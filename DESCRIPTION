@@ -5,9 +5,11 @@ Version: 1.7.0
 Date: 2017-02-03
 Author: Alexandre Bureau, Ingo Ruczinski, Samuel G. Younkin
 Maintainer: Alexandre Bureau <alexandre.bureau@msp.ulaval.ca>
-Description: Computes estimates of the probability of related individuals sharing a rare variant.
+Description: Computes estimates of the probability of related individuals
+    sharing a rare variant.
 License: GPL-2
 Depends: R (>= 2.15.2)
 Imports: utils, methods, kinship2
 LazyLoad: yes
 RoxygenNote: 6.0.1
+
