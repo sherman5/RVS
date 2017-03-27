@@ -1,11 +1,10 @@
+# ped.mat : pedigrees coded as in a ped file
+# ped.listfams : list of pedigree objects, one object for each pedigree in ped.mat
+# fams : vector of families carrying the variants listed in the corresponding position in sites
+# sites : vector of the variant sites for each family in the fams vector 
+# minor.allele.vec : vector of the minor alleles at each site in the sites vector
 RVgene = function(ped.mat,ped.listfams,sites,fams,pattern.prob.list,nequiv.list,N.list,type="alleles",minor.allele.vec,precomputed.prob=list(0),maxdim = 1e9)
 {
-	# ped.mat : pedigrees coded as in a ped file
-	# ped.listfams : list of pedigree objects, one object for each pedigree in ped.mat
-	# fams : vector of families carrying the variants listed in the corresponding position in sites
-	# sites : vector of the variant sites for each family in the fams vector 
-	# minor.allele.vec : vector of the minor alleles at each site in the sites vector
-
     if (missing(nequiv.list))
     {
         nequiv.list = rep(1,length(pattern.prob.list))
