@@ -10,7 +10,7 @@ RVsharing.fn = function(id, dad.id, mom.id,carriers)
     if (nfd < 2)
     {
         stop(paste("There are fewer than 2 descendants for which to",
-            "compute a rare variant sharing probability.")
+            "compute a rare variant sharing probability."))
     }
 
     if (!missing(carriers))
@@ -25,9 +25,9 @@ RVsharing.fn = function(id, dad.id, mom.id,carriers)
         names(dad.id) = id
         if (any(is.na(dad.id[as.character(carriers)])))
         {
-            stop ("Carriers ", carriers[is.na(dad.id[as.character(1
+            stop ("Carriers ", carriers[is.na(dad.id[as.character(1,
                 carriers)])], paste(" are founders. This is not supported",
-                "by RVsharing.")
+                "by RVsharing."))
         }
     }
 
