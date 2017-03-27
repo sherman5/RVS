@@ -9,22 +9,5 @@ Description: Computes estimates of the probability of related individuals sharin
 License: GPL-2
 Depends: R (>= 2.15.2)
 Imports: utils, methods, kinship2
-Suggests:
-Enhances:
-Collate: AllGenerics.R
-	 AllClasses.R
-	 methods-pedigree.R
-	 methods-trio.R
- 	 methods-RVsharingProb.R
-	 functions.R
-	 approx2_functions.R		  
-	 ped2trio.R
-	 PFU.R
-	 RVsharing.fn.R
-	 extract_carriers.R
-	 pvalue_functions.R
-	 RVgene.R
-	 RVgene_allshare.R
-         zzz.R
 LazyLoad: yes
-biocViews:
+RoxygenNote: 6.0.1

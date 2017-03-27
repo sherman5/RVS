@@ -1,7 +1,4 @@
 # Computation of P[FjU]
-
-PFU.direct = function(nf,theta,ord=2)
-{
 # Computation of P[FjU] using equation 21 of Bureau et al.
 
 # Arguments:
@@ -11,23 +8,24 @@ PFU.direct = function(nf,theta,ord=2)
 #       of distinct alleles in the founders (noted d in Bureau et al.) Must be <= 5.
 
 # Value: P[FjU] (scalar)
-
-a = (2*nf):(2*nf-ord)
-distri = c(1,theta,theta^2/2,theta^3/6,theta^4/24,theta^5/120)[1:(ord+1)]
-weighted.mean(2/nf - 2/a,distri)
+PFU.direct = function(nf,theta,ord=2)
+{
+    a = (2*nf):(2*nf-ord)
+    distri = c(1,theta,theta^2/2,theta^3/6,theta^4/24,theta^5/120)[1:(ord+1)]
+    weighted.mean(2/nf - 2/a,distri)
 }
 
 # Special cases of PFU.direct which are no longer needed
 PFU.direct.cubic = function(nf,theta)
 {
-a = (2*nf-3):(2*nf)
-weighted.mean(2/nf - 2/a,c(theta^3/6,theta^2/2,theta,1))
+    a = (2*nf-3):(2*nf)
+    weighted.mean(2/nf - 2/a,c(theta^3/6,theta^2/2,theta,1))
 }
 
 PFU.direct.order4 = function(nf,theta)
 {
-a = (2*nf-4):(2*nf)
-weighted.mean(2/nf - 2/a,c(theta^4/24,theta^3/6,theta^2/2,theta,1))
+    a = (2*nf-4):(2*nf)
+    weighted.mean(2/nf - 2/a,c(theta^4/24,theta^3/6,theta^2/2,theta,1))
 }
 
 ## PFU.fromphi = function(phi.vec,theta)
