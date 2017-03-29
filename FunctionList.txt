@@ -1,0 +1,126 @@
+approx2_functions.R
+
+    # Returns the most likely number of distinct alleles among nf founders
+    # based on mean estimated kinship phi
+    infer.nalleles(phi,nf)
+
+    # Compute the vector of expected phi_a for nf founders for numbers of
+    # distinct alleles a from amin to 2 * nf-1
+    # Sequential probability computation
+    compute.phi.vec(nf, amin = 2*nf - 2)
+
+    # Solve the parameter theta for polynomial approximation of the 
+    # distribution of the number of distinct alleles. This is a general
+    # function for polynomials of order 2 to 5. The previous version of
+    # this function was doing the computation for a quadratic polynomials
+    # Arguments:
+    # phi is the mean estimated kinship between founders
+    # phi.vec contains phi_a for a = 2*nf-ord to 2*nf-1, where 2 <= ord <= 5
+    # Return:
+    # Real roots of the polynomial approximation
+    infer.theta(phi, phi.vec)
+
+    # Special cases of infer.theta which are no longer needed
+
+    infer.theta.quadratic(phi, phi.vec)
+    infer.theta.cubic(phi, phi.vec)
+    infer.theta.order4(phi, phi.vec)
+    infer.theta.order5(phi, phi.vec)
+
+    get.LODallshare(vec, pshare)
+
+    # Wrappers for pedigree object
+    # Returns only pshare
+    RVsharing.ped.pshare(ped)
+
+extract_carriers.R
+
+    # ped : pedigree coded in a ped file with either two alleles per variant
+    # ("alleles"), or a count of one allele ("count")
+    # site : site where to record carriers
+    # fam : ID of the family for which to extract carriers
+    extract_carriers(ped, site, fam, type='alleles', minor.allele = 2)
+    
+functions.R
+
+    gene.drop.fn(g1, g2)
+
+    GeneDropSim.fn(trio.list, id, dt.vec, fd.indices,
+        carriers = dt.vec, n = 1e3, k = 10, nf = 1)
+
+    GeneDropSim.allsubsets.fn(trio.list, id, dt.vec, fd.indices, 
+        carriers = dt.vec, n = 1e3, k = 10, nf = 1)
+
+    GeneDropSimExcessSharing.fn(trio.list, id, dt.vec, fd.indices,
+        phihat, RVfreq, carriers = dt.vec, ord=5, n = 1e3, k = 10)
+
+    get.fd.indices(ped)
+
+methods-pedigree.R
+
+    RVsharing(data, dad.id, mom.id, carriers)
+
+    signatures:
+
+    pedigree, missing, missing, character
+    pedigree, missing, missing, missing
+    character, character, character, character
+    characer, character, character, missing
+    numeric, numeric, numeric, numeric
+    numeric numeric, numeric, missing
+
+methods-RVsharingProb.R
+
+    initialize(RVsharingProb)
+    ComputeKinshipPropCoef(RVsharingProb)
+    show(RVsharingProb)   
+
+methods-trio.R
+
+    initialize(Trio)
+    GeneDrop(Trio, geno.vec)
+
+ped2trio.R
+
+    ped2trio(ped)
+
+PFU.R
+
+    PFU.direct(nf, theta, ord)
+    PFU.direct.cubic(nf, theta)
+    PFU.direct.order4(nf, theta)
+
+pvalue_functions.R
+
+    get.psubset(vec, not, pshare.data)
+
+RVgene.R
+
+    RVgene(ped.mat, ped.listfams, sites, fams, pattern.prob.list,
+        nequiv.list, N.list, type = "alleles", minor.allele.vec,
+        precomputed.prob = list(0), maxdim = 1e9)
+
+RVgene_allshare.R
+
+    RVgene_allshare(ped.mat, ped.listfams, sites, fams, pshare.vec,
+        type="alleles", minor.allele.vec, precomputed.prob = list(0),
+        maxdim = 1e9)
+
+RVsharing.fn.R
+
+    RVsharing.fn(id, dad.id, mom.id,carriers)
+    RVsharing.ped.pshare(ped)
+
+zzz.R
+
+    .onAttach(libname, pkgname)
+
+    
+
+
+
+
+
+
+    
+    

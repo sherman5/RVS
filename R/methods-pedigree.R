@@ -1,5 +1,5 @@
 #' @export
-setMethod("RVsharing",  signature(data="pedigree", dad.id="missing",mom.id="missing",carriers="character"), function(data,carriers)
+setMethod("RVsharing", signature(data="pedigree", dad.id="missing",mom.id="missing",carriers="character"), function(data,carriers)
 {
     fa.index <- ifelse(data$findex !=0, data$findex, NA)
     fa.id <- data$id[fa.index]
