@@ -2,10 +2,10 @@
 # vec : vector of names of all families where a variant is seen
 # not : vector of names of families where not all affected subjects share the rare variant (RV)
 # pshare.data : data frame with at least the two following columns:
-#    pshare : vector of RV sharing probabilities
-#    ped.tocompute.vec : vector of names of the families whose sharing probability is contained in pshare. 
-#						 The names in the arguments "vec" and "not" must be found in ped.tocompute.vec.
-get.psubset = function(vec,not,pshare.data)
+# pshare : vector of RV sharing probabilities
+# ped.tocompute.vec : vector of names of the families whose sharing probability is contained in pshare. 
+# The names in the arguments "vec" and "not" must be found in ped.tocompute.vec.
+get.psubset = function(vec, not, pshare.data)
 {
     # check: "not" contains at least one family 
     if (length(not)==0) stop ("Vector 'not' of families not sharing the RV is empty.")

@@ -4,7 +4,7 @@ setMethod("initialize", "Trio", function(.Object, ... )
     .Object
 })
 
-setMethod("GeneDrop", signature( trio = "Trio", geno.vec = "numeric"), function( trio, geno.vec )
+setMethod("GeneDrop", signature(trio = "Trio", geno.vec = "numeric"), function( trio, geno.vec )
 {
     g1 <- geno.vec[trio@id]
     g2 <- geno.vec[trio@spouse]

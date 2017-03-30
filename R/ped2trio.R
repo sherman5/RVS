@@ -44,7 +44,8 @@ ped2trio <- function(ped)
                     offspring.vec = id[dad.id==dad.trio[i] & mom.id==spousevec[j]]
 
                     # Creating the elements of the trio object in trio.list
-                    # I need to convert the offspring vector into a list to handle sibships that contain both trios and final descendants represented by a character string
+                    # I need to convert the offspring vector into a list to handle sibships that contain both trios and final
+                    # descendants represented by a character string
                     offspring.list = as.list(offspring.vec)
 
                     # For children who already have their own trio, replace their name by the actual trio object in the list of offspring
