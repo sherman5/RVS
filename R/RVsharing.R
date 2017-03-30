@@ -17,6 +17,29 @@ ped_datastruct = function(finalDescendants, depth)
     # List of intermediate ancestors
     iancestors = character(0)
 
+    if (nfd < 2)
+    {
+        stop("There are fewer than 2 descendants for which to",
+            "compute a rare variant sharing probability.")
+    }
+
+    if (!missing(carriers))
+    {
+        missc = setdiff(carriers,id)
+        if (length(missc) > 0)
+        {
+            stop(missc, " not in pedigree.")
+        }
+
+        # Check all carriers are non-founders
+        names(dad.id) = id
+        if (any(is.na(dad.id[as.character(carriers)])))
+        {
+            stop ("Carriers ", carriers[is.na(dad.id[as.character(carriers)])],
+                " are founders. This is not supported by RVsharing.")
+        }
+    }
+
     # Number of founders below each intermediate ancestor
     iancestors.Nf = numeric(0)
 

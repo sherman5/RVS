@@ -1,4 +1,5 @@
 #' @export
+<<<<<<< HEAD
 setMethod("RVsharing", signature(data = "pedigree", dad.id = "missing",
 mom.id = "missing", carriers = "character"),
 function(data, carriers)
