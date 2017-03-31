@@ -23,9 +23,9 @@ parsePedigree <- function(ped)
         }
 
         # remove duplicates and self
+        validSpouses <- subject[[i]]@spouses != i
+        subjects[[i]]@spouses <- subjects[[i]]@spouses[validSpouses]        
         subjects[[i]]@spouses <- unique(subjects[[i]]@spouses)
-        subjects[[i]]@spouses <- 
-            subjects[[i]]@spouses[subjects[[i]]@spouses != i]        
     }
     return (subjects)
 }
@@ -57,7 +57,7 @@ getNextGeneration <- function(subjects)
     return (unique(unlist(allChildren)))
 }
 
-# get a list of all descendants from each founder
+# get a list of all descendants from each founder, including distance
 getDescendants <- function(founders, subjects, ped)
 {
     descendants <- list()
