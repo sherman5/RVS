@@ -1,114 +1,83 @@
-# parses all pedigree information into a simple list of Subject objects
-parsePedigree <- function(ped)
+getSize <- function(ped)
 {
-    # create empty list of subjects
-    subjects <- replicate(length(ped[['id']]), new('Subject'))
+    return (length(ped$id))
+}
 
-    # get info for each subject
-    for (i in 1:length(subjects))
+getOffspring <- function(ped, index)
+{
+    return (c(which(ped[['findex']] == index),
+        which(ped[['mindex']] == index)))    
+}
+
+getParents <- function(ped, index)
+{
+    return (c(ped$findex[index], ped$mindex[index]))
+}
+
+getSpouses <- function(ped, index)
+{
+    # get all kids
+    kids <- getOffspring(ped, index)
+    if (length(kids) == 0) {return (0)}
+
+    # find all parents
+    parents <- sapply(kids, getParents, ped = ped)
+
+    # remove index from list of parents, keep unique indices
+    return (unique(parents[which(parents != index)]))
+}
+
+getInLaws <- function(ped, index)
+{
+    spouses <- getSpouses(ped, index)
+    if (spouses[1] == 0) {return (c(0))}
+
+    inLaws <- sapply(spouses, getParents, ped = ped)
+    return (unique(c(inLaws)))
+}
+
+getFounders <- function(ped)
+{
+    sumParents <- function(i)
     {
-        # get mom and dad index
-        subjects[[i]]@mom <- ped[['mindex']][[i]]
-        subjects[[i]]@dad <- ped[['findex']][[i]]
-
-        # find all subjects that refer to this one as 'mom' or 'dad'    
-        subjects[[i]]@offspring <- c(which(ped[['findex']] == i),
-            which(ped[['mindex']] == i))
-
-        # find spouses
-        for (c in subjects[[i]]@offspring)
-        {
-            subjects[[i]]@spouses <- c(subjects[[i]]@spouses,
-                ped[['mindex']][[c]], ped[['findex']][[c]])
-        }
-
-        # remove duplicates and self
-        validSpouses <- subject[[i]]@spouses != i
-        subjects[[i]]@spouses <- subjects[[i]]@spouses[validSpouses]        
-        subjects[[i]]@spouses <- unique(subjects[[i]]@spouses)
+        return (sum(getParents(ped, i)))
     }
-    return (subjects)
+
+    totalParents <- sapply(1:getSize(ped), sumParents)
+    return (which(totalParents == 0))
 }
 
-# get the indices of the founders
-getFounders <- function(subjects)
+getFinalDescendants <- function(ped)
 {
-    sumParents <- function(sub) {return (sub@mom + sub@dad)}
-    sumInLaws <- function(sub)
-        {return (sum(unlist(sapply(subjects[sub@spouses], sumParents))))}
-
-    parents <- sapply(subjects, sumParents)
-    inLaws <- sapply(subjects, sumInLaws)
-
-    return (which(parents == 0 & inLaws == 0))
+    sumOffspring <- function(i) {return (sum(getOffspring(ped, i)))}
+    totalKids <- sapply(1:getSize(ped), sumOffspring)
+    return (which(totalKids == 0))
 }
 
-# get the indices of the final descendants
-getFinalDescendants <- function(subjects)
+getNextGeneration <- function(ped, generation)
 {
-    num <- sapply(subjects, function(sub) {return (length(sub@offspring))})
-    return (which(num == 0))
+    allChildren <- sapply(generation, getOffspring, ped = ped)
+    return (unique(c(unlist(allChildren))))
 }
 
-# get indices of all children
-getNextGeneration <- function(subjects)
+getDescendants <- function(ped, founder)
 {
-    allChildren <- sapply(subjects, function(sub) {return (sub@offspring)}) 
-    return (unique(unlist(allChildren)))
-}
+    # used to label descendant depth
+    labelDepth <- function(x, d) {return (c(x, d))}
 
-# get a list of all descendants from each founder, including distance
-getDescendants <- function(founders, subjects, ped)
-{
-    descendants <- list()
-    for (f in 1:length(founders))
+    # get first generation
+    gen <- getNextGeneration(ped, founder)
+    if (length(gen) == 0) {return (matrix(nrow = 0, ncol = 2))}
+
+    # process each generation
+    depth <- 1
+    descend <- matrix(nrow = 2, ncol = 0)
+    while (length(gen) > 0)
     {
-        # get first generation after this founder
-        gen <- getNextGeneration(subjects[founders[f]])
-        descendants[[f]] <- sapply(gen, function(x) {return (c(x,1))})
-
-        # check if no descendants
-        if (length(gen) == 0)
-        {
-            stop("error, founder ", ped[['id']][founders[f]],
-                " has no descendants")
-        }
-
-        # get all subsequent generations
-        depth <- 2
-        gen <- getNextGeneration(subjects[gen])
-        while (length(gen) > 0)
-        {
-            descendants[[f]] <- cbind(descendants[[f]], sapply(gen,
-                function(x) {return (c(x,depth))}))
-            
-            depth <- depth + 1
-            gen <- getNextGeneration(subjects[gen])
-        }
+        descend <- cbind(descend, sapply(gen, labelDepth, d = depth))
+        gen <- getNextGeneration(ped, gen)
+        depth <- depth + 1
     }
-    return (descendants)
+    return (descend)
 }
-        
-# compute RV sharing probability
-RVsharingNew <- function(ped)
-{
-    subjects <- parsePedigree(ped)
-    founders <- getFounders(subjects)
-    descendants <- getDescendants(founders, subjects, ped)
-
-    numer = 0
-    denom = 0
-
-    for (f in 1:length(founders))
-    {
-        dist <- descendants[[f]][2, descendants[[f]][1,] > 0]
-
-        commonAncestor <- 1
-
-        numer <- numer + 0.5 ^ sum(dist) * commonAncestor
-        denom <- denom + 1 - prod(1 - 0.5 ^ dist)
-    }
-    return (numer / denom)
-}
-
 
