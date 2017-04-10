@@ -1,5 +1,4 @@
 #' @export
-<<<<<<< HEAD
 setMethod("RVsharing", signature(data = "pedigree", dad.id = "missing",
 mom.id = "missing", carriers = "character"),
 function(data, carriers)
@@ -9,7 +8,7 @@ function(data, carriers)
     ma.index <- ifelse(data$mindex !=0, data$mindex, NA)
     ma.id <- data$id[ma.index]
   
-    calculateSharingProb(id = data$id, dad.id = fa.id, mom.id = ma.id,
+    RVsharing.fn(id = data$id, dad.id = fa.id, mom.id = ma.id,
         carriers = carriers)
 })
 
@@ -23,7 +22,7 @@ function(data)
     ma.index <- ifelse(data$mindex != 0, data$mindex, NA)
     ma.id <- data$id[ma.index]
   
-    calculateSharingProb(id = data$id, dad.id = fa.id, mom.id = ma.id)
+    RVsharing.fn(id = data$id, dad.id = fa.id, mom.id = ma.id)
 })
 
 #' @export
@@ -35,7 +34,7 @@ function(data, dad.id, mom.id, carriers)
     dad.id = ifelse(dad.id == "0", NA, dad.id)
     mom.id = ifelse(mom.id == "0", NA, mom.id)
 
-    calculateSharingProb(id = data, dad.id = dad.id, mom.id = mom.id,
+    RVsharing.fn(id = data, dad.id = dad.id, mom.id = mom.id,
         carriers = carriers)
 })
 
@@ -48,7 +47,7 @@ function(data, dad.id, mom.id)
     dad.id = ifelse(dad.id == "0", NA, dad.id)
     mom.id = ifelse(mom.id == "0", NA, mom.id)
 
-    calculateSharingProb(id = data, dad.id = dad.id, mom.id = mom.id)
+    RVsharing.fn(id = data, dad.id = dad.id, mom.id = mom.id)
 })
 
 #' @export
@@ -60,7 +59,7 @@ function(data, dad.id, mom.id, carriers)
     dad.id = ifelse(dad.id == 0, NA, dad.id)
     mom.id = ifelse(mom.id == 0, NA, mom.id)
 
-    calculateSharingProb(id = data, dad.id = dad.id, mom.id = mom.id,
+    RVsharing.fn(id = data, dad.id = dad.id, mom.id = mom.id,
         carriers = carriers)
 })
 
@@ -73,7 +72,7 @@ function(data, dad.id, mom.id)
     dad.id = ifelse(dad.id == 0, NA, dad.id)
     mom.id = ifelse(mom.id == 0, NA, mom.id)
 
-    calculateSharingProb(id = data, dad.id = dad.id, mom.id = mom.id)
+    RVsharing.fn(id = data, dad.id = dad.id, mom.id = mom.id)
 })
 
 

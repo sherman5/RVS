@@ -1,4 +1,4 @@
-calculateSharingProb <- function(ped)
+calculateSharingProbNew <- function(ped)
 {
     affected <- which(ped$affected == 1) 
 

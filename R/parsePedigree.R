@@ -33,7 +33,9 @@ getInLaws <- function(ped, index)
     if (spouses[1] == 0) {return (c(0))}
 
     inLaws <- sapply(spouses, getParents, ped = ped)
-    return (unique(c(inLaws)))
+    inLaws <- unique(c(inLaws))
+    if (length(inLaws) == 1) {inLaws <- c(0,0)}
+    return (inLaws)
 }
 
 getFounders <- function(ped)
