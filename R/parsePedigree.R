@@ -83,3 +83,91 @@ getDescendants <- function(ped, founder)
     return (descend)
 }
 
+getTopFounders <- function(ped)
+{
+    sumParents <- function(i)
+    {
+        return (sum(getParents(ped, i) + sum(getInLaws(ped, i))))
+    }
+    totalParents <- sapply(1:getSize(ped), sumParents)
+    return (which(totalParents == 0))
+}
+
+# depth first search of parents going back to founder 
+getLineage <- function(ped, founder, descendant)
+{
+    parents <- getParents(ped, descendant)
+    allDes <- getDescendants(ped, founder)[1,]    
+    
+    if (!(founder %in% parents) && descendant %in% allDes)
+    {
+        lin <- parents
+        if (parents[1] %in% allDes)
+        {
+            lin <- c(lin, getLineage(ped, founder, parents[1]))
+        }
+        if (parents[2] %in% allDes)
+        {
+            lin <- c(lin, getLineage(ped, founder, parents[2]))
+        }
+        return (lin)
+    }
+    else if (founder %in% parents)
+    {
+        return (parents)
+    }
+    else
+    {
+        return (c())
+    }
+}
+
+getDistance <- function(ped, sub1, sub2)
+{
+
+}
+
+getCommonAncestor <- function(ped, sub1, sub2)
+{
+    founders <- getFounders(ped)
+    topFounders <- getTopFounders(ped)
+    
+    valid <- sapply(topFounders, function(x)
+        {
+            return (sub1 %in% getDescendants(ped, x)[1,]
+                && sub2 %in% getDescendants(ped, x)[1,])
+        })
+
+    topFounders <- topFounders[valid]
+    if (length(topFounders) == 0) return (NA)
+    n <- sapply(topFounders, function(x) length(getDescendants(ped, x)[1,]))
+    topFounder <- topFounders[n==max(n)][1]
+
+    path1 <- getIntermediateAncestors(ped, topFounder, sub1)
+    path2 <- getIntermediateAncestors(ped, topFounder, sub2)
+
+    overlap <- c(path1, path2)
+    overlap <- overlap[duplicated(overlap)]
+    overlap <- overlap[!overlap %in% founders]
+
+    if (length(overlap) == 0) return (topFounder)
+    else return (overlap[1])
+}
+
+getBranchingPoints <- function(ped)
+{
+    finalDescendants <- combn(getFinalDescendants(ped), 2)
+    branchingPoints <- apply(finalDescendants, 2, function(x)
+        getCommonAncestor(ped, x[1], x[2]))
+
+    branchingPoints <- unique(branchingPoints)
+    founders <- getFounders(ped)
+    return (branchingPoints[!(branchingPoints %in% founders)])
+}
+
+validPedigree <- function(ped)
+{
+    return (TRUE)
+}
+
+
