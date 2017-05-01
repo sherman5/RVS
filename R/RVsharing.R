@@ -1,3 +1,32 @@
+#  [13][10][9]P(12|9,10) [8]P(11|8,13) [7][6]P(6)P(13|6,7)P(10|6,7)
+#  [5]P(5) [4]P(9|4,5)P(8|4,5) [3]P(3) [2]P(2)P(7|2,3) [1]P(1)P(4|1,2)
+
+# local
+# f(1,2,4)
+# f(2,3,7)
+# f(3)
+# f(4,5,8,9)
+# f(5)
+# f(6,7,10,13)
+# f()
+# f(8,11,13)
+# f(9,10,12)
+# f()
+# f()
+
+# global
+# f(2,4)
+# f(3,4,7)
+# f(4,7)
+# f(5,7,8,9)
+# f(7,8,9)
+# f(7,8,9,10,13)
+# f(8,9,10,13)
+# f(9,10,13)
+# f(10,13)
+# f(13)
+# f()
+
 sumOutVariable <- function(pmf, index)
 {
     perm <- 1:length(dim(pmf))
@@ -6,13 +35,18 @@ sumOutVariable <- function(pmf, index)
     return(colSums(aperm(pmf, perm)))
 }
 
-marginalProbability <- function(ped, nodes, prior)
+globalPmf <- function(pmf, vars, vals)
+{
+
+
+}
+
+marginalProbability <- function(ped, marginalNodes, prior)
 {
     # get graph info
     graph <- pedToDAG(ped)
     order <- as.numeric(topoSort(graph))
-    print(order)
-    edges <- edgeMatrix(graph)
+    order <- order[!order %in% marginalNodes[1,]]
     
     #initialize conditional probabilities
     condProb <- function(x,p1,p2) 
@@ -20,7 +54,7 @@ marginalProbability <- function(ped, nodes, prior)
         pmf <- c((2-p1)*(2-p2)/4, (p1+p2-p1*p2)/2, p1*p2/4)
         return(pmf[x+1])
     }
-    prob <- lapply(1:length(order), function(x) condProb)
+    prob <- lapply(1:length(graph@nodes), function(x) condProb)
 
     # overwrite conditional probs for founders
     for (node in 1:length(order))
@@ -32,57 +66,65 @@ marginalProbability <- function(ped, nodes, prior)
     }
 
     # create local interaction pmf
-    localPmf <- function(nodes, args)
+    localPmf <- function(nodes, vals)
     {
         prod <- 1
-        for (i in 1:length(nodes))
+        for (i in nodes)
         {
-            prod <- prod * prob[[nodes[i]]](args[[i]][1], args[[i]][2],
-                args[[i]][3])
+            prod <- prod * prob[[i]](vals[[i]][1], vals[[i]][2],
+                vals[[i]][3])
         }
         return(prod)
     }
 
-    # sum over variables in order
-    vars <- c()
-    pmf <- array()
+    # rolling pmf
+    pmf <- list()
+    pmf[['vars']] <- c()
+    pmf[['prob']] <- array()
+
+    # already processed nodes
     processed <- c()
+
+    # sum over variables in order
     for (node in order)
     {
-        # find all interactions (children & spouses) for this node
-        children <- sapply(getOffspring(ped, node), function(x)
-            {sum(getParents(ped, x) %in% processed) == 0})
-        parents <- sapply(children, getParents, ped = ped)
+        # find all un-processed children for this node
+        candidates <- c(node, getOffspring(ped, node))
+        localVars <- candidates[sapply(candidates, function(x)
+            {sum(getParents(ped, x) %in% processed) == 0})]
 
-        # include this node if a parent was not previously processed
-        allNodes <- children
-        if (sum(getParents(ped, node) %in% processed) == 0)
-            {allNodes <- c(allNodes, node)}
+        # find the parents the localVars depend on
+        localVarsDep <- unique(c(sapply(localVars, getParents, ped=ped)))
+        localVarsDep <- unlist(localVarsDep[localVarsDep != 0])
 
-        # create current pmf (function)
-        mainVars <- as.numeric(unlist(unique(c)))
-        allVars <- as.numeric(unlist(unique(c(allNodes, c(parents)))))
+        # find the vars required by the new pmf being made (node summed out)
+        newVars <- unique(c(localVars, localVarsDep, pmf[['vars']]))
+        newVars <- newVars[!newVars %in% marginalNodes[1,]]
 
-        # record primary vars and parents, set node to 0,1,2
-        # sum over 3 values of node to get values for pmf
+        # create new pmf
+        newPmf <- list()
+        newPmf[['vars']] <- newVars
+        newPmf[['prob']] <- array(0, rep(3,length(newVars)))
 
-        # update main pmf
-        newPmf <- array(0, rep(3, length(allVars)))
-        args <- expand.grid(lapply(1:length(allVars), function(x) 0:2))
-        args <- as.matrix(unname(args)) + 1
+        # find all variable combinations needed for new pmf
+        args <- expand.grid(lapply(1:length(newVars), function(x) 0:2))
+        args <- as.matrix(unname(args))
         for (a in 1:nrow(args))
         {
-            arg <- args[a,]
-            curArg <- arg[1:length(curVars)]
-            oldArg <- arg[(length(curVars)+1):length(oldVars)]
-#            arg <- matrix(args[a,], 1)
-            newPmf[arg] <- localPmf(curArg) * pmf[matrix(oldArg, 1)]
-        }
-l
-        # sum out node
-        pmf <- sumOutVariable(newPmf, index(node))
+            arg <- args[a,]  
+            trios <- list()
+            for (v in newVars)
+            {
+                
 
-        # mark this node as processed
+            }
+            localArg <- arg[1:length(newVars)]
+        }
+
+        # sum out node, update pmf, mark node as processed
+        newPmf[['prob']] <- sumOutVariable(newPmf[['prob']],
+            which(newVars==node))
+        pmf <- newPmf
         processed <- c(processed, node)
     }
 }
