@@ -27,34 +27,13 @@
 # f(13)
 # f()
 
-sumOutVariable <- function(pmf, index)
-{
-    perm <- 1:length(dim(pmf))
-    perm <- perm[perm != index]
-    perm <- c(index, perm)
-    return(colSums(aperm(pmf, perm)))
-}
-
-globalPmf <- function(pmf, vars, vals)
-{
-
-
-}
-
-marginalProbability <- function(ped, marginalNodes, prior)
-{
-    # get graph info
-    graph <- pedToDAG(ped)
-    order <- as.numeric(topoSort(graph))
-    order <- order[!order %in% marginalNodes[1,]]
-    
     #initialize conditional probabilities
     condProb <- function(x,p1,p2) 
     {
         pmf <- c((2-p1)*(2-p2)/4, (p1+p2-p1*p2)/2, p1*p2/4)
         return(pmf[x+1])
     }
-    prob <- lapply(1:length(graph@nodes), function(x) condProb)
+
 
     # overwrite conditional probs for founders
     for (node in 1:length(order))
@@ -65,8 +44,8 @@ marginalProbability <- function(ped, marginalNodes, prior)
         }
     }
 
-    # create local interaction pmf
-    localPmf <- function(nodes, vals)
+
+    localPmf <- function(pmf, vars, vals)
     {
         prod <- 1
         for (i in nodes)
@@ -77,7 +56,63 @@ marginalProbability <- function(ped, marginalNodes, prior)
         return(prod)
     }
 
-    # rolling pmf
+
+    for (v in 1:length(newVars))
+    {
+        p <- getParents(ped, v)
+        vals[[newVars[v]]] <- c() 
+        vals[[newVars[v]]][1] <- arg[v]
+        vals[[newVars[v]]][2] <- ifelse(p[1] == 0, 0, arg[p[1]])
+        vals[[newVars[v]]][3] <- ifelse(p[2] == 0, 0, arg[p[2]])
+    }
+
+
+sumOutVariable <- function(pmf, index)
+{
+    perm <- 1:length(dim(pmf))
+    perm <- perm[perm != index]
+    perm <- c(index, perm)
+    return(colSums(aperm(pmf, perm)))
+}
+
+getProb <- function(pmf, vars, vals)
+{
+    if (!all(pmf[['vars']] %in% vars))
+    {
+        stop('not enough variables supplied to pmf')
+    }
+    else
+    {
+        ind <- sapply(pmf[['vars']], function(x) which(vars==x))
+        arrayIndex <- matrix(vals[ind], ncol=length(pmf[['vars']]))
+        return (pmf[['prob']][arrayIndex])
+    }
+}
+
+createLocalPmf <- function(ped, vars, varsDep, prior)
+{
+    pmf[['vars']] <- unique(c(vars, varsDep))
+    pmf[['prob']] <- array(0, rep(3, length(pmf[['vars']])))
+
+    args <- expand.grid(lapply(1:length(vars), function(x) 0:2))
+    args <- as.matrix(unname(args))
+    for (a in 1:nrow(args))
+    {
+        arg <- args[a,]  
+        pmf[['prob']][matrix(arg, ncol=length(arg))] <-
+                getProb(localPmf, newVars, arg) * getProb(pmf, newVars, arg)
+    }
+    prob <- lapply(1:length(vars), function(x) condProb)
+}
+
+marginalProbability <- function(ped, marginalNodes, prior)
+{
+    # get graph order
+    graph <- pedToDAG(ped)
+    order <- as.numeric(topoSort(graph))
+    order <- order[!order %in% marginalNodes[1,]]
+
+    # partial sum pmf
     pmf <- list()
     pmf[['vars']] <- c()
     pmf[['prob']] <- array()
@@ -97,7 +132,10 @@ marginalProbability <- function(ped, marginalNodes, prior)
         localVarsDep <- unique(c(sapply(localVars, getParents, ped=ped)))
         localVarsDep <- unlist(localVarsDep[localVarsDep != 0])
 
-        # find the vars required by the new pmf being made (node summed out)
+        # create pmf for variables interacting with this node
+        localPmf <- createLocalPmf(ped, localVars, localVarsDep, prior)
+
+        # find the vars required by the new pmf being made
         newVars <- unique(c(localVars, localVarsDep, pmf[['vars']]))
         newVars <- newVars[!newVars %in% marginalNodes[1,]]
 
@@ -112,13 +150,8 @@ marginalProbability <- function(ped, marginalNodes, prior)
         for (a in 1:nrow(args))
         {
             arg <- args[a,]  
-            trios <- list()
-            for (v in newVars)
-            {
-                
-
-            }
-            localArg <- arg[1:length(newVars)]
+            newPmf[['prob']][matrix(arg, ncol=length(arg))] <-
+                getProb(localPmf, newVars, arg) * getProb(pmf, newVars, arg)
         }
 
         # sum out node, update pmf, mark node as processed
