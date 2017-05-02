@@ -9,7 +9,7 @@ Description: Computes estimates of the probability of related individuals
     sharing a rare variant.
 License: GPL-2
 Depends: R (>= 2.15.2)
-Imports: utils, methods, kinship2
+Imports: utils, methods, kinship2, gRbase
 LazyLoad: yes
 RoxygenNote: 6.0.1
 

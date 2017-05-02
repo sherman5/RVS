@@ -30,11 +30,11 @@ getSpouses <- function(ped, index)
 getInLaws <- function(ped, index)
 {
     spouses <- getSpouses(ped, index)
-    if (spouses[1] == 0) {return (c(0))}
+    if (spouses[1] == 0) {return (c(0))} # unmarried
 
     inLaws <- sapply(spouses, getParents, ped = ped)
     inLaws <- unique(c(inLaws))
-    if (length(inLaws) == 1) {inLaws <- c(0,0)}
+    if (length(inLaws) == 1) {inLaws <- c(0,0)} # married to founder
     return (inLaws)
 }
 
@@ -170,4 +170,27 @@ validPedigree <- function(ped)
     return (TRUE)
 }
 
+pedToDAG <- function(ped)
+{
+    # list used to generator DAG
+    edgeList <- list()
+    index <- 1
 
+    # process nodes in order
+    for (i in 1:getSize(ped))
+    {
+        edgeList[[index]] <- i
+        index <- index + 1
+    }
+
+    # find edges in graph
+    for (i in 1:getSize(ped))
+    {
+        for (c in getOffspring(ped, i))
+        {
+            edgeList[[index]] <- c(c, i)
+            index <- index + 1
+        }
+    }
+    return (dag(edgeList))
+}
