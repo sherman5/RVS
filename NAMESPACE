@@ -3,5 +3,7 @@
 import(kinship2)
 import(methods)
 import(utils)
+importFrom(gRbase,dag)
+importFrom(gRbase,parents)
 importFrom(stats,dbinom)
 importFrom(stats,weighted.mean)
