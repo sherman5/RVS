@@ -128,12 +128,13 @@ getIndividualPmf <- function(var, parents, marginalVars)
     pmf[['prob']] <- array(0, c(3,3,3))
 
     # populate pmf args
-    args <- expand.grid(x=0:2, a=0:2, b=0:2)
-    pmf[['prob']][] <- with(args, c((2-a)*(2-b)/4, (a+b-a*b)/2, a*b/4)[x+1])   
+    args <- expand.grid(p1=0:2, p2=0:2)
+    pmf[['prob']][1,,] <- with(args, (2-p1)*(2-p2)/4)
+    pmf[['prob']][2,,] <- with(args, (p1+p2-p1*p2)/2)
+    pmf[['prob']][3,,] <- with(args, p1*p2/4)
 
     # plug in marginal variable values
     varIndex <- p1Index <- p2Index <- 1:3
-    
     if (var %in% marginalVars[1,])
     {
         varIndex <- marginalVars[2,which(marginalVars[1,]==var)] + 1
