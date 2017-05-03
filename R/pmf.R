@@ -1,30 +1,5 @@
 getNonRootPmf <- function(var, parents, fixedVars)
 {
-    # create pmf structure
-    pmf <- list()
-    pmf[['vars']] <- c(var, parents)
-    pmf[['prob']] <- array(0, c(3,3,3))
-
-    # populate pmf probability
-    args <- expand.grid(p1=0:2, p2=0:2)
-    pmf[['prob']][1,,] <- with(args, (2-p1)*(2-p2)/4)
-    pmf[['prob']][2,,] <- with(args, (p1+p2-p1*p2)/2)
-    pmf[['prob']][3,,] <- with(args, p1*p2/4)
-
-    # plug in fixed variable values
-    pmf[['vars']] <- setdiff(pmf[['vars']], fixedVars[1,])
-    i1 <- i2 <- i3 <- 1:3
-
-    if (var %in% fixedVars[1,])
-        i1 <- fixedVars[2,which(fixedVars[1,]==var)] + 1
-    if (parents[1] %in% fixedVars[1,])
-        i2 <- fixedVars[2,which(fixedVars[1,]==parents[1])] + 1
-    if (parents[2] %in% fixedVars[1,])
-        i3 <- fixedVars[2,which(fixedVars[1,]==parents[2])] + 1
-
-    # prune pmf and return result
-    pmf[['prob']] <- pmf[['prob']][i1,i2,i3]
-    return(pmf)
 }
 
 getProb <- function(pmf, vars, vals)
@@ -65,24 +40,34 @@ multiplyPmf <- function(pmf1, pmf2)
     return(newPmf)
 }
 
-createLocalPmf <- function(graph, vars, prior, fixedVars)
+individualPmf <- function(graph, var, fixedVars, prior=NULL)
 {
-    # start with constant pmf
-    pmf <- list()
-    pmf[['prob']] <- c(1)
+    # initialize pmf strcuture, return prior if var is a founder
+    parents <- as.numeric(parents(v,graph))
+    if (length(parents) == 0) # founder
+        return(list('vars'=var, 'prob'= prior[[v]]))
+    else # non-founder
+        pmf <- list('vars'=c(var, parents), 'prob'= array(0, c(3,3,3)))
 
-    # add each variable's indiviudal pmf
-    for (v in vars)
-    {
-        parents <- as.numeric(parents(v,graph))
-        if (length(parents) == 0) # founder
-            indivPmf <- list('vars'=v, 'prob'= prior[[v]])
-        else # non-founder
-            indivPmf <- getNonRootPmf(v, parents, fixedVars)
+    # populate pmf probability
+    args <- expand.grid(p1=0:2, p2=0:2)
+    pmf[['prob']][1,,] <- with(args, (2-p1)*(2-p2)/4)
+    pmf[['prob']][2,,] <- with(args, (p1+p2-p1*p2)/2)
+    pmf[['prob']][3,,] <- with(args, p1*p2/4)
 
-        # update main pmf
-        pmf <- multiplyPmf(pmf, indivPmf)
-    }
+    # plug in fixed variable values
+    pmf[['vars']] <- setdiff(pmf[['vars']], fixedVars[1,])
+    i1 <- i2 <- i3 <- 1:3
+
+    if (var %in% fixedVars[1,])
+        i1 <- fixedVars[2,which(fixedVars[1,]==var)] + 1
+    if (parents[1] %in% fixedVars[1,])
+        i2 <- fixedVars[2,which(fixedVars[1,]==parents[1])] + 1
+    if (parents[2] %in% fixedVars[1,])
+        i3 <- fixedVars[2,which(fixedVars[1,]==parents[2])] + 1
+
+    # prune pmf and return result
+    pmf[['prob']] <- pmf[['prob']][i1,i2,i3]
     return(pmf)
 }
 

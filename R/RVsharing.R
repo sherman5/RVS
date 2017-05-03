@@ -27,6 +27,3 @@ RVsharing <- function(ped)
     return(numer/denom)
 }
 
-founders <- function(graph)
-{
-}
