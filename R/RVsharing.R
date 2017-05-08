@@ -8,7 +8,7 @@ RVsharing <- function(ped)
     graph <- pedToDAG(ped)
     totalParents <- sapply(1:length(nodes(graph)),
         function(x) sum(as.numeric(parents(x, graph))))
-    founders <- which(totalParents == 0))
+    founders <- which(totalParents == 0)
 
     numer <- 0
     denom <- 0
