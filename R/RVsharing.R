@@ -35,7 +35,7 @@ sharingProb <- function(ped)
     parents <- sapply(ped$id, function(i) c(ped$findex[i], ped$mindex[i]))
     founders <- which(parents[1,] == 0)
 
-    # construct bayesian network
+    # construct bayesian network, TODO: don't set root if # affected large
     bayesNet <- buildBayesNet(ped, c(1,0,0))
     bayesNet <- compile(bayesNet, root=as.character(affected))
     bayesNet <- propagate(bayesNet)
