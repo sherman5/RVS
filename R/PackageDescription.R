@@ -2,9 +2,8 @@
 #'
 #' @docType package
 #' @name RVsharing
-#' @import utils methods kinship2
-#' @importFrom stats dbinom weighted.mean
-#' @importFrom gRbase dag parents
+#' @import utils methods kinship2 gRain
+
 NULL
 
 

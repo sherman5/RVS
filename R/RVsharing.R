@@ -65,4 +65,33 @@ sharingProb <- function(ped)
     return(numer/denom)
 }
 
+createNetwork <- function(ped, alleleFreq)
+{
+
+}
+
+evaluateNetwork <- function(net, nSimulations)
+{
+
+
+}
+
+#' @export
+RVsharing <- function(ped, alleleFreq, nSimulations)
+{
+    if (!missing(alleleFreq))
+    {
+
+    }
+    else if (!missing(nSimulations))
+    {
+
+    }
+    else
+    {
+
+    }
+    return(sharingProb)
+}
+
 
