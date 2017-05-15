@@ -5,12 +5,8 @@ validPedigree <- function(ped)
 }
 
 # create bayesian network from pedigree, use gRain package
-createNetwork <- function(ped, prior)
+createNetwork <- function(ped, parents, founders, prior)
 {
-    # get list of all parents, determine founders
-    parents <- sapply(ped$id, function(i) c(ped$findex[i], ped$mindex[i]))
-    founders <- which(parents[1,] == 0)
-
     # process founders
     founderNodes <- lapply(founders, cptable, values=prior, levels=0:2)
 
@@ -47,7 +43,7 @@ marginalProb <- function(net, marginalNodes, nSimulations)
     else # calculate distribution from monte carlo simulations
     {
         sim <- simulate(net, nsim=nSimulations)[,marginalNodes]
-        sim <- matrix(as.numeric(as.matrix(res)),ncol=length(marginalNodes))
+        sim <- matrix(as.numeric(as.matrix(sim)),ncol=length(marginalNodes))
         p0 <- sum(apply(sim, 1, function(r) all(r==0))) / nSimulations
         p1 <- sum(apply(sim, 1, function(r) all(r==1))) / nSimulations
     }
@@ -62,34 +58,40 @@ RVsharing <- function(ped, alleleFreq, nSimulations)
     validPedigree(ped)
     parents <- sapply(ped$id, function(i) c(ped$findex[i], ped$mindex[i]))
     founders <- which(parents[1,] == 0)
-    affected <- which(ped$affected==1)
+    affected <- which(ped$affected == 1)
     nAff <- length(affected)
     
     # calculate prior distribution based on allele frequency
-    ifelse(missing(alleleFreq), p <- 0, p <- alleleFreq)
+    ifelse(missing(alleleFreq), p <- 0.5, p <- alleleFreq)
     prior <- c((1-p)^2, 2*p*(1-p), p^2)
 
     # create bayesian network from the pedigree
-    net <- createNetwork(ped, prior)
-    
+    net <- createNetwork(ped, parents, founders, prior)
+
     # if allele frequency not given, assume 1 founder introduces variant
     if (missing(alleleFreq))
     {
-        # condition on each founder introducing the variant
+        # each fraction component of probability
         numer <- 0
         denom <- 0
+
+        # condition on each founder introducing the variant
+        net <- setEvidence(net, as.character(founders),
+            rep('0', length(founders)))
         for (f in founders)
         {
             # condition on founder and calculate distribution
+            net <- retractEvidence(net, as.character(f))
             net <- setEvidence(net, as.character(f), '1')
             prob <- marginalProb(net, affected, nSimulations)
 
             # sum relevant probability       
-            numer <- numer + prob[1]
-            denom <- denom + 1 - prob[2]
+            numer <- numer + prob[2]
+            denom <- denom + 1 - prob[1]
 
             # reset founder
             net <- retractEvidence(net, as.character(f))
+            net <- setEvidence(net, as.character(f), '0')
         }
         return(numer/denom)
     }
