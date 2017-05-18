@@ -61,8 +61,12 @@ marginalProb <- function(net, marginalNodes, nSimulations)
     return(c(p0,p1))
 }
 
+oneFounderSharingProb <- function()
+
+twoFounderSharingProb <- function()
+
 #' @export
-RVsharing <- function(ped, alleleFreq, nSimulations)
+RVsharing <- function(ped, alleleFreq, nSimulations, kinshipCoeff)
 {
     # check pedigree
     ped$id <- 1:length(ped$id)
@@ -70,7 +74,8 @@ RVsharing <- function(ped, alleleFreq, nSimulations)
     parents <- sapply(ped$id, function(i) c(ped$findex[i], ped$mindex[i]))
     founders <- which(parents[1,] == 0)
     affected <- which(ped$affected == 1)
-    # TODO throw error if founders and affected overlap
+    if (sum(affected %in% founders) > 0)
+        stop('some founders are affected')
     nAff <- length(affected)
     
     # calculate prior distribution based on allele frequency
