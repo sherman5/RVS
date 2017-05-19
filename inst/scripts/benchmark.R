@@ -24,12 +24,25 @@ lines(bm[,1], fit)
 # time relative to size of cliques
 
 ped <- list()
-ped$id <- 1:14
-ped$findex <- c(0,0,rep(1,14),3,5,7,9)
-ped$mindex <- c(0,0,rep(2,14),4,6,8,10)
-ped$sex <- c(rbind(rep(1,7), rep(2,7)))
-ped$affected <- rep(0, 14)
-ped$affected[c(13,14)] <- 1
+ped$findex <- c(0,0,rep(1,16),seq(from=3,by=2,length=8),seq(from=19,by=2,length=4),c(27,29),31)
+ped$mindex <- c(0,0,rep(2,16),seq(from=4,by=2,length=8),seq(from=20,by=2,length=4),c(28,30),32)
+len <- length(ped$findex)
+ped$id <- 1:len
+ped$sex <- c(rbind(rep(1,len/2), rep(2,len/2)),1)
+ped$affected <- rep(0, len)
+ped$affected[c(19,20)] <- 1
+class(ped) <- 'pedigree'
+plot(ped)
+RVsharing(ped)
+
+ped <- list()
+ped$findex <- c(0,0,1,1,0,0,rep(3,6),rep(4,6),7,8,9,10,11,12)
+ped$mindex <- c(0,0,2,2,0,0,rep(5,6),rep(6,6),13,14,15,16,17,18)
+len <- length(ped$findex)
+ped$id <- 1:len
+ped$sex <- rep(1,len)
+ped$affected <- rep(0, len)
+ped$affected[c(3,4)] <- 1
 class(ped) <- 'pedigree'
 plot(ped)
 RVsharing(ped)
