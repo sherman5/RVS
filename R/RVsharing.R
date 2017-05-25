@@ -1,7 +1,18 @@
 # check if pedigree is valid for RVsharing
-validPedigree <- function(ped)
+processPedigree <- function(ped)
 {
-    if (sum(ped$affected==1) < 2) stop('need at least 2 affected subjects')
+    ped$id <- 1:length(ped$id)
+    parents <- sapply(ped$id, function(i) c(ped$findex[i], ped$mindex[i]))
+    founders <- which(parents[1,] == 0)
+    affected <- which(ped$affected == 1)
+
+    if (sum(affected %in% founders) > 0)
+        stop('some founders are affected')
+    if (sum(ped$affected==1) < 2)
+        stop('need at least 2 affected subjects')
+
+    return(list('ped'=ped, 'parents'=parents, 'founders'=founders,
+        'affected'=affected))
 }
 
 # create bayesian network from pedigree, use gRain package
@@ -105,29 +116,20 @@ affected, nSimulations)
 #' @export
 RVsharing <- function(ped, alleleFreq, kinshipCoeff, nSimulations)
 {
-    # check pedigree
-    ped$id <- 1:length(ped$id)
-    validPedigree(ped)
-    parents <- sapply(ped$id, function(i) c(ped$findex[i], ped$mindex[i]))
-    founders <- which(parents[1,] == 0)
-    affected <- which(ped$affected == 1)
-    if (sum(affected %in% founders) > 0)
-        stop('some founders are affected')
-    nAff <- length(affected)
-    
+    # pre-process pedigree
+    ped <- processPedigree(ped)
+
     # calculate prior distribution based on allele frequency
     ifelse(missing(alleleFreq), p <- 0.5, p <- alleleFreq)
     prior <- c((1-p)^2, 2*p*(1-p), p^2)
 
     # create bayesian network from the pedigree
-    net <- createNetwork(ped, parents, founders, prior)
-    print(max(sapply(net$rip$cliques, length))
-#    if (max(sapply(net$rip$cliques, length)) > 10)
-#        warning('large amount of inbreeding - computation time may be long')
+    net <- createNetwork(ped$ped, ped$parents, ped$founders, prior)
 
+    # calculate sharing prob with appropiate method
     if (!missing(alleleFreq))
     {
-        prob <- marginalProb(net, affected, nSimulations)
+        prob <- marginalProb(net, ped$affected, nSimulations)
         return(prob[2] / (1 - prob[1]))
     }        
     else if (!missing(kinshipCoeff))
@@ -136,7 +138,8 @@ RVsharing <- function(ped, alleleFreq, kinshipCoeff, nSimulations)
     }
     else
     {
-        return(oneFounderSharingProb(net, founders, affected, nSimulations))
+        return(oneFounderSharingProb(net, ped$founders, ped$affected,
+            nSimulations))
     }
 }
 
