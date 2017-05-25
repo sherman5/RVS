@@ -3,11 +3,11 @@ source('~/Work/RVsharing/ClonedRepo/inst/scripts/generateData.R')
 
 # time relative to number of nodes
 
-nGen <- 10
+nGen <- 3
 bm <- matrix(nrow = nGen, ncol = 2)
 for (n in 1:nGen)
 {
-  ped <- simPedigree(n, function() 2, 0)
+  ped <- simPedigree(n, function() 4, 0)
   len <- length(ped$affected)
   ped$affected[(len-2):(len-1)] <- 1
   bm[n,1] <- length(ped$id)  
