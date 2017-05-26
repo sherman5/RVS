@@ -3,11 +3,11 @@ source('~/Work/RVsharing/ClonedRepo/inst/scripts/generateData.R')
 
 # time relative to number of nodes
 
-nGen <- 10
+nGen <- 3
 bm <- matrix(nrow = nGen, ncol = 2)
 for (n in 1:nGen)
 {
-  ped <- simPedigree(n, function() 2, 0)
+  ped <- simPedigree(n, function() 4, 0)
   len <- length(ped$affected)
   ped$affected[(len-2):(len-1)] <- 1
   bm[n,1] <- length(ped$id)  
@@ -43,6 +43,18 @@ ped$id <- 1:len
 ped$sex <- rep(1,len)
 ped$affected <- rep(0, len)
 ped$affected[c(3,4)] <- 1
+class(ped) <- 'pedigree'
+plot(ped)
+RVsharing(ped)
+
+ped <- list()
+ped$findex <- c(rep(0,8),1,3,5,7,9,11)
+ped$mindex <- c(rep(0,8),2,4,6,8,10,12)
+len <- length(ped$findex)
+ped$id <- 1:len
+ped$sex <- rep(1,len)
+ped$affected <- rep(0, len)
+ped$affected[c(5,6)] <- 1
 class(ped) <- 'pedigree'
 plot(ped)
 RVsharing(ped)

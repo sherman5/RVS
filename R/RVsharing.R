@@ -1,7 +1,18 @@
 # check if pedigree is valid for RVsharing
-validPedigree <- function(ped)
+processPedigree <- function(ped)
 {
-    if (sum(ped$affected==1) < 2) stop('need at least 2 affected subjects')
+    ped$id <- 1:length(ped$id)
+    parents <- sapply(ped$id, function(i) c(ped$findex[i], ped$mindex[i]))
+    founders <- which(parents[1,] == 0)
+    affected <- which(ped$affected == 1)
+
+    if (sum(affected %in% founders) > 0)
+        stop('some founders are affected')
+    if (sum(ped$affected==1) < 2)
+        stop('need at least 2 affected subjects')
+
+    return(list('ped'=ped, 'parents'=parents, 'founders'=founders,
+        'affected'=affected))
 }
 
 # create bayesian network from pedigree, use gRain package
@@ -29,37 +40,27 @@ createNetwork <- function(ped, parents, founders, prior)
 }
 
 # prob of event that all marginal nodes are 0, and event all are 1
-marginalProb <- function(net, margNodes, nSimulations)
+marginalProb <- function(net, marginalNodes)
 {
-    if (missing(nSimulations)) # calculate exact distribution
+    p0 <- p1 <- 1
+    net0 <- net1 <- net
+    for (n in as.character(marginalNodes))
     {
-        p0 <- p1 <- 1
-        net0 <- net1 <- net
-        for (n in as.character(margNodes))
+        if (p0 > 0) # prevents conditioning on zero prob events
         {
-            if (p0 > 0) # prevents conditioning on zero prob events
-            {
-                p0 <- p0 * unname(querygrain(net0, n)[[1]][1])
-                net0 <- setEvidence(net0, n, '0')
-            }
-            if (p1 > 0)
-            {
-                p1 <- p1 * unname(querygrain(net1, n)[[1]][2])
-                net1 <- setEvidence(net1, n, '1')
-            }
+            p0 <- p0 * unname(querygrain(net0, n)[[1]][1])
+            net0 <- setEvidence(net0, n, '0')
         }
-    }
-    else # calculate distribution from monte carlo simulations
-    {
-        sim <- simulate(net, nsim=nSimulations)[,as.character(margNodes)]
-        sim <- matrix(as.numeric(as.matrix(sim)), ncol=length(margNodes))
-        p0 <- sum(apply(sim, 1, function(r) all(r==0))) / nSimulations
-        p1 <- sum(apply(sim, 1, function(r) all(r==1))) / nSimulations
+        if (p1 > 0)
+        {
+            p1 <- p1 * unname(querygrain(net1, n)[[1]][2])
+            net1 <- setEvidence(net1, n, '1')
+        }
     }
     return(c(p0,p1))
 }
 
-oneFounderSharingProb <- function(net, founders, affected, nSimulations)
+oneFounderSharingProb <- function(net, founders, affected)
 {
     # each fraction component of probability
     numer <- denom <- 0
@@ -74,7 +75,7 @@ oneFounderSharingProb <- function(net, founders, affected, nSimulations)
         # condition on founder and calculate distribution
         net <- retractEvidence(net, as.character(f))
         net <- setEvidence(net, as.character(f), '1')
-        prob <- marginalProb(net, affected, nSimulations)
+        prob <- marginalProb(net, affected)
 
         # sum relevant probability       
         numer <- numer + prob[2]
@@ -85,6 +86,13 @@ oneFounderSharingProb <- function(net, founders, affected, nSimulations)
         net <- setEvidence(net, as.character(f), '0')
     }
     return(numer/denom)
+}
+
+pFU <- function(nFounders, theta, order=2)
+{
+    a <- (2*nFounders):(2*nFounders - order)
+    dist <- c(1, theta, theta^2/2, theta^3/6, theta^4/24, theta^5/120)
+    return(weighted.mean(2/nFounders - 2/a, dist[1:(order+1)]))
 }
 
 twoFounderSharingProb <- function(net, kinshipCoeff, founders,
@@ -105,29 +113,23 @@ affected, nSimulations)
 #' @export
 RVsharing <- function(ped, alleleFreq, kinshipCoeff, nSimulations)
 {
-    # check pedigree
-    ped$id <- 1:length(ped$id)
-    validPedigree(ped)
-    parents <- sapply(ped$id, function(i) c(ped$findex[i], ped$mindex[i]))
-    founders <- which(parents[1,] == 0)
-    affected <- which(ped$affected == 1)
-    if (sum(affected %in% founders) > 0)
-        stop('some founders are affected')
-    nAff <- length(affected)
-    
+    # pre-process pedigree
+    ped <- processPedigree(ped)
+
+    if (!missing(nSimulations))
+        return(monteCarloSharingProb(ped, alleleFreq, kinshipCoeff, nSimulations))
+
     # calculate prior distribution based on allele frequency
     ifelse(missing(alleleFreq), p <- 0.5, p <- alleleFreq)
     prior <- c((1-p)^2, 2*p*(1-p), p^2)
 
     # create bayesian network from the pedigree
-    net <- createNetwork(ped, parents, founders, prior)
-    print(max(sapply(net$rip$cliques, length))
-    if (max(sapply(net$rip$cliques, length)) > 10)
-        warning('inbreeding may cause computation time to be long')
+    net <- createNetwork(ped$ped, ped$parents, ped$founders, prior)
 
+    # calculate sharing prob with appropiate method
     if (!missing(alleleFreq))
     {
-        prob <- marginalProb(net, affected, nSimulations)
+        prob <- marginalProb(net, ped$affected)
         return(prob[2] / (1 - prob[1]))
     }        
     else if (!missing(kinshipCoeff))
@@ -136,7 +138,7 @@ RVsharing <- function(ped, alleleFreq, kinshipCoeff, nSimulations)
     }
     else
     {
-        return(oneFounderSharingProb(net, founders, affected,nSimulations))
+        return(oneFounderSharingProb(net, ped$founders, ped$affected))
     }
 }
 

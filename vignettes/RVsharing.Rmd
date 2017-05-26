@@ -1,0 +1,63 @@
+---
+title: "The RVsharing Package"
+author: ""
+data: "`r doc_date()`"
+package: "`r pkg_ver('RVsharing')`"
+bibliography: References.bib
+vignette: >
+    %\VignetteIndexEntry{The RVsharing Package}
+    %\VignetteEngine{knitr::rmarkdown}
+    %\VignetteEncoding{UTF-8}
+output:
+    BiocStyle::html_document
+---
+
+```{r include=FALSE, cache=FALSE}
+library(RVsharing)
+```
+
+# Introduction 
+
+# Computing Sharing Probabilities
+
+## Assuming no IBS without IBD
+
+```{r}
+data(samplePedigrees)
+defaultProbs <- c()
+defaultProbs[1] <- RVsharing(samplePedigrees$firstCousinPair)
+defaultProbs[2] <- RVsharing(samplePedigrees$secondCousinPair)
+defaultProbs[3] <- RVsharing(samplePedigrees$firstCousinTriple)
+defaultProbs[4] <- RVsharing(samplePedigrees$secondCousinTriple)
+names(defaultProbs) <- c('firstCousinPair', 'secondCousinPair',
+    'firstCousinTriple', 'secondCousinTriple')
+print(defaultProbs)
+```
+
+## When Population Allele Frequency is Known
+
+```{r}
+exactProbs <- list()
+freq <- c(0.001,0.0025,0.005,0.01,0.025,0.05)
+exactProbs$fistCousinPair <- sapply(freq, function(f)
+    RVsharing(samplePedigrees$firstCousinPair, alleleFreq=f))
+exactProbs$secondCousinPair <- sapply(freq, function(f)
+    RVsharing(samplePedigrees$secondCousinPair, alleleFreq=f))
+exactProbs$firstCousinTriple <- sapply(freq, function(f)
+    RVsharing(samplePedigrees$firstCousinTriple, alleleFreq=f))
+exactProbs$secondCousinTriple <- sapply(freq, function(f)
+    RVsharing(samplePedigrees$secondCousinTriple, alleleFreq=f))
+
+plot(NULL, xlim=c(0.001,0.05), ylim=c(0,0.12),log='x',xaxt='n',
+    ylab='probability of sharing', xlab='variant frequency [%]')
+axis(side=1, at=freq, labels=freq*100)
+invisible(sapply(exactProbs, lines, x=freq))
+invisible(sapply(exactProbs, points, x=freq, pch=19))
+abline(h=defaultProbs,lty=2)
+```
+
+Similiar to Figure 2 in @METHODS
+
+## Using Monte Carlo Simulation
+
+# References

@@ -15,4 +15,8 @@ Imports:
     gRbase,
     gRain
 LazyLoad: yes
+<<<<<<< HEAD
+=======
+VignetteBuilder: knitr
+>>>>>>> 93f26292213d7c73ba2a80722c46edd8fe3808ae
 RoxygenNote: 6.0.1
