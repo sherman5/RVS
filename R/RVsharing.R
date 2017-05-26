@@ -29,13 +29,13 @@ createNetwork <- function(ped, parents, founders, prior)
 }
 
 # prob of event that all marginal nodes are 0, and event all are 1
-marginalProb <- function(net, marginalNodes, nSimulations)
+marginalProb <- function(net, margNodes, nSimulations)
 {
     if (missing(nSimulations)) # calculate exact distribution
     {
         p0 <- p1 <- 1
         net0 <- net1 <- net
-        for (n in as.character(marginalNodes))
+        for (n in as.character(margNodes))
         {
             if (p0 > 0) # prevents conditioning on zero prob events
             {
@@ -51,8 +51,8 @@ marginalProb <- function(net, marginalNodes, nSimulations)
     }
     else # calculate distribution from monte carlo simulations
     {
-        sim <- simulate(net,nsim=nSimulations)[,as.character(marginalNodes)]
-        sim <- matrix(as.numeric(as.matrix(sim)),ncol=length(marginalNodes))
+        sim <- simulate(net, nsim=nSimulations)[,as.character(margNodes)]
+        sim <- matrix(as.numeric(as.matrix(sim)), ncol=length(margNodes))
         p0 <- sum(apply(sim, 1, function(r) all(r==0))) / nSimulations
         p1 <- sum(apply(sim, 1, function(r) all(r==1))) / nSimulations
     }
@@ -122,8 +122,8 @@ RVsharing <- function(ped, alleleFreq, kinshipCoeff, nSimulations)
     # create bayesian network from the pedigree
     net <- createNetwork(ped, parents, founders, prior)
     print(max(sapply(net$rip$cliques, length))
-#    if (max(sapply(net$rip$cliques, length)) > 10)
-#        warning('large amount of inbreeding - computation time may be long')
+    if (max(sapply(net$rip$cliques, length)) > 10)
+        warning('inbreeding may cause computation time to be long')
 
     if (!missing(alleleFreq))
     {
@@ -136,7 +136,7 @@ RVsharing <- function(ped, alleleFreq, kinshipCoeff, nSimulations)
     }
     else
     {
-        return(oneFounderSharingProb(net, founders, affected, nSimulations))
+        return(oneFounderSharingProb(net, founders, affected,nSimulations))
     }
 }
 
