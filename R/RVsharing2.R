@@ -111,7 +111,7 @@ affected, nSimulations)
 }
 
 #' @export
-RVsharing <- function(ped, alleleFreq, kinshipCoeff, nSimulations)
+RVsharing2 <- function(ped, alleleFreq, kinshipCoeff, nSimulations)
 {
     # pre-process pedigree
     ped <- processPedigree(ped)

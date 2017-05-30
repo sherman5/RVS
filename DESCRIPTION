@@ -1,4 +1,4 @@
-Package: RVsharing
+Package: RVsharing2
 Type: Package
 Title: Probability of Sharing Rare Variants among Relatives
 Version: 1.99.0
@@ -15,8 +15,5 @@ Imports:
     gRbase,
     gRain
 LazyLoad: yes
-<<<<<<< HEAD
-=======
 VignetteBuilder: knitr
->>>>>>> 93f26292213d7c73ba2a80722c46edd8fe3808ae
-RoxygenNote: 6.0.1
+RoxygenNote: 5.0.1

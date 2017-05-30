@@ -1,7 +1,7 @@
-#' RVsharing
+#' RVsharing2
 #'
 #' @docType package
-#' @name RVsharing
+#' @name RVsharing2
 #' @import kinship2 gRbase gRain
 NULL
 
