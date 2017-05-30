@@ -1,4 +1,4 @@
 library(testthat)
-library(RVsharing)
+library(RVsharing2)
 
-test_check('RVsharing')
+test_check('RVsharing2')

@@ -1,11 +1,11 @@
 ---
-title: "The RVsharing Package"
+title: "The RVsharing2 Package"
 author: ""
 data: "`r doc_date()`"
-package: "`r pkg_ver('RVsharing')`"
+package: "`r pkg_ver('RVsharing2')`"
 bibliography: References.bib
 vignette: >
-    %\VignetteIndexEntry{The RVsharing Package}
+    %\VignetteIndexEntry{The RVsharing2 Package}
     %\VignetteEngine{knitr::rmarkdown}
     %\VignetteEncoding{UTF-8}
 output:

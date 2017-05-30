@@ -7,13 +7,13 @@ nGen <- 3
 bm <- matrix(nrow = nGen, ncol = 2)
 for (n in 1:nGen)
 {
-  ped <- simPedigree(n, function() 4, 0)
-  len <- length(ped$affected)
-  ped$affected[(len-2):(len-1)] <- 1
-  bm[n,1] <- length(ped$id)  
+    ped <- simPedigree(n, function() 4, 0)
+    len <- length(ped$affected)
+    ped$affected[(len-2):(len-1)] <- 1
+    bm[n,1] <- length(ped$id)  
 
-  print(paste('running', n))
-  bm[n,2] <- system.time(RVsharing(ped, alleleFreq = 1e-9))[1]
+    print(paste('running', n))
+    bm[n,2] <- system.time(RVsharing(ped, alleleFreq = 1e-9))[1]
 }
 
 const <- bm[nGen,2] / (bm[nGen,1] ^ 2)
@@ -68,12 +68,12 @@ nonFounders <- which(parents[1,] != 0)
 bm <- matrix(nrow=20, ncol=2)
 for (nAff in seq(1,100,5))
 {
-  aff <- sample(nonFounders, nAff+1)
-  ped$affected[aff] <- 1
-  n <- ceiling(nAff / 5)
-  bm[n,1] <- nAff
-  bm[n,2] <- system.time(RVsharing(ped, alleleFreq = 1e-9))[1]
-  ped$affected[aff] <- 0
+    aff <- sample(nonFounders, nAff+1)
+    ped$affected[aff] <- 1
+    n <- ceiling(nAff / 5)
+    bm[n,1] <- nAff
+    bm[n,2] <- system.time(RVsharing(ped, alleleFreq = 1e-9))[1]
+    ped$affected[aff] <- 0
 }
 
 plot(bm[,1], bm[,2])

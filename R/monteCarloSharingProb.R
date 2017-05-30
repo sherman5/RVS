@@ -17,7 +17,7 @@ nSimulations)
         for (n in 1:nSimulations)
         {
             states <- defStates
-            states[ped$founders] <- sample.int(3,nFounders,TRUE,p)-1
+            states[ped$founders] <- sample.int(3,nFounders,TRUE,p) - 1
             res <- simulateTree(ped, states)
 
             if (sum(res) >= 1) denom <- denom + 1
@@ -26,7 +26,6 @@ nSimulations)
     }
     else if (!missing(kinshipCoeff))
     {
-    
     }
     else # one founder introduces
     {
@@ -53,13 +52,13 @@ simulateTree <- function(ped, states)
         {
             p1 <- states[ped$parents[,i][1]]
             p2 <- states[ped$parents[,i][2]]
-        
+
             if (!is.na(p1) & !is.na(p2))
             {
-                states[i] <- sample.int(3,1,p=mendelProb[,p1+1,p2+1])-1
+                states[i] <- sample.int(3,1,prob=mendelProb[,p1+1,p2+1]) - 1
             }
         }
         remain <- which(is.na(states))
     }
-   return(states[ped$affected])
+    return(states[ped$affected])
 }
