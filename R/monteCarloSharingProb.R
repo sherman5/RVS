@@ -5,7 +5,7 @@ nSimulations)
     if (!missing(alleleFreq))
     {
         p <- with(data.frame(f=alleleFreq), c((1-f)^2, 2*f*(1-f), f^2))
-        f <- function(n) sample.int(3,n,TRUE,p) - 1
+        founderFunc <- function(n) sample.int(3,n,TRUE,p) - 1
     }
     else if (!missing(kinshipCoeff))
     {
@@ -13,11 +13,12 @@ nSimulations)
     }
     else # one founder introduces
     {
-        f <- function(n) sample(c(rep(0,n-1),1))
+        founderFunc <- function(n) sample(c(rep(0,n-1),1))
     }
-    return(runMonteCarlo(ped, f, nSimulations))
+    return(runMonteCarlo(ped, founderFunc, nSimulations))
 }
 
+# TODO: run simulations in parallel
 runMonteCarlo <- function(procPed, founderFunc, nSim)
 {
     numer <- denom <- 0
