@@ -9,7 +9,25 @@ test_that('standard sharing probabilities',
     expect_equal(RVsharing2(samplePedigrees$thirdCousinPair), 1/255)
     expect_equal(RVsharing2(samplePedigrees$firstCousinTriple), 1/85)
     expect_equal(RVsharing2(samplePedigrees$secondCousinTriple), 1/745)
-    expect_equal(RVsharing2(samplePedigrees$secondCousinPairWithLoop), 6/122)
-    expect_equal(RVsharing2(samplePedigrees$firstCousinInbreeding), 180/1783)
-    expect_equal(RVsharing2(samplePedigrees$twoGenerationsInbreeding), 34/1975)
+    expect_equal(RVsharing2(samplePedigrees$secondCousinPairWithLoop),6/122)
+    expect_equal(RVsharing2(samplePedigrees$firstCousinInbreeding),180/1783)
+    expect_equal(RVsharing2(samplePedigrees$twoGenerationsInbreeding),
+        34/1975)
 })
+
+test_that('monte carlo sharing probabilities')
+{
+    data(samplePedigrees)
+       
+    expect_equal(RVsharing2(samplePedigrees$firstCousinPair,
+        nSimulations=1e4), 1/15, tolerance=1e-3)
+    expect_equal(RVsharing2(samplePedigrees$secondCousinPair), 1/63)
+    expect_equal(RVsharing2(samplePedigrees$thirdCousinPair), 1/255)
+    expect_equal(RVsharing2(samplePedigrees$firstCousinTriple), 1/85)
+    expect_equal(RVsharing2(samplePedigrees$secondCousinTriple), 1/745)
+    expect_equal(RVsharing2(samplePedigrees$secondCousinPairWithLoop),6/122)
+    expect_equal(RVsharing2(samplePedigrees$firstCousinInbreeding),180/1783)
+    expect_equal(RVsharing2(samplePedigrees$twoGenerationsInbreeding),
+        34/1975)
+
+}

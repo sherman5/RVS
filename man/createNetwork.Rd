@@ -2,12 +2,12 @@
 % Please edit documentation in R/RVsharing2.R
 \name{createNetwork}
 \alias{createNetwork}
-\title{\code{createNetwork} create bayesian network from pedigree}
+\title{\code{createNetwork} create bayesian network from procPedigree}
 \usage{
-createNetwork(ped, prior = c(1, 1, 1))
+createNetwork(procPed, prior = c(1, 2, 1))
 }
 \arguments{
-\item{ped}{S3 Pedigree object}
+\item{procPed}{processed Pedigree object}
 
 \item{prior}{prior on number of alleles for founders}
 }
@@ -15,7 +15,6 @@ createNetwork(ped, prior = c(1, 1, 1))
 bayesian network friom gRain package
 }
 \description{
-\code{createNetwork} create bayesian network from pedigree
+\code{createNetwork} create bayesian network from procPedigree
 }
 \keyword{internal}
-

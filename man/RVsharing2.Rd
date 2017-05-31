@@ -3,14 +3,15 @@
 \docType{package}
 \name{RVsharing2}
 \alias{RVsharing2}
+\alias{RVsharing2}
 \alias{RVsharing2-package}
 \title{\code{RVsharing2} Calculates rare variant sharing probability between
- affected subjects in a pedigree}
+ affected subjects in a procPedigree}
 \usage{
 RVsharing2(ped, alleleFreq, kinshipCoeff, nSimulations)
 }
 \arguments{
-\item{ped}{pedigree object (S3)}
+\item{ped}{S3 Pedigree object}
 
 \item{alleleFreq}{frequency of variant present amount the founders}
 
@@ -20,16 +21,15 @@ RVsharing2(ped, alleleFreq, kinshipCoeff, nSimulations)
 approach to calculating sharing probabilities}
 }
 \value{
-sharing probability between all affected subjects in the pedigree
+sharing probability between all affected subjects in the procPedigree
 }
 \description{
 \code{RVsharing2} Calculates rare variant sharing probability between
- affected subjects in a pedigree
+ affected subjects in a procPedigree
 
 RVsharing2
 }
 \examples{
- data("samplePedigrees")
- RVsharing2(samplePedigrees[[1]])
+ data("sampleprocPedigrees")
+ RVsharing2(sampleprocPedigrees[[1]])
 }
-

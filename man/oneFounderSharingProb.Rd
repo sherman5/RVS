@@ -5,10 +5,10 @@
 \title{\code{oneFounderSharingProb} calculate sharing prob assuming one founder
  introduces the variant}
 \usage{
-oneFounderSharingProb(ped)
+oneFounderSharingProb(procPed)
 }
 \arguments{
-\item{ped}{pedigree S3 Object}
+\item{procPed}{processed Pedigree object}
 }
 \value{
 sharing probability
@@ -18,4 +18,3 @@ sharing probability
  introduces the variant
 }
 \keyword{internal}
-

@@ -16,6 +16,6 @@ processPedigree <- function(ped)
         stop('need at least 2 affected subjects')
 
     return(list('ped'=ped, 'parents'=parents, 'founders'=founders,
-        'affected'=affected))
+        'affected'=affected, 'size'=length(ped$id)))
 }
 

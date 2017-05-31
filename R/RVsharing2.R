@@ -1,25 +1,26 @@
-#' \code{createNetwork} create bayesian network from pedigree
+#' \code{createNetwork} create bayesian network from procPedigree
 #'
-#' @param ped S3 Pedigree object
+#' @param procPed processed Pedigree object
 #' @param prior prior on number of alleles for founders
 #' @return bayesian network friom gRain package
 #' @keywords internal
-createNetwork <- function(ped, prior=c(1,1,1))
+createNetwork <- function(procPed, prior=c(1,2,1))
 {
     # process founders
-    founderNodes <- lapply(ped$founders, gRain::cptable, values=prior,
+    founderNodes <- lapply(procPed$founders, gRain::cptable, values=prior,
         levels=0:2)
 
     # process non-founders
     f <- function(nf)
     {
-        gRain::cptable(c(nf, ped$parents[1,nf], ped$parents[2,nf]),
-            values=mendelProb, levels=0:2)
+        gRain::cptable(c(nf, procPed$parents[1,nf], procPed$parents[2,nf]),
+            values=mendelProbTable, levels=0:2)
     }
-    nonFounderNodes <- lapply(setdiff(ped$ped$id, ped$founders), f)
+    nonFounderNodes <- lapply(setdiff(1:procPed$size, procPed$founders), f)
 
     # create bayesian network
-    return(gRain::grain(gRain::compileCPT(c(founderNodes,nonFounderNodes))))
+    condProbTable <- gRain::compileCPT(c(founderNodes, nonFounderNodes))
+    return(gRain::grain(condProbTable))
 }
 
 #' \code{marginalProb} calculates probability that 1) all marginal nodes
@@ -52,26 +53,26 @@ marginalProb <- function(net, marginalNodes)
 #' \code{oneFounderSharingProb} calculate sharing prob assuming one founder
 #'  introduces the variant
 #'
-#' @param ped pedigree S3 Object
+#' @param procPed processed Pedigree object
 #' @return sharing probability
 #' @keywords internal
-oneFounderSharingProb <- function(ped)
+oneFounderSharingProb <- function(procPed)
 {
     # each fraction component of probability
     numer <- denom <- 0
 
     # set all founders to 0 (no variant)
-    net <- createNetwork(ped)
-    net <- gRain::setEvidence(net, as.character(ped$founders),
-        rep('0', length(ped$founders)))
+    net <- createNetwork(procPed)
+    net <- gRain::setEvidence(net, as.character(procPed$founders),
+        rep('0', length(procPed$founders)))
 
     # sum over probs, conditioning on each founder introducing variant
-    for (f in ped$founders)
+    for (f in procPed$founders)
     {
         # condition on founder and calculate distribution
         net <- gRain::retractEvidence(net, as.character(f))
         net <- gRain::setEvidence(net, as.character(f), '1')
-        prob <- marginalProb(net, ped$affected)
+        prob <- marginalProb(net, procPed$affected)
 
         # sum relevant probability       
         numer <- numer + prob[2]
@@ -84,37 +85,42 @@ oneFounderSharingProb <- function(ped)
     return(numer/denom)
 }
 
-exactSharingProb <- function(ped, alleleFreq)
+#' \code{exactSharingProb}
+exactSharingProb <- function(procPed, alleleFreq)
 {
+    p <- with(data.frame(f=alleleFreq), c((1-f)^2, 2*f*(1-f), f^2))
+    net <- createNetwork(pprocPed, p)
+    prob <- marginalProb(net, procPed$affected)
+    return (prob[2] / (1 - prob[1]))
 }
 
 #' \code{RVsharing2} Calculates rare variant sharing probability between
-#'  affected subjects in a pedigree
+#'  affected subjects in a procPedigree
 #'
-#' @param ped pedigree object (S3)
+#' @param ped S3 Pedigree object
 #' @param alleleFreq frequency of variant present amount the founders
 #' @param kinshipCoeff relationship between founders
 #' @param nSimulations number of simulations to run for the monte carlo
 #'  approach to calculating sharing probabilities
-#' @return sharing probability between all affected subjects in the pedigree
+#' @return sharing probability between all affected subjects in the procPedigree
 #' @examples
-#'  data("samplePedigrees")
-#'  RVsharing2(samplePedigrees[[1]])
+#'  data("sampleprocPedigrees")
+#'  RVsharing2(sampleprocPedigrees[[1]])
 #' @export
 RVsharing2 <- function(ped, alleleFreq, kinshipCoeff, nSimulations)
 {
-    # pre-process pedigree
-    ped <- processPedigree(ped)
+    # pre-process procPedigree
+    procPed <- processprocPedigree(procPed)
 
     # calculate sharing prob with appropiate method
     if (!missing(nSimulations))
     {
-        return(monteCarloSharingProb(ped, alleleFreq, kinshipCoeff,
+        return(monteCarloSharingProb(procPed, alleleFreq, kinshipCoeff,
             nSimulations))
     }
     else if (!missing(alleleFreq))
     {
-        return(exactSharingProb(ped, alleleFreq))
+        return(exactSharingProb(procPed, alleleFreq))
     }        
     else if (!missing(kinshipCoeff))
     {
@@ -122,6 +128,6 @@ RVsharing2 <- function(ped, alleleFreq, kinshipCoeff, nSimulations)
     }
     else
     {
-        return(oneFounderSharingProb(ped))
+        return(oneFounderSharingProb(procPed))
     }
 }

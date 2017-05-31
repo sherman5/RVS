@@ -20,4 +20,3 @@ two probabilities
  are 0 and 2) all marginal nodes are 1
 }
 \keyword{internal}
-
