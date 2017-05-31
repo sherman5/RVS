@@ -17,5 +17,5 @@ Suggests:
     testthat,
     rmarkdown,
     BiocStyle
-RoxygenNote: 6.0.1
+RoxygenNote: 5.0.1
 biocViews: Bayesian, Network

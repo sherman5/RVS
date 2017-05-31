@@ -18,3 +18,4 @@ sharing probability
  introduces the variant
 }
 \keyword{internal}
+

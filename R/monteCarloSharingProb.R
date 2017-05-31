@@ -15,19 +15,20 @@ nSimulations)
     {
         founderFunc <- function(n) sample(c(rep(0,n-1),1))
     }
-    return(runMonteCarlo(ped, founderFunc, nSimulations))
+    return(runMonteCarlo(procPed, founderFunc, nSimulations))
 }
 
-# TODO: run simulations in parallel
+#' \code{runMonteCarlo}
 runMonteCarlo <- function(procPed, founderFunc, nSim)
 {
     numer <- denom <- 0
-    defStates <- rep(NA, procPed$size)
-    for (n in 1:nSim)
+    defaultStates <- rep(NA, procPed$size)
+
+    for (n in 1:nSim) #TODO: run simulations in parallel
     {
-        states <- defStates
-        states[ped$founders] <- founderFunc(length(procPed$founders))   
-        res <- simulateTree(ped, states)
+        states <- defaultStates
+        states[procPed$founders] <- founderFunc(length(procPed$founders))   
+        res <- simulatePedigree(procPed, states)
         
         if (sum(res) >= 1) denom <- denom + 1
         if (all(res >= 1)) numer <- numer + 1
@@ -35,15 +36,16 @@ runMonteCarlo <- function(procPed, founderFunc, nSim)
     return(numer/denom)
 }
 
-simulateTree <- function(procPed, states)
+#' \code{simulatePedigree}
+simulatePedigree <- function(procPed, states)
 {
     remain <- which(is.na(states))
     while (length(remain))
     {
         for (i in remain)
         {
-            p1 <- states[ped$parents[1,i]]
-            p2 <- states[ped$parents[2,i]]
+            p1 <- states[procPed$parents[1,i]]
+            p2 <- states[procPed$parents[2,i]]
 
             if (!is.na(p1) & !is.na(p2))
             {
@@ -53,5 +55,5 @@ simulateTree <- function(procPed, states)
         }
         remain <- which(is.na(states))
     }
-    return(states[ped$affected])
+    return(states[procPed$affected])
 }

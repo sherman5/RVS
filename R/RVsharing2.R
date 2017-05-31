@@ -89,7 +89,7 @@ oneFounderSharingProb <- function(procPed)
 exactSharingProb <- function(procPed, alleleFreq)
 {
     p <- with(data.frame(f=alleleFreq), c((1-f)^2, 2*f*(1-f), f^2))
-    net <- createNetwork(pprocPed, p)
+    net <- createNetwork(procPed, p)
     prob <- marginalProb(net, procPed$affected)
     return (prob[2] / (1 - prob[1]))
 }
@@ -109,8 +109,11 @@ exactSharingProb <- function(procPed, alleleFreq)
 #' @export
 RVsharing2 <- function(ped, alleleFreq, kinshipCoeff, nSimulations)
 {
+    # load data for prob calculations
+    data(mendelProbTable)
+
     # pre-process procPedigree
-    procPed <- processprocPedigree(procPed)
+    procPed <- processPedigree(ped)
 
     # calculate sharing prob with appropiate method
     if (!missing(nSimulations))

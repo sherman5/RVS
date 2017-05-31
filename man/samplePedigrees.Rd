@@ -10,3 +10,4 @@ samplePedigrees
 \description{
 This data contains sample pedigrees
 }
+

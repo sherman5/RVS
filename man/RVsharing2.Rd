@@ -3,7 +3,6 @@
 \docType{package}
 \name{RVsharing2}
 \alias{RVsharing2}
-\alias{RVsharing2}
 \alias{RVsharing2-package}
 \title{\code{RVsharing2} Calculates rare variant sharing probability between
  affected subjects in a procPedigree}
@@ -33,3 +32,4 @@ RVsharing2
  data("sampleprocPedigrees")
  RVsharing2(sampleprocPedigrees[[1]])
 }
+

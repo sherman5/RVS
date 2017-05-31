@@ -9,3 +9,4 @@ exactSharingProb(procPed, alleleFreq)
 \description{
 \code{exactSharingProb}
 }
+

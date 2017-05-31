@@ -11,3 +11,10 @@ NULL
 #' @usage samplePedigrees
 NULL
 
+
+#' Table of mendelian inheritance probabilities
+#'
+#' @docType data
+#' @name mendelProbTable
+#' @usage mendelProbTable
+NULL

@@ -9,3 +9,4 @@ monteCarloSharingProb(procPed, alleleFreq, kinshipCoeff, nSimulations)
 \description{
 \code{monteCarloSharingProb}
 }
+
