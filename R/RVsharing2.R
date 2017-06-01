@@ -43,8 +43,13 @@ marginalProb <- function(net, marginalNodes)
         }
         if (p1 > 0)
         {
-            p1 <- p1 * unname(gRain::querygrain(net1, n)[[1]][2])
-            net1 <- gRain::setEvidence(net1, n, '1')
+            prob1 <- unname(gRain::querygrain(net1, n)[[1]][2])
+            prob2 <- unname(gRain::querygrain(net1, n)[[1]][3])
+            p1 <- p1 * (prob1 + prob2)
+#            net1 <- gRain::setEvidence(net1, evidence=list(n=c(0,prob1,prob2)))
+            pList <- list()
+            pList[[n]] <- c(0,prob1,prob2)
+            net1 <- gRain::setEvidence(net1, evidence=pList)
         }
     }
     return(c(p0,p1))
@@ -70,17 +75,13 @@ oneFounderSharingProb <- function(procPed)
     for (f in procPed$founders)
     {
         # condition on founder and calculate distribution
-        net <- gRain::retractEvidence(net, as.character(f))
-        net <- gRain::setEvidence(net, as.character(f), '1')
-        prob <- marginalProb(net, procPed$affected)
+        condNet <- gRain::retractEvidence(net, as.character(f))
+        condNet <- gRain::setEvidence(condNet, as.character(f), '1')
+        prob <- marginalProb(condNet, procPed$affected)
 
         # sum relevant probability       
         numer <- numer + prob[2]
         denom <- denom + 1 - prob[1]
-
-        # reset founder
-        net <- gRain::retractEvidence(net, as.character(f))
-        net <- gRain::setEvidence(net, as.character(f), '0')
     }
     return(numer/denom)
 }
@@ -88,8 +89,8 @@ oneFounderSharingProb <- function(procPed)
 #' \code{exactSharingProb}
 exactSharingProb <- function(procPed, alleleFreq)
 {
-    p <- with(data.frame(f=alleleFreq), c((1-f)^2, 2*f*(1-f), f^2))
-    net <- createNetwork(procPed, p)
+    prior <- with(data.frame(f=alleleFreq), c((1-f)^2, 2*f*(1-f), f^2))
+    net <- createNetwork(procPed, prior)
     prob <- marginalProb(net, procPed$affected)
     return (prob[2] / (1 - prob[1]))
 }
