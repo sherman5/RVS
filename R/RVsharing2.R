@@ -20,11 +20,11 @@ createNetwork <- function(procPed, prior=c(1,2,1))
 
     # create bayesian network
     condProbTable <- gRain::compileCPT(c(founderNodes, nonFounderNodes))
-    return(gRain::grain(condProbTable))
+    return(gRain::compile.CPTgrain(gRain::grain(condProbTable)))
 }
 
 #' \code{marginalProb} calculates probability that 1) all marginal nodes
-#'  are 0 and 2) all marginal nodes are 1
+#'  are 0 and 2) all marginal nodes are at least 1
 #'
 #' @param net Bayesian network from gRain package
 #' @param marginalNodes nodes in the joint-marginal distribution
@@ -43,16 +43,18 @@ marginalProb <- function(net, marginalNodes)
         }
         if (p1 > 0)
         {
+            # calculate prob this node is at least 1
             prob1 <- unname(gRain::querygrain(net1, n)[[1]][2])
             prob2 <- unname(gRain::querygrain(net1, n)[[1]][3])
             p1 <- p1 * (prob1 + prob2)
-#            net1 <- gRain::setEvidence(net1, evidence=list(n=c(0,prob1,prob2)))
+
+            # update evidence
             pList <- list()
-            pList[[n]] <- c(0,prob1,prob2)
+            pList[[n]] <- c(0,1,1)
             net1 <- gRain::setEvidence(net1, evidence=pList)
         }
     }
-    return(c(p0,p1))
+    return(c(p0, p1))
 }
 
 #' \code{oneFounderSharingProb} calculate sharing prob assuming one founder

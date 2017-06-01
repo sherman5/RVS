@@ -3,7 +3,7 @@
 \name{marginalProb}
 \alias{marginalProb}
 \title{\code{marginalProb} calculates probability that 1) all marginal nodes
- are 0 and 2) all marginal nodes are 1}
+ are 0 and 2) all marginal nodes are at least 1}
 \usage{
 marginalProb(net, marginalNodes)
 }
@@ -17,7 +17,7 @@ two probabilities
 }
 \description{
 \code{marginalProb} calculates probability that 1) all marginal nodes
- are 0 and 2) all marginal nodes are 1
+ are 0 and 2) all marginal nodes are at least 1
 }
 \keyword{internal}
 
