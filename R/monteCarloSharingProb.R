@@ -21,19 +21,26 @@ nSimulations)
 #' \code{runMonteCarlo}
 runMonteCarlo <- function(procPed, founderFunc, nSim)
 {
-    numer <- denom <- 0
-    defaultStates <- rep(NA, procPed$size)
-
-    for (n in 1:nSim) #TODO: run simulations in parallel
+    oneSim <- function(x)
     {
-        states <- defaultStates
+        states <- rep(NA, procPed$size)
         states[procPed$founders] <- founderFunc(length(procPed$founders))   
         res <- simulatePedigree(procPed, states)
-        
-        if (sum(res) >= 1) denom <- denom + 1
-        if (all(res >= 1)) numer <- numer + 1
+        return(c(all(res >= 1), sum(res) >= 1))
     }
-    return(numer/denom)
+
+    if (is.element('parallel', installed.packages()[,1]) & nSim > 2e4)
+    {
+        cl <- parallel::makeCluster(parallel::detectCores())
+        parallel::clusterExport(cl, 'mendelProbTable')
+        prob <- parallel::parSapply(cl, 1:nSim, oneSim)
+        parallel::stopCluster(cl)
+    }
+    else
+    {
+        prob <- sapply(1:nSim, oneSim)
+    }
+    return(sum(prob[1,]) / sum(prob[2,]))
 }
 
 #' \code{simulatePedigree}

@@ -17,9 +17,9 @@ test_that('standard sharing probabilities',
     expect_equal(RVsharing2(samplePedigrees$secondCousinPairWithLoop),
         6/122)
     expect_equal(RVsharing2(samplePedigrees$firstCousinInbreeding),
-        180/1783)
+        201/1783)
     expect_equal(RVsharing2(samplePedigrees$twoGenerationsInbreeding),
-        34/1975)
+        37/1975)
 })
 
 test_that('exact sharing probabilities',
@@ -27,7 +27,7 @@ test_that('exact sharing probabilities',
     data(samplePedigrees)
        
     expect_equal(RVsharing2(samplePedigrees$firstCousinPair,
-        alleleFreq=0.01), 0.075, tol=1e-3)
+        alleleFreq=0.01), 0.076, tol=1e-3)
     expect_equal(RVsharing2(samplePedigrees$secondCousinPair,
         alleleFreq=0.01), 0.025, tol=1e-3)
     expect_equal(RVsharing2(samplePedigrees$thirdCousinPair,
@@ -39,22 +39,22 @@ test_that('exact sharing probabilities',
     expect_equal(RVsharing2(samplePedigrees$secondCousinPairWithLoop,
         alleleFreq=0.01), 0.058, tol=1e-3)
     expect_equal(RVsharing2(samplePedigrees$firstCousinInbreeding,
-        alleleFreq=0.01), 0.107, tol=1e-3)
+        alleleFreq=0.01), 0.122, tol=1e-3)
     expect_equal(RVsharing2(samplePedigrees$twoGenerationsInbreeding,
-        alleleFreq=0.01), 0.026, tol=1e-3)
+        alleleFreq=0.01), 0.029, tol=1e-3)
 })
 
 monteCarloComp <- function(ped, f)
 {
     abs(RVsharing2(ped, alleleFreq=f) - 
-        RVsharing2(ped, alleleFreq=f, nSimulations=1e2))
+        RVsharing2(ped, alleleFreq=f, nSimulations=1e4))
 }
 
 test_that('monte carlo sharing probabilities',
 {
     data(samplePedigrees)
-    tol <- 1.0 #0.02
-    set.seed(123)
+    tol <- 0.02
+    set.seed(2)
 
     expect_equal(monteCarloComp(samplePedigrees$firstCousinPair),
         0, tolerance=tol)

@@ -86,8 +86,8 @@ test_that('marginal probability calculation',
     procPed <- processPedigree(ped)
     net <- createNetwork(procPed)
 
-    expect_equal(marginalProb(net, 7), c(1/4,1/2))
-    expect_equal(marginalProb(net, 8), c(1/4,1/2))
-    expect_equal(marginalProb(net, c(4,6)), c(1/16,1/4))
+    expect_equal(marginalProb(net, 7), c(1/4,3/4))
+    expect_equal(marginalProb(net, 8), c(1/4,3/4))
+    expect_equal(marginalProb(net, c(4,6)), c(1/16,9/16))
     expect_true(all(marginalProb(net, c(7,8)) >= marginalProb(net, c(4,6))))
 })
