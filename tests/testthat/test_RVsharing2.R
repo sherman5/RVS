@@ -90,4 +90,3 @@ test_that('monte carlo sharing probabilities',
     expect_equal(monteCarloComp(samplePedigrees$twoGenerationsInbreeding,
         0.01), 0, tolerance=tol)
 })
-

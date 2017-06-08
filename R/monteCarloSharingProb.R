@@ -1,4 +1,12 @@
-#' \code{monteCarloSharingProb}
+#' \code{monteCarloSharingProb} calculates sharing probability by
+#'  simulating many outcomes of the pedigree
+#'
+#' @param procPed pedigree that has been through processPedigree()
+#' @param alleleFreq allele frequency among the founders
+#' @param kinshipCoeff mean kinship coefficient among the founders
+#' @param nSimulations number of simulations used in calculation
+#' @return sharing probability
+#' @keywords internal
 monteCarloSharingProb <- function(procPed, alleleFreq, kinshipCoeff,
 nSimulations)
 {
@@ -9,7 +17,15 @@ nSimulations)
     }
     else if (!missing(kinshipCoeff))
     {
-        stop('RVsharing2 does not yet support relatedness among founders')
+        w <- relatedFoundersCorrection(length(procPed$founders),
+            kinshipCoeff)
+        founderFunc <- function(n)
+        {
+            if (runif(1) < w)
+                sample(c(rep(0,n-1),1)) # one founder introduces
+            else
+                sample(c(rep(0,n-2),c(1,1))) # two founders introduce
+        }        
     }
     else # one founder introduces
     {
@@ -18,8 +34,15 @@ nSimulations)
     return(runMonteCarlo(procPed, founderFunc, nSimulations))
 }
 
-#' \code{runMonteCarlo}
-runMonteCarlo <- function(procPed, founderFunc, nSim)
+#' \code{runMonteCarlo} run the monte carlo simulation
+#'
+#' @param procPed pedigree that has been through processPedigree()
+#' @param founderFunc function describing how to sample alleles
+#'  for the founders
+#' @param nSimulations number of simulations used in calculation
+#' @return sharing probability
+#' @keywords internal
+runMonteCarlo <- function(procPed, founderFunc, nSimulations)
 {
     oneSim <- function(x)
     {
@@ -33,17 +56,22 @@ runMonteCarlo <- function(procPed, founderFunc, nSim)
     {
         cl <- parallel::makeCluster(parallel::detectCores())
         parallel::clusterExport(cl, 'mendelProbTable')
-        prob <- parallel::parSapply(cl, 1:nSim, oneSim)
+        prob <- parallel::parSapply(cl, 1:nSimulations, oneSim)
         parallel::stopCluster(cl)
     }
     else
     {
-        prob <- sapply(1:nSim, oneSim)
+        prob <- sapply(1:nSimulations, oneSim)
     }
     return(sum(prob[1,]) / sum(prob[2,]))
 }
 
-#' \code{simulatePedigree}
+#' \code{simulatePedigree} simulates pedigree given founder states
+#'
+#' @param procPed pedigree that has been through processPedigree()
+#' @param states state of each founder (0,1,2 copies of variant)
+#' @return states for all subjects in pedigree
+#' @keywords internal
 simulatePedigree <- function(procPed, states)
 {
     remain <- which(is.na(states))
