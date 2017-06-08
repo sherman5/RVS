@@ -2,11 +2,23 @@
 % Please edit documentation in R/monteCarloSharingProb.R
 \name{runMonteCarlo}
 \alias{runMonteCarlo}
-\title{\code{runMonteCarlo}}
+\title{\code{runMonteCarlo} run the monte carlo simulation}
 \usage{
-runMonteCarlo(procPed, founderFunc, nSim)
+runMonteCarlo(procPed, founderFunc, nSimulations)
+}
+\arguments{
+\item{procPed}{pedigree that has been through processPedigree()}
+
+\item{founderFunc}{function describing how to sample alleles
+for the founders}
+
+\item{nSimulations}{number of simulations used in calculation}
+}
+\value{
+sharing probability
 }
 \description{
-\code{runMonteCarlo}
+\code{runMonteCarlo} run the monte carlo simulation
 }
+\keyword{internal}
 

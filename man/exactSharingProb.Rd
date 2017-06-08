@@ -2,11 +2,22 @@
 % Please edit documentation in R/RVsharing2.R
 \name{exactSharingProb}
 \alias{exactSharingProb}
-\title{\code{exactSharingProb}}
+\title{\code{exactSharingProb} calculates the exact sharing probability given
+ allele frequency among the founders}
 \usage{
 exactSharingProb(procPed, alleleFreq)
 }
-\description{
-\code{exactSharingProb}
+\arguments{
+\item{procPed}{pedigree that has been through processPedigree()}
+
+\item{alleleFreq}{allele frequency among the founders}
 }
+\value{
+sharing probability
+}
+\description{
+\code{exactSharingProb} calculates the exact sharing probability given
+ allele frequency among the founders
+}
+\keyword{internal}
 
