@@ -10,4 +10,5 @@ mendelProbTable
 \description{
 Table of mendelian inheritance probabilities
 }
+\keyword{internal}
 

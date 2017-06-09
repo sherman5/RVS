@@ -18,9 +18,9 @@ inferNumAlleles <- function(phi, nf)
 computePhiVec <- function(nf, amin=2*nf-2)
 {
     a = amin:(2*nf-1)
-    term1 = (2*nf-a)*(2*nf-a-1) / (nf*(nf-1))
-    term2 = (a-nf)*(2*nf-a) / (nf*(nf-1)) + 2*(a-nf)*(2*nf-a) / (nf*(2*nf-1))
-    return((0.5*term1 + 0.25*term2) / (nf-1))
+    term1 = (2*nf-a)*(2*nf-a-1)/(nf*(nf-1))
+    term2 = (a-nf)*(2*nf-a)/(nf*(nf-1)) + 2*(a-nf)*(2*nf-a)/(nf*(2*nf-1))
+    return((0.5*term1 + 0.25*term2)/(nf-1))
 }
 
 #' \code{inferTheta} solve the parameter theta for polynomial approximation
@@ -34,8 +34,8 @@ computePhiVec <- function(nf, amin=2*nf-2)
 #' @keywords internal
 inferTheta <- function(phi, phiVec)
 {
-    ord = length(phi.vec)
-    phi.diff = (phi - phi.vec)
+    ord = length(phiVec)
+    phi.diff = (phi - phiVec)
     coef.vec = 1/factorial(1:ord)
     racines = polyroot(c(phi,phi.diff[ord:1]*coef.vec))
     return(Re(racines)[abs(Im(racines))<1e-10]) # Return only the real roots
@@ -53,7 +53,22 @@ inferTheta <- function(phi, phiVec)
 computePFU <- function(nf, theta, ord=2)
 {
     a = (2*nf):(2*nf-ord)
-    distri = c(1,theta,theta^2/2,theta^3/6,theta^4/24,theta^5/120)[1:(ord+1)]
-    return(weighted.mean(2/nf - 2/a,distri))
+    dist = c(1,theta,theta^2/2,theta^3/6,theta^4/24,theta^5/120)[1:(ord+1)]
+    return(weighted.mean(2/nf - 2/a,dist))
+}
+
+#' \code{relatedFoundersCorrection} make the neccesary correction for 
+#'  when founders have a non-zero kinship coefficient
+#'
+#' @param nf number of founders
+#' @param  kinshipCoeff mean kinship coefficient among all founders
+#' @return weight used in probability calculation
+#' @keywords internal
+relatedFoundersCorrection <- function(nf, kinshipCoeff)
+{
+    phiVec <- computePhiVec(nf, 2*nf-5)
+    theta <- inferTheta(kinshipCoeff, phiVec)
+    PFU <- computePFU(nf, theta, 5)
+    return(nf * PFU)
 }
 

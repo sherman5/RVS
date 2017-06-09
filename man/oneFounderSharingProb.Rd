@@ -2,20 +2,20 @@
 % Please edit documentation in R/RVsharing2.R
 \name{oneFounderSharingProb}
 \alias{oneFounderSharingProb}
-\title{\code{oneFounderSharingProb} calculate sharing prob assuming one founder
- introduces the variant}
+\title{\code{oneFounderSharingProb} calculate sharing probability assuming one
+ founder introduces the variant}
 \usage{
 oneFounderSharingProb(procPed)
 }
 \arguments{
-\item{procPed}{processed Pedigree object}
+\item{procPed}{pedigree that has been through processPedigree()}
 }
 \value{
 sharing probability
 }
 \description{
-\code{oneFounderSharingProb} calculate sharing prob assuming one founder
- introduces the variant
+\code{oneFounderSharingProb} calculate sharing probability assuming one
+ founder introduces the variant
 }
 \keyword{internal}
 

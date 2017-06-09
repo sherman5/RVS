@@ -4,10 +4,12 @@
 \alias{processPedigree}
 \title{\code{processPedigree} pre-process a pedigree for calculations}
 \usage{
-processPedigree(ped)
+processPedigree(ped, carriers)
 }
 \arguments{
 \item{ped}{pedigree objevt (S3)}
+
+\item{carriers}{subjects of interest who have the variant}
 }
 \value{
 list containing relevant pedigree info

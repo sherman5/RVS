@@ -2,11 +2,20 @@
 % Please edit documentation in R/monteCarloSharingProb.R
 \name{simulatePedigree}
 \alias{simulatePedigree}
-\title{\code{simulatePedigree}}
+\title{\code{simulatePedigree} simulates pedigree given founder states}
 \usage{
 simulatePedigree(procPed, states)
 }
-\description{
-\code{simulatePedigree}
+\arguments{
+\item{procPed}{pedigree that has been through processPedigree()}
+
+\item{states}{state of each founder (0,1,2 copies of variant)}
 }
+\value{
+states for all subjects in pedigree
+}
+\description{
+\code{simulatePedigree} simulates pedigree given founder states
+}
+\keyword{internal}
 

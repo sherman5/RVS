@@ -4,7 +4,7 @@
 #' @name RVsharing2
 NULL
 
-#' This data contains sample pedigrees
+#' This data contains 8 sample pedigrees
 #' 
 #' @docType data
 #' @name samplePedigrees
@@ -17,4 +17,5 @@ NULL
 #' @docType data
 #' @name mendelProbTable
 #' @usage mendelProbTable
+#' @keywords internal
 NULL

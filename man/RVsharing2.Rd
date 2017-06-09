@@ -5,31 +5,30 @@
 \alias{RVsharing2}
 \alias{RVsharing2-package}
 \title{\code{RVsharing2} Calculates rare variant sharing probability between
- affected subjects in a procPedigree}
+ carriers in a pedigree given that the variant in seen in one of the}
 \usage{
-RVsharing2(ped, alleleFreq, kinshipCoeff, nSimulations)
+RVsharing2(ped, alleleFreq, kinshipCoeff, nSimulations, carriers)
 }
 \arguments{
 \item{ped}{S3 Pedigree object}
 
-\item{alleleFreq}{frequency of variant present amount the founders}
+\item{alleleFreq}{allele frequency among the founders}
 
-\item{kinshipCoeff}{relationship between founders}
+\item{kinshipCoeff}{mean kinship coefficient among the founders}
 
-\item{nSimulations}{number of simulations to run for the monte carlo
-approach to calculating sharing probabilities}
+\item{nSimulations}{number of simulations used in monte carlo calculation}
 }
 \value{
-sharing probability between all affected subjects in the procPedigree
+sharing probability between all carriers in pedigree
 }
 \description{
 \code{RVsharing2} Calculates rare variant sharing probability between
- affected subjects in a procPedigree
+ carriers in a pedigree given that the variant in seen in one of the
 
 RVsharing2
 }
 \examples{
- data("sampleprocPedigrees")
- RVsharing2(sampleprocPedigrees[[1]])
+ data("samplePedigrees")
+ RVsharing2(samplePedigrees[[1]])
 }
 

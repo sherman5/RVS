@@ -39,8 +39,8 @@ marginalProb <- function(net, states)
             prob <- prob * sum(p[states[[n]]+1])
 
             # condition on this node being in the correct states
-            net <- setEvidence(net, evidence=sapply(n, simplify=FALSE,
-                FUN=function(x) as.numeric(0:2 %in% states[[n]])))
+            net <- gRain::setEvidence(net, evidence=sapply(simplify=FALSE,
+                X=n, FUN=function(x) as.numeric(0:2 %in% states[[n]])))
         }
     }
     return(prob)
