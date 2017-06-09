@@ -23,9 +23,9 @@ oneFounderSharingProb <- function(procPed)
 
         # sum relevant probability       
         numer <- numer + marginalProb(condNet, sapply(simplify=FALSE,
-            X=as.character(procPed$carriers), FUN=function(x) 1:2))
+            X=as.character(procPed$carriers), FUN=function(dummy) 1:2))
         denom <- denom + 1 - marginalProb(condNet, sapply(simplify=FALSE,
-            X=as.character(procPed$affected), FUN=function(x) 0))
+            X=as.character(procPed$affected), FUN=function(dummy) 0))
     }
     return(numer/denom)
 }
@@ -73,11 +73,11 @@ exactSharingProb <- function(procPed, alleleFreq)
     prior <- with(data.frame(f=alleleFreq), c((1-f)^2, 2*f*(1-f), f^2))
     net <- createNetwork(procPed, prior)
 
-    numer <- marginalProb(net, sapply(as.character(procPed$carriers),
-        function(x) 1:2, simplify=FALSE))
-    denom <- 1 - marginalProb(net, sapply(as.character(procPed$affected),
-        function(x) 0, simplify=FALSE))
-    return (numer/denom)
+    numer <- numer + marginalProb(condNet, sapply(simplify=FALSE,
+        X=as.character(procPed$carriers), FUN=function(dummy) 1:2))
+    denom <- denom + 1 - marginalProb(condNet, sapply(simplify=FALSE,
+        X=as.character(procPed$affected), FUN=function(dummy) 0))
+   return (numer/denom)
 }
 
 #' \code{RVsharing2} Calculates rare variant sharing probability between
