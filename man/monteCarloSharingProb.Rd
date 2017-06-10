@@ -24,4 +24,3 @@ sharing probability
  simulating many outcomes of the pedigree
 }
 \keyword{internal}
-

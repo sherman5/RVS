@@ -17,5 +17,3 @@ list containing relevant pedigree info
 \description{
 \code{processPedigree} pre-process a pedigree for calculations
 }
-\keyword{internal}
-

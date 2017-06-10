@@ -7,19 +7,18 @@
 #' @param nSimulations number of simulations used in calculation
 #' @return sharing probability
 #' @keywords internal
-monteCarloSharingProb <- function(procPed, alleleFreq, kinshipCoeff,
-nSimulations)
+monteCarloSharingProb <- function(procPed, founderDist, alleleFreq, kinshipCoeff, nSimulations)
 {
     if (!missing(alleleFreq))
     {
         p <- with(data.frame(f=alleleFreq), c((1-f)^2, 2*f*(1-f), f^2))
-        founderFunc <- function(n) sample.int(3,n,TRUE,p) - 1
+        founderDist <- function(n) sample.int(3,n,TRUE,p) - 1
     }
     else if (!missing(kinshipCoeff))
     {
         w <- relatedFoundersCorrection(length(procPed$founders),
             kinshipCoeff)
-        founderFunc <- function(n)
+        founderDist <- function(n)
         {
             if (runif(1) < w)
                 sample(c(rep(0,n-1),1)) # one founder introduces
@@ -27,11 +26,11 @@ nSimulations)
                 sample(c(rep(0,n-2),c(1,1))) # two founders introduce
         }        
     }
-    else # one founder introduces
+    else if (missing(founderDist))# one founder introduces
     {
-        founderFunc <- function(n) sample(c(rep(0,n-1),1))
+        founderDist <- function(n) sample(c(rep(0,n-1),1))
     }
-    return(runMonteCarlo(procPed, founderFunc, nSimulations))
+    return(runMonteCarlo(procPed, founderDist, nSimulations))
 }
 
 #' \code{runMonteCarlo} run the monte carlo simulation
@@ -42,17 +41,17 @@ nSimulations)
 #' @param nSimulations number of simulations used in calculation
 #' @return sharing probability
 #' @keywords internal
-runMonteCarlo <- function(procPed, founderFunc, nSimulations)
+runMonteCarlo <- function(procPed, founderDist, nSimulations)
 {
     oneSim <- function(x)
     {
         states <- rep(NA, procPed$size)
-        states[procPed$founders] <- founderFunc(length(procPed$founders))   
+        states[procPed$founders] <- founderDist(length(procPed$founders))   
         res <- simulatePedigree(procPed, states)
         return(c(all(res >= 1), sum(res) >= 1))
     }
 
-    if (is.element('parallel', installed.packages()[,1]) & nSim > 2e4)
+    if (is.element('parallel', installed.packages()[,1]) & nSimulations>2e4)
     {
         cl <- parallel::makeCluster(parallel::detectCores())
         parallel::clusterExport(cl, 'mendelProbTable')

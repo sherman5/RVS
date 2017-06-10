@@ -21,4 +21,3 @@ sharing probability
 \code{runMonteCarlo} run the monte carlo simulation
 }
 \keyword{internal}
-

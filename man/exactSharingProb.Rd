@@ -20,4 +20,3 @@ sharing probability
  allele frequency among the founders
 }
 \keyword{internal}
-

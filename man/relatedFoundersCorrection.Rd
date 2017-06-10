@@ -20,4 +20,3 @@ weight used in probability calculation
  when founders have a non-zero kinship coefficient
 }
 \keyword{internal}
-

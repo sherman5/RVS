@@ -22,4 +22,3 @@ sharing probability
  relatedness among founders
 }
 \keyword{internal}
-

@@ -1,6 +1,6 @@
 ---
 title: "The RVsharing2 Package"
-author: ""
+author: "Thomas Sherman"
 data: "`r doc_date()`"
 package: "`r pkg_ver('RVsharing2')`"
 bibliography: References.bib
@@ -16,7 +16,15 @@ output:
 library(RVsharing)
 ```
 
-# Introduction 
+# Introduction
+
+RVsharing2 computes the probabilities described in @METHODS.
+
+# Pedigree format
+
+Pedigrees used as input for RVsharing2 should be an S3 object as outlined in the kinship2 package.
+
+# Main function
 
 # Computing Sharing Probabilities
 
@@ -59,5 +67,13 @@ abline(h=defaultProbs,lty=2)
 Similiar to Figure 2 in @METHODS
 
 ## Using Monte Carlo Simulation
+
+# Adjusting for relatedness among founders
+
+## Exact calculation with kinship coefficient
+
+## Custom distribution among founders
+
+## Using monte carlo with custom distribution
 
 # References

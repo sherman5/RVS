@@ -23,4 +23,3 @@ real roots of the polynomial approximation
 function for polynomials of order 2 to 5.
 }
 \keyword{internal}
-

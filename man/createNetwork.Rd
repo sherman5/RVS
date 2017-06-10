@@ -18,4 +18,3 @@ bayesian network friom gRain package
 \code{createNetwork} create bayesian network from procPedigree
 }
 \keyword{internal}
-

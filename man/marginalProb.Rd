@@ -20,4 +20,3 @@ joint probability
  that a set of nodes are in given states
 }
 \keyword{internal}
-

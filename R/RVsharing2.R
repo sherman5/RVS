@@ -13,7 +13,7 @@ oneFounderSharingProb <- function(procPed)
 
     # sum over probs, conditioning on each founder introducing variant
     numer <- denom <- 0
-    for (f in procPed$founders)
+    for (f in procPed$founders) #TODO: use sapply here
     {
         # condition on founder and calculate distribution
         condNet <- gRain::retractEvidence(net, as.character(f))
@@ -47,7 +47,7 @@ twoFounderSharingProb <- function(procPed, kinshipCoeff)
     cor <- relatedFoundersCorrection(length(procPed$founders), kinshipCoeff)
     numer <- denom <- 0
     remainingFounders <- procPed$founders
-    for (f1 in procPed$founders)
+    for (f1 in procPed$founders) #TODO: use sapply here
     {
         # condition on founder
         net1 <- gRain::retractEvidence(net, as.character(f1))
@@ -63,9 +63,9 @@ twoFounderSharingProb <- function(procPed, kinshipCoeff)
             w <- ifelse(f1==f2, cor, 1 - cor)
 
             # calculate conditional probability
-            numer <- numer + w * marginalProb(net2, sapply(simplify=FALSE,
+            numer <- numer + w * marginalProb(net2,sapply(simplify=FALSE,
                 X=as.character(procPed$carriers), FUN=function(dummy) 1:2))
-            denom <- denom + w * (1 - marginalProb(net2, sapply(simplify=FALSE,
+            denom <- denom + w * (1-marginalProb(net2,sapply(simplify=FALSE,
                 X=as.character(procPed$affected), FUN=function(dummy) 0)))
 
         }
@@ -88,9 +88,9 @@ exactSharingProb <- function(procPed, alleleFreq)
     net <- createNetwork(procPed, prior)
 
     # calculate the conditional probability
-    numer <- marginalProb(condNet, sapply(simplify=FALSE,
+    numer <- marginalProb(net, sapply(simplify=FALSE,
         X=as.character(procPed$carriers), FUN=function(dummy) 1:2))
-    denom <- 1 - marginalProb(condNet, sapply(simplify=FALSE,
+    denom <- 1 - marginalProb(net, sapply(simplify=FALSE,
         X=as.character(procPed$affected), FUN=function(dummy) 0))
    return (numer/denom)
 }
@@ -108,8 +108,15 @@ exactSharingProb <- function(procPed, alleleFreq)
 #'  data("samplePedigrees")
 #'  RVsharing2(samplePedigrees[[1]])
 #' @export
-RVsharing2 <- function(ped, alleleFreq, kinshipCoeff, nSimulations, carriers)
+RVsharing2 <- function(ped, carriers, alleleFreq, kinshipCoeff,
+nSimulations, founderDist)
 {
+    # check args are valid
+    if (!missing(alleleFreq) & !missing(founderDist))
+        warning('founderDist ignored since alleleFreq was provided')
+    if (!missing(alleleFreq) & !missing(kinshipCoeff))
+        stop('can\'t use both alleleFreq and kinshipCoeff')
+
     # load data for prob calculations
     data(mendelProbTable)
 
@@ -119,8 +126,8 @@ RVsharing2 <- function(ped, alleleFreq, kinshipCoeff, nSimulations, carriers)
     # calculate sharing prob with appropiate method
     if (!missing(nSimulations))
     {
-        return(monteCarloSharingProb(procPed, alleleFreq, kinshipCoeff,
-            nSimulations))
+        return(monteCarloSharingProb(procPed, founderDist, alleleFreq,
+            kinshipCoeff, nSimulations))
     }
     else if (!missing(alleleFreq))
     {

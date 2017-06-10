@@ -3,7 +3,7 @@
 #' @param ped pedigree objevt (S3)
 #' @param carriers subjects of interest who have the variant
 #' @return list containing relevant pedigree info
-#' @keywords internal
+#' @export
 processPedigree <- function(ped, carriers)
 {
     # get pedigree info

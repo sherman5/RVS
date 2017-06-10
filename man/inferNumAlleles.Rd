@@ -12,4 +12,3 @@ inferNumAlleles(phi, nf)
  among nf founders based on mean estimated kinship phi
 }
 \keyword{internal}
-
