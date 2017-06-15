@@ -52,7 +52,7 @@ runMonteCarlo <- function(procPed, founderFunc, nSimulations)
         return(c(all(res >= 1), sum(res) >= 1))
     }
 
-    if (is.element('parallel', installed.packages()[,1]) & nSim > 2e4)
+    if (is.element('parallel', installed.packages()[,1]) & nSimulations > 2e4)
     {
         cl <- parallel::makeCluster(parallel::detectCores())
         parallel::clusterExport(cl, 'mendelProbTable')

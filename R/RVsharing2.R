@@ -88,9 +88,9 @@ exactSharingProb <- function(procPed, alleleFreq)
     net <- createNetwork(procPed, prior)
 
     # calculate the conditional probability
-    numer <- marginalProb(condNet, sapply(simplify=FALSE,
+    numer <- marginalProb(net, sapply(simplify=FALSE,
         X=as.character(procPed$carriers), FUN=function(dummy) 1:2))
-    denom <- 1 - marginalProb(condNet, sapply(simplify=FALSE,
+    denom <- 1 - marginalProb(net, sapply(simplify=FALSE,
         X=as.character(procPed$affected), FUN=function(dummy) 0))
    return (numer/denom)
 }
