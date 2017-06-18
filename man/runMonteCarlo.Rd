@@ -4,15 +4,15 @@
 \alias{runMonteCarlo}
 \title{\code{runMonteCarlo} run the monte carlo simulation}
 \usage{
-runMonteCarlo(procPed, founderFunc, nSimulations)
+runMonteCarlo(procPed, founderDist, nSimulations)
 }
 \arguments{
 \item{procPed}{pedigree that has been through processPedigree()}
 
+\item{nSimulations}{number of simulations used in calculation}
+
 \item{founderFunc}{function describing how to sample alleles
 for the founders}
-
-\item{nSimulations}{number of simulations used in calculation}
 }
 \value{
 sharing probability

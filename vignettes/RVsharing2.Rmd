@@ -13,7 +13,8 @@ output:
 ---
 
 ```{r include=FALSE, cache=FALSE}
-library(RVsharing)
+library(RVsharing2)
+library(kinship2)
 ```
 
 # Introduction
@@ -22,23 +23,27 @@ RVsharing2 computes the probabilities described in @METHODS.
 
 # Pedigree format
 
-Pedigrees used as input for RVsharing2 should be an S3 object as outlined in the kinship2 package.
+The primary input used in this package is a 'Pedigree' object from the 'kinship2' package on CRAN (@KINSHIP_PKG). The package vignette outlines the basic steps to creating a 'Pedigree' object, see here (https://cran.r-project.org/web/packages/kinship2/vignettes/pedigree.pdf). In addition to the standard pedigree fields (id, findex, mindex, sex) it is also neccesary to specify which subjects in the pedigree are 'affected'. The affected subjects should be any subject that was sequenced. The 'RVsharing2' package comes with 8 sample pedigrees.
 
-# Main function
+```{r}
+data(samplePedigrees) # load sample pedigrees
+kinship2::plot.pedigree(samplePedigrees$firstCousinPair) # plot pedigree
+```
 
-# Computing Sharing Probabilities
+# Computing Standard Sharing Probabilities
 
-## Assuming no IBS without IBD
+The primary function in the package is 'RVsharing2'. Most of the package features are accessible through this function. 
+
+## Assuming no IBS without IBD (only one founder introduces)
 
 ```{r}
 data(samplePedigrees)
 defaultProbs <- c()
-defaultProbs[1] <- RVsharing(samplePedigrees$firstCousinPair)
-defaultProbs[2] <- RVsharing(samplePedigrees$secondCousinPair)
-defaultProbs[3] <- RVsharing(samplePedigrees$firstCousinTriple)
-defaultProbs[4] <- RVsharing(samplePedigrees$secondCousinTriple)
-names(defaultProbs) <- c('firstCousinPair', 'secondCousinPair',
-    'firstCousinTriple', 'secondCousinTriple')
+defaultProbs[1] <- RVsharing2(samplePedigrees$firstCousinPair)
+defaultProbs[2] <- RVsharing2(samplePedigrees$secondCousinPair)
+defaultProbs[3] <- RVsharing2(samplePedigrees$firstCousinTriple)
+defaultProbs[4] <- RVsharing2(samplePedigrees$secondCousinTriple)
+names(defaultProbs) <- c('firstCousinPair', 'secondCousinPair', 'firstCousinTriple', 'secondCousinTriple')
 print(defaultProbs)
 ```
 
@@ -47,17 +52,12 @@ print(defaultProbs)
 ```{r}
 exactProbs <- list()
 freq <- c(0.001,0.0025,0.005,0.01,0.025,0.05)
-exactProbs$fistCousinPair <- sapply(freq, function(f)
-    RVsharing(samplePedigrees$firstCousinPair, alleleFreq=f))
-exactProbs$secondCousinPair <- sapply(freq, function(f)
-    RVsharing(samplePedigrees$secondCousinPair, alleleFreq=f))
-exactProbs$firstCousinTriple <- sapply(freq, function(f)
-    RVsharing(samplePedigrees$firstCousinTriple, alleleFreq=f))
-exactProbs$secondCousinTriple <- sapply(freq, function(f)
-    RVsharing(samplePedigrees$secondCousinTriple, alleleFreq=f))
+exactProbs$fistCousinPair <- sapply(freq, function(f) RVsharing2(samplePedigrees$firstCousinPair, alleleFreq=f))
+exactProbs$secondCousinPair <- sapply(freq, function(f) RVsharing2(samplePedigrees$secondCousinPair, alleleFreq=f))
+exactProbs$firstCousinTriple <- sapply(freq, function(f) RVsharing2(samplePedigrees$firstCousinTriple, alleleFreq=f))
+exactProbs$secondCousinTriple <- sapply(freq, function(f) RVsharing2(samplePedigrees$secondCousinTriple, alleleFreq=f))
 
-plot(NULL, xlim=c(0.001,0.05), ylim=c(0,0.12),log='x',xaxt='n',
-    ylab='probability of sharing', xlab='variant frequency [%]')
+plot(NULL, xlim=c(0.001,0.05), ylim=c(0,0.12),log='x',xaxt='n', ylab='probability of sharing', xlab='variant frequency [%]')
 axis(side=1, at=freq, labels=freq*100)
 invisible(sapply(exactProbs, lines, x=freq))
 invisible(sapply(exactProbs, points, x=freq, pch=19))
@@ -70,10 +70,10 @@ Similiar to Figure 2 in @METHODS
 
 # Adjusting for relatedness among founders
 
+When founders of the pedigree are related, the computation is more tricky. 'RVsharing' allows the user to apply a correction for this fact in two different ways.
+
 ## Exact calculation with kinship coefficient
 
-## Custom distribution among founders
-
-## Using monte carlo with custom distribution
+## Using monte carlo with custom distribution for founders
 
 # References
