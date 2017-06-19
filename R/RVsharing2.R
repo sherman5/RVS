@@ -11,6 +11,14 @@ oneFounderSharingProb <- function(procPed)
     net <- gRain::setEvidence(net, as.character(procPed$founders),
         rep('0', length(procPed$founders)))
 
+    # probability events
+    rvInCarriers <- sapply(simplify=FALSE, FUN=function(dummy) 1:2,
+        X=as.character(procPed$carriers))
+    noRvInNonCarriers <- sapply(simplify=FALSE, FUN=function(dummy) 0,
+        X=as.character(setdiff(procPed$affected, procPed$carriers)))
+    noRvInAny <- sapply(simplify=FALSE, FUN=function(dummy) 0,
+        X=as.character(procPed$affected))
+
     # sum over probs, conditioning on each founder introducing variant
     numer <- denom <- 0
     for (f in procPed$founders) #TODO: use sapply here
@@ -19,11 +27,12 @@ oneFounderSharingProb <- function(procPed)
         condNet <- gRain::retractEvidence(net, as.character(f))
         condNet <- gRain::setEvidence(condNet, as.character(f), '1')
 
-        # sum relevant probability       
-        numer <- numer + marginalProb(condNet, sapply(simplify=FALSE,
-            X=as.character(procPed$carriers), FUN=function(dummy) 1:2))
-        denom <- denom + 1 - marginalProb(condNet, sapply(simplify=FALSE,
-            X=as.character(procPed$affected), FUN=function(dummy) 0))
+        # compute probability
+        denom <- denom + 1 - marginalProb(net, noRvInAny)
+#        if (length(setdiff(procPed$affected, procPed$carriers)) > 0)
+#            numer <- numer + marginalProb(net, c(rvInCarriers, noRvInNonCarriers))
+#        else
+            numer <- numer + marginalProb(net, rvInCarriers)
     }
     return(numer/denom)
 }
@@ -42,6 +51,14 @@ twoFounderSharingProb <- function(procPed, kinshipCoeff)
     net <- createNetwork(procPed)
     net <- gRain::setEvidence(net, as.character(procPed$founders),
         rep('0', length(procPed$founders)))
+
+    # probability events
+    rvInCarriers <- sapply(simplify=FALSE, FUN=function(dummy) 1:2,
+        X=as.character(procPed$carriers))
+    noRvInNonCarriers <- sapply(simplify=FALSE, FUN=function(dummy) 0,
+        X=as.character(setdiff(procPed$affected, procPed$carriers)))
+    noRvInAny <- sapply(simplify=FALSE, FUN=function(dummy) 0,
+        X=as.character(procPed$affected))
 
     # calculate kinship correction and initialize variables
     cor <- relatedFoundersCorrection(length(procPed$founders), kinshipCoeff)
@@ -63,11 +80,8 @@ twoFounderSharingProb <- function(procPed, kinshipCoeff)
             w <- ifelse(f1==f2, cor, 1 - cor)
 
             # calculate conditional probability
-            numer <- numer + w * marginalProb(net2,sapply(simplify=FALSE,
-                X=as.character(procPed$carriers), FUN=function(dummy) 1:2))
-            denom <- denom + w * (1-marginalProb(net2,sapply(simplify=FALSE,
-                X=as.character(procPed$affected), FUN=function(dummy) 0)))
-
+            numer <- numer + w * marginalProb(net, c(rvInCarriers, noRvInNonCarriers))
+            denom <- denom + w * (1 - marginalProb(net, noRvInAny))
         }
         remainingFounders <- setdiff(remainingFounders, f1)
     }
@@ -87,12 +101,18 @@ exactSharingProb <- function(procPed, alleleFreq)
     prior <- with(data.frame(f=alleleFreq), c((1-f)^2, 2*f*(1-f), f^2))
     net <- createNetwork(procPed, prior)
 
-    # calculate the conditional probability
-    numer <- marginalProb(net, sapply(simplify=FALSE,
-        X=as.character(procPed$carriers), FUN=function(dummy) 1:2))
-    denom <- 1 - marginalProb(net, sapply(simplify=FALSE,
-        X=as.character(procPed$affected), FUN=function(dummy) 0))
-   return (numer/denom)
+    # probability events
+    rvInCarriers <- sapply(simplify=FALSE, FUN=function(dummy) 1:2,
+        X=as.character(procPed$carriers))
+    noRvInNonCarriers <- sapply(simplify=FALSE, FUN=function(dummy) 0,
+        X=as.character(setdiff(procPed$affected, procPed$carriers)))
+    noRvInAny <- sapply(simplify=FALSE, FUN=function(dummy) 0,
+        X=as.character(procPed$affected))
+
+    # compute probability
+    numer <- marginalProb(net, c(rvInCarriers, noRvInNonCarriers))
+    denom <- 1 - marginalProb(net, noRvInAny)
+    return (numer/denom)
 }
 
 #' \code{RVsharing2} Calculates rare variant sharing probability between

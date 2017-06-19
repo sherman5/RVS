@@ -12,3 +12,4 @@ computePhiVec(nf, amin = 2 * nf - 2)
  numbers of distinct alleles a from amin to 2*nf-1
 }
 \keyword{internal}
+

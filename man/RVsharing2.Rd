@@ -3,7 +3,6 @@
 \docType{package}
 \name{RVsharing2}
 \alias{RVsharing2}
-\alias{RVsharing2}
 \alias{RVsharing2-package}
 \title{\code{RVsharing2} Calculates rare variant sharing probability between
  carriers in a pedigree given that the variant in seen in one of the}
@@ -32,3 +31,4 @@ RVsharing2
  data("samplePedigrees")
  RVsharing2(samplePedigrees[[1]])
 }
+

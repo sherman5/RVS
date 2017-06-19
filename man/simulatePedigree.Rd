@@ -18,3 +18,4 @@ states for all subjects in pedigree
 \code{simulatePedigree} simulates pedigree given founder states
 }
 \keyword{internal}
+

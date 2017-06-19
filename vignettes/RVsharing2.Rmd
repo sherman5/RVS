@@ -34,7 +34,7 @@ kinship2::plot.pedigree(samplePedigrees$firstCousinPair) # plot pedigree
 
 The primary function in the package is 'RVsharing2'. Most of the package features are accessible through this function. 
 
-## Assuming no IBS without IBD (only one founder introduces)
+## Assuming no IBS without IBD (only one founder introduces the variant)
 
 ```{r}
 data(samplePedigrees)
@@ -68,12 +68,51 @@ Similiar to Figure 2 in @METHODS
 
 ## Using Monte Carlo Simulation
 
+'RVsharing2' also allows for estimating sharing probabilities through monte carlo simulation. The primary use of this feature is for calculating sharing probabilities under non standard assumptions about the founders. See [Calculating P-Values across multiple families](#Calculating P Values across multiple families). However, this feature is available for the standard assumptions as well. To run a monte carlo simulation, specify all parameters as normal and additionally provide the 'nSimulations' parameter.
+
+```{r}
+print(RVsharing2(samplePedigrees$firstCousinPair))
+print(RVsharing2(samplePedigrees$firstCousinPair, nSimulations=1e4))
+```
+
+## Sharing Probability in a subset of affected
+
 # Adjusting for relatedness among founders
 
-When founders of the pedigree are related, the computation is more tricky. 'RVsharing' allows the user to apply a correction for this fact in two different ways.
+When founders of the pedigree are related, the computation is more tricky. 'RVsharing2' allows the user to apply a correction for this fact in two different ways.
 
 ## Exact calculation with kinship coefficient
 
+In this method, a mean kinship coefficient among the founders is given. Using the methods from @METHODS, RVsharing2 then computes the sharing probability on the assumption one or two founders introduce the variant. Weighting each probability using a calculation based on the mean kinship coefficient. To use this correction, provide the parameter 'kinshipCoeff'.
+
+```{r}
+print(RVsharing2(samplePedigrees$firstCousinPair, kinshipCoeff = 0.05))
+kCoeff <- seq(0.005,0.15,0.005)
+sharingProb <- sapply(kCoeff, function(c) RVsharing2(samplePedigrees$firstCousinPair, kinshipCoeff=c))
+plot(kCoeff, sharingProb, type='l')
+```
+
 ## Using monte carlo with custom distribution for founders
+
+This method allows for more complex relationships among the founders to be given. 'RVsharing2' allows for a complete distribution among the founders to be passed in as a parameter - 'founderDist'. This function should accept a single argument, N, and should return a vector of length N with values in {0,1,2} representing the number of copies of the variant each founder has.
+
+```{r}
+fDist <- function(N) sample(c(rep(0,N-1), 1)) # assumption that 1 founder introduces
+print(RVsharing2(samplePedigrees$firstCousinPair, nSimulations=1e4, founderDist=fDist))
+print(RVsharing2(samplePedigrees$firstCousinPair))
+```
+
+# Calculating P Values across multiple families
+
+For variants seen in only one family, the RVsharing probability can be interpreted directly as a P-value from a Bernoulli trial. For variants seen in M families and shared by affected relatives in a subset S of them, the P-value can be obtained as the sum of the probability of events as (or more) extreme as the observed sharing in the family subset S. 
+
+
+```{r}
+variantSharedPeds <- list(samplePedigrees$firstCousinPair, samplePedigrees$secondCousinPair)
+variantNotSharedPeds <- list(samplePedigrees$firstCousinTriple)
+sharedProbs <- sapply(variantSharedPeds, RVsharing2)
+notSharedProbs <- sapply(variantNotSharedPeds, RVsharing2)
+multipleFamilyPValue(sharedProbs, notSharedProbs)
+```
 
 # References

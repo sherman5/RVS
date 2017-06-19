@@ -22,3 +22,4 @@ P[FjU] (scalar)
 \code{computePFU} computation of P[FjU] using equation 21 of Bureay et al.
 }
 \keyword{internal}
+
