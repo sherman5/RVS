@@ -105,8 +105,6 @@ print(RVsharing2(samplePedigrees$firstCousinPair))
 # Calculating P Values across multiple families
 
 For variants seen in only one family, the RVsharing probability can be interpreted directly as a P-value from a Bernoulli trial. For variants seen in M families and shared by affected relatives in a subset S of them, the P-value can be obtained as the sum of the probability of events as (or more) extreme as the observed sharing in the family subset S. 
-
-
 ```{r}
 variantSharedPeds <- list(samplePedigrees$firstCousinPair, samplePedigrees$secondCousinPair)
 variantNotSharedPeds <- list(samplePedigrees$firstCousinTriple)

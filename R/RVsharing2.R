@@ -115,6 +115,7 @@ exactSharingProb <- function(procPed, alleleFreq)
     return (numer/denom)
 }
 
+#TODO: accept list of pedigrees, return object (or list)
 #' \code{RVsharing2} Calculates rare variant sharing probability between
 #'  carriers in a pedigree given that the variant in seen in one of the
 #   affected subjects
