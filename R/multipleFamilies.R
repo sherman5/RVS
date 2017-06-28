@@ -12,24 +12,22 @@
 #'  the pattern probabilities inferior or equal to the probability
 #'  of the observed pattern of the not families not sharing a rare variant
 #'  and the remaining families sharing a rare variant.
-#' @param shared vector of sharing probabilities for families where
-#'  all affected subjects share the variant
-#' @param notShared vector of sharing probabilities for families where
-#'  not all affected subjects share the variant
+#' @param probs sharing probabilities for all families
+#' @param shared boolean vector describing if all affected subject
+#'  in the family share the variant (TRUE if all share)
 #' @return p-value
-multipleFamilyPValue <- function(shared, notShared)
+multipleFamilyPValue <- function(probs, shared)
 {
     # check: "not" contains at least one family 
-    if (length(notShared)==0)
-        stop("Vector 'notShared' of families not sharing the RV is empty.")
+    if (sum(!shared)==0)
+        stop("number of families not sharing the RV is zero.")
 
     # If all families share the variant, then return 1
 #    if (length(not)==length(vec)) return (1)
 
-    vec <- 1:(length(notShared)+length(shared))
-    not <- 1:length(notShared)
-    pshare.data <- data.frame(pshare=c(notShared,shared),
-        ped.tocompute.vec=vec)
+    vec <- 1:(length(shared))
+    not <- which(shared==FALSE)
+    pshare.data <- data.frame(pshare=probs, ped.tocompute.vec=vec)
     
     p.vec = pshare.data$pshare[pshare.data$ped.tocompute.vec%in%vec]
     names(p.vec) = pshare.data$ped.tocompute.vec[pshare.data$ped.tocompute.vec%in%vec]

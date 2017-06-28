@@ -2,9 +2,9 @@
 % Please edit documentation in R/pedigreeHelper.R
 \name{processPedigree}
 \alias{processPedigree}
-\title{\code{processPedigree} pre-process a pedigree for calculations}
+\title{pre-process a pedigree for calculations}
 \usage{
-processPedigree(ped, carriers)
+processPedigree(ped, carriers = NULL)
 }
 \arguments{
 \item{ped}{pedigree objevt (S3)}
@@ -15,6 +15,6 @@ processPedigree(ped, carriers)
 list containing relevant pedigree info
 }
 \description{
-\code{processPedigree} pre-process a pedigree for calculations
+pre-process a pedigree for calculations
 }
 

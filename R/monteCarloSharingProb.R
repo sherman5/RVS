@@ -26,7 +26,7 @@ monteCarloSharingProb <- function(procPed, founderDist, alleleFreq, kinshipCoeff
                 sample(c(rep(0,n-2),c(1,1))) # two founders introduce
         }        
     }
-    else if (missing(founderDist))# one founder introduces
+    else if (missing(founderDist)) # one founder introduces
     {
         founderDist <- function(n) sample(c(rep(0,n-1),1))
     }

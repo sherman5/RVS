@@ -1,11 +1,11 @@
 ---
-title: "The RVsharing2 Package"
+title: "The RVsharing Package"
 author: "Thomas Sherman"
 data: "`r doc_date()`"
 package: "`r pkg_ver('RVsharing2')`"
 bibliography: References.bib
 vignette: >
-    %\VignetteIndexEntry{The RVsharing2 Package}
+    %\VignetteIndexEntry{The RVsharing Package}
     %\VignetteEngine{knitr::rmarkdown}
     %\VignetteEncoding{UTF-8}
 output:
@@ -19,11 +19,11 @@ library(kinship2)
 
 # Introduction
 
-RVsharing2 computes the probabilities described in @METHODS.
+RVsharing computes the probabilities described in @METHODS.
 
 # Pedigree format
 
-The primary input used in this package is a 'Pedigree' object from the 'kinship2' package on CRAN (@KINSHIP_PKG). The package vignette outlines the basic steps to creating a 'Pedigree' object, see here (https://cran.r-project.org/web/packages/kinship2/vignettes/pedigree.pdf). In addition to the standard pedigree fields (id, findex, mindex, sex) it is also neccesary to specify which subjects in the pedigree are 'affected'. The affected subjects should be any subject that was sequenced. The 'RVsharing2' package comes with 8 sample pedigrees.
+The primary input used in this package is a 'Pedigree' object from the 'kinship2' package on CRAN (@KINSHIP_PKG). The package vignette outlines the basic steps to creating a 'Pedigree' object, see here (https://cran.r-project.org/web/packages/kinship2/vignettes/pedigree.pdf). In addition to the standard pedigree fields (id, findex, mindex, sex) it is also neccesary to specify which subjects in the pedigree are 'affected'. The affected subjects should be any subject that was sequenced. The 'RVsharing' package comes with 8 sample pedigrees.
 
 ```{r}
 data(samplePedigrees) # load sample pedigrees
@@ -32,17 +32,17 @@ kinship2::plot.pedigree(samplePedigrees$firstCousinPair) # plot pedigree
 
 # Computing Standard Sharing Probabilities
 
-The primary function in the package is 'RVsharing2'. Most of the package features are accessible through this function. 
+The primary function in the package is 'RVsharing'. Most of the package features are accessible through this function. 
 
 ## Assuming no IBS without IBD (only one founder introduces the variant)
 
 ```{r}
 data(samplePedigrees)
 defaultProbs <- c()
-defaultProbs[1] <- RVsharing2(samplePedigrees$firstCousinPair)
-defaultProbs[2] <- RVsharing2(samplePedigrees$secondCousinPair)
-defaultProbs[3] <- RVsharing2(samplePedigrees$firstCousinTriple)
-defaultProbs[4] <- RVsharing2(samplePedigrees$secondCousinTriple)
+defaultProbs[1] <- RVsharing(samplePedigrees$firstCousinPair)
+defaultProbs[2] <- RVsharing(samplePedigrees$secondCousinPair)
+defaultProbs[3] <- RVsharing(samplePedigrees$firstCousinTriple)
+defaultProbs[4] <- RVsharing(samplePedigrees$secondCousinTriple)
 names(defaultProbs) <- c('firstCousinPair', 'secondCousinPair', 'firstCousinTriple', 'secondCousinTriple')
 print(defaultProbs)
 ```
@@ -52,10 +52,10 @@ print(defaultProbs)
 ```{r}
 exactProbs <- list()
 freq <- c(0.001,0.0025,0.005,0.01,0.025,0.05)
-exactProbs$fistCousinPair <- sapply(freq, function(f) RVsharing2(samplePedigrees$firstCousinPair, alleleFreq=f))
-exactProbs$secondCousinPair <- sapply(freq, function(f) RVsharing2(samplePedigrees$secondCousinPair, alleleFreq=f))
-exactProbs$firstCousinTriple <- sapply(freq, function(f) RVsharing2(samplePedigrees$firstCousinTriple, alleleFreq=f))
-exactProbs$secondCousinTriple <- sapply(freq, function(f) RVsharing2(samplePedigrees$secondCousinTriple, alleleFreq=f))
+exactProbs$fistCousinPair <- sapply(freq, function(f) RVsharing(samplePedigrees$firstCousinPair, alleleFreq=f))
+exactProbs$secondCousinPair <- sapply(freq, function(f) RVsharing(samplePedigrees$secondCousinPair, alleleFreq=f))
+exactProbs$firstCousinTriple <- sapply(freq, function(f) RVsharing(samplePedigrees$firstCousinTriple, alleleFreq=f))
+exactProbs$secondCousinTriple <- sapply(freq, function(f) RVsharing(samplePedigrees$secondCousinTriple, alleleFreq=f))
 
 plot(NULL, xlim=c(0.001,0.05), ylim=c(0,0.12),log='x',xaxt='n', ylab='probability of sharing', xlab='variant frequency [%]')
 axis(side=1, at=freq, labels=freq*100)
@@ -68,38 +68,38 @@ Similiar to Figure 2 in @METHODS
 
 ## Using Monte Carlo Simulation
 
-'RVsharing2' also allows for estimating sharing probabilities through monte carlo simulation. The primary use of this feature is for calculating sharing probabilities under non standard assumptions about the founders. See [Calculating P-Values across multiple families](#Calculating P Values across multiple families). However, this feature is available for the standard assumptions as well. To run a monte carlo simulation, specify all parameters as normal and additionally provide the 'nSimulations' parameter.
+'RVsharing' also allows for estimating sharing probabilities through monte carlo simulation. The primary use of this feature is for calculating sharing probabilities under non standard assumptions about the founders. See [Calculating P-Values across multiple families](#Calculating P Values across multiple families). However, this feature is available for the standard assumptions as well. To run a monte carlo simulation, specify all parameters as normal and additionally provide the 'nSimulations' parameter.
 
 ```{r}
-print(RVsharing2(samplePedigrees$firstCousinPair))
-print(RVsharing2(samplePedigrees$firstCousinPair, nSimulations=1e4))
+print(RVsharing(samplePedigrees$firstCousinPair))
+print(RVsharing(samplePedigrees$firstCousinPair, nSimulations=1e4))
 ```
 
 ## Sharing Probability in a subset of affected
 
 # Adjusting for relatedness among founders
 
-When founders of the pedigree are related, the computation is more tricky. 'RVsharing2' allows the user to apply a correction for this fact in two different ways.
+When founders of the pedigree are related, the computation is more tricky. 'RVsharing' allows the user to apply a correction for this fact in two different ways.
 
 ## Exact calculation with kinship coefficient
 
-In this method, a mean kinship coefficient among the founders is given. Using the methods from @METHODS, RVsharing2 then computes the sharing probability on the assumption one or two founders introduce the variant. Weighting each probability using a calculation based on the mean kinship coefficient. To use this correction, provide the parameter 'kinshipCoeff'.
+In this method, a mean kinship coefficient among the founders is given. Using the methods from @METHODS, RVsharing then computes the sharing probability on the assumption one or two founders introduce the variant. Weighting each probability using a calculation based on the mean kinship coefficient. To use this correction, provide the parameter 'kinshipCoeff'.
 
 ```{r}
-print(RVsharing2(samplePedigrees$firstCousinPair, kinshipCoeff = 0.05))
+print(RVsharing(samplePedigrees$firstCousinPair, kinshipCoeff = 0.05))
 kCoeff <- seq(0.005,0.15,0.005)
-sharingProb <- sapply(kCoeff, function(c) RVsharing2(samplePedigrees$firstCousinPair, kinshipCoeff=c))
+sharingProb <- sapply(kCoeff, function(c) RVsharing(samplePedigrees$firstCousinPair, kinshipCoeff=c))
 plot(kCoeff, sharingProb, type='l')
 ```
 
 ## Using monte carlo with custom distribution for founders
 
-This method allows for more complex relationships among the founders to be given. 'RVsharing2' allows for a complete distribution among the founders to be passed in as a parameter - 'founderDist'. This function should accept a single argument, N, and should return a vector of length N with values in {0,1,2} representing the number of copies of the variant each founder has.
+This method allows for more complex relationships among the founders to be given. 'RVsharing' allows for a complete distribution among the founders to be passed in as a parameter - 'founderDist'. This function should accept a single argument, N, and should return a vector of length N with values in {0,1,2} representing the number of copies of the variant each founder has.
 
 ```{r}
 fDist <- function(N) sample(c(rep(0,N-1), 1)) # assumption that 1 founder introduces
-print(RVsharing2(samplePedigrees$firstCousinPair, nSimulations=1e4, founderDist=fDist))
-print(RVsharing2(samplePedigrees$firstCousinPair))
+print(RVsharing(samplePedigrees$firstCousinPair, nSimulations=1e4, founderDist=fDist))
+print(RVsharing(samplePedigrees$firstCousinPair))
 ```
 
 # Calculating P Values across multiple families
@@ -108,8 +108,8 @@ For variants seen in only one family, the RVsharing probability can be interpret
 ```{r}
 variantSharedPeds <- list(samplePedigrees$firstCousinPair, samplePedigrees$secondCousinPair)
 variantNotSharedPeds <- list(samplePedigrees$firstCousinTriple)
-sharedProbs <- sapply(variantSharedPeds, RVsharing2)
-notSharedProbs <- sapply(variantNotSharedPeds, RVsharing2)
+sharedProbs <- sapply(variantSharedPeds, RVsharing)
+notSharedProbs <- sapply(variantNotSharedPeds, RVsharing)
 multipleFamilyPValue(sharedProbs, notSharedProbs)
 ```
 

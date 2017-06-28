@@ -19,10 +19,10 @@ test_that('pre-process pedigree',
     expect_equal(procPed$size, 8)
     
     ped$affected[1] <- 1
-    expect_error(RVsharing2(ped), 'some founders are affected')
+    expect_error(RVsharing(ped), 'some founders are affected')
 
     ped$affected <- rep(0, procPed$size)
-    expect_error(RVsharing2(ped), 'need at least 2 affected subjects')
+    expect_error(RVsharing(ped), 'need at least 2 affected subjects')
 })
 
 test_that('pedigree simulation',

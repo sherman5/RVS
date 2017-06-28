@@ -4,14 +4,13 @@
 \alias{multipleFamilyPValue}
 \title{Probability of sharing of rare variants in a subset of families}
 \usage{
-multipleFamilyPValue(shared, notShared)
+multipleFamilyPValue(probs, shared)
 }
 \arguments{
-\item{shared}{vector of sharing probabilities for families where
-all affected subjects share the variant}
+\item{probs}{sharing probabilities for all families}
 
-\item{notShared}{vector of sharing probabilities for families where
-not all affected subjects share the variant}
+\item{shared}{boolean vector describing if all affected subject
+in the family share the variant (TRUE if all share)}
 }
 \value{
 p-value
