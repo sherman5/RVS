@@ -4,7 +4,7 @@
 \alias{processPedigree}
 \title{pre-process a pedigree for calculations}
 \usage{
-processPedigree(ped, carriers = NULL)
+processPedigree(ped, carriers)
 }
 \arguments{
 \item{ped}{pedigree objevt (S3)}

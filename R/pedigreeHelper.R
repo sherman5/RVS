@@ -4,12 +4,13 @@
 #' @param ped pedigree objevt (S3)
 #' @param carriers subjects of interest who have the variant
 #' @return list containing relevant pedigree info
-processPedigree <- function(ped, carriers=NULL)
+processPedigree <- function(ped, carriers)
 {
     # get pedigree info
     affected <- which(ped$affected == 1)
-    carriers <- affected
-    if (!missing(carriers)) carriers <- which(ped$id %in% carriers)
+    if (missing(carriers)) carriers <- affected
+    else carriers <- which(ped$id %in% carriers)
+
     ped$id <- 1:length(ped$id)
     parents <- sapply(ped$id, function(i) c(ped$findex[i], ped$mindex[i]))
     founders <- which(parents[1,] == 0)
