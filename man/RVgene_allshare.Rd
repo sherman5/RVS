@@ -2,7 +2,7 @@
 % Please edit documentation in R/RVgeneAllshare.R
 \name{RVgene_allshare}
 \alias{RVgene_allshare}
-\title{Probability of sharing of rare variants among all affected relatives in
+\title{probability of sharing of rare variants among all affected relatives in
 a family sample within a gene}
 \usage{
 RVgene_allshare(ped.mat, ped.listfams, sites, fams, pshare.vec,

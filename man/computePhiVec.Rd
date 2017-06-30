@@ -2,14 +2,21 @@
 % Please edit documentation in R/relatedFoundersCorrection.R
 \name{computePhiVec}
 \alias{computePhiVec}
-\title{\code{computePhiVec} the vector of expected phi_a for nf founders for
- numbers of distinct alleles a from amin to 2*nf-1}
+\title{expected kinship coefficient for different number of alleles}
 \usage{
 computePhiVec(nf, amin = 2 * nf - 2)
 }
+\arguments{
+\item{nf}{number of founders}
+
+\item{amin}{minimum number of distinct alleles}
+}
+\value{
+vector of expected phi_a for nf founders for
+ numbers of distinct alleles from amin to 2*nf-1
+}
 \description{
-\code{computePhiVec} the vector of expected phi_a for nf founders for
- numbers of distinct alleles a from amin to 2*nf-1
+expected kinship coefficient for different number of alleles
 }
 \keyword{internal}
 

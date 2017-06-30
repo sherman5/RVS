@@ -13,43 +13,47 @@
 #'  of the observed pattern of the not families not sharing a rare variant
 #'  and the remaining families sharing a rare variant.
 #' @param probs sharing probabilities for all families
-#' @param shared boolean vector describing if all affected subject
+#' @param shared boolean vector describing if all affected subjects
 #'  in the family share the variant (TRUE if all share)
-#' @return p-value
+#' @return P-value of the exact rare variant sharing test requiring
+#'  sharing by all affected subjects
+#' @examples
+#'  data(samplePedigrees)
+#'  notSharedFams <- c(15159, 15053, 15157)
+#'  famids <- sapply(samplePedigrees, function(p) p$famid[1])
+#'  shared <- famids %in% notSharedFams
+#'  probs <- sapply(samplePedigrees, RVsharing)
+#'  multipleFamilyPValue(probs, shared)
 multipleFamilyPValue <- function(probs, shared)
 {
     # check: "not" contains at least one family 
-    if (sum(!shared)==0)
+    if (sum(!shared) == 0)
         stop("number of families not sharing the RV is zero.")
 
-    vec <- 1:(length(shared))
-    not <- which(shared==FALSE)
-    pshare.data <- data.frame(pshare=probs, ped.tocompute.vec=vec)
-
     # If all families share the variant, then return 1
-    if (length(not)==length(vec)) return (1)
+    if (all(shared)) return (1)
     
-    p.vec = pshare.data$pshare[pshare.data$ped.tocompute.vec%in%vec]
-    names(p.vec) = pshare.data$ped.tocompute.vec[pshare.data$ped.tocompute.vec%in%vec]
-    nf = length(p.vec)
-    nnot = sum(names(p.vec)%in%not)
+    # total number, and number not sharing
+    nf <- length(probs)
+    nnot <- sum(!shared)
 
     # Probability of observed data
-    p.obs = prod(p.vec[!(names(p.vec)%in%not)],1-p.vec[as.character(not)])
+    p.obs <- prod(probs[shared], 1 - probs[!shared])
 
     # Tail probability includes case where all families share the variant
-    p = prod(p.vec)
+    p = prod(probs)
+
     for (h in 1:nnot)
     {
-        comb.mat = combn(nf,h)
-        # print(comb.mat)
-        # plus the cases where the probability with two families not sharing the variant is less extreme than the observed
+        comb.mat <- combn(nf, h)
+
+        # plus the cases where the probability with two families not sharing
+        # the variant is less extreme than the observed
         # Compute probability for all pairs of families not sharing
         for (i in 1:ncol(comb.mat))
         {
-            ptmp = prod(p.vec[-comb.mat[,i]],1-p.vec[comb.mat[,i]])
-            #    print(ptmp)
-            if (ptmp <= p.obs) p = p + ptmp
+            ptmp <- prod(probs[-comb.mat[,i]], 1 - probs[comb.mat[,i]])
+            if (ptmp <= p.obs) p <- p + ptmp
         }
     }
     return(p)
@@ -67,6 +71,8 @@ multipleFamilyPValue <- function(probs, shared)
 #'  ped.tocompute.vec: vector of names of the families whose sharing 
 #'      probability is contained in pshare. The names in the arguments
 #'      vec and not must be found in ped.tocompute.vec
+#' @return P-value of the exact rare variant sharing test requiring
+#'  sharing by all affected subjects.
 get.psubset <- function(vec, not, pshare.data)
 {
     warning(paste('this function is depreciated with version >= 2.0',

@@ -1,3 +1,11 @@
+#' numerator of sharing probability
+#' @keywords internal
+#'
+#' @description calculates the numerator of the sharing probability
+#'  outline in section 2.1 of Bureau et al.
+#' @param gRain bayesian network
+#' @param procPed pedigree object that has been process with processPedigree
+#' @return numerator value
 numerProb <- function(net, procPed)
 {
     rvInCarriers <- sapply(simplify=FALSE, FUN=function(dummy) 1:2,
@@ -7,6 +15,14 @@ numerProb <- function(net, procPed)
     return(marginalProb(net, c(rvInCarriers, noRvInNonCarriers)))
 }
 
+#' denominator of sharing probability
+#' @keywords internal
+#'
+#' @description calculates the denominator of the sharing probability
+#'  outline in section 2.1 of Bureau et al.
+#' @param gRain bayesian network
+#' @param procPed pedigree object that has been process with processPedigree
+#' @return denominator value
 denomProb <- function(net, procPed)
 {
     noRvInAny <- sapply(simplify=FALSE, FUN=function(dummy) 0,
@@ -14,12 +30,14 @@ denomProb <- function(net, procPed)
     return(1 - marginalProb(net, noRvInAny))
 }
 
-#' \code{oneFounderSharingProb} calculate sharing probability assuming one
-#'  founder introduces the variant
+#' calculate sharing probability in basic case
+#' @keywords internal
 #'
+#' @description Assume that only one founder can introduce the variant to 
+#'  the pedigree. Condition on each founder and sum over all resulting
+#'  probabilities. 
 #' @param procPed pedigree that has been through processPedigree()
 #' @return sharing probability
-#' @keywords internal
 oneFounderSharingProb <- function(procPed)
 {
     # set all founders to 0 (no variant)
@@ -42,14 +60,15 @@ oneFounderSharingProb <- function(procPed)
     return(numer/denom)
 }
 
-#' \code{twoFounderSharingProb} calculate the sharing probability assuming
-#'  that at most two founders introduce the variant, accounting for 
-#'  relatedness among founders
+#' calculate the sharing probability when two founders can introduce variant
+#' @keywords internal
 #'
+#' @description In the case of relatedness among founders, assume that up
+#'  to two founders could introduce the variant and condition on all possible
+#'  pairs.
 #' @param procPed pedigree that has been through processPedigree()
 #' @param kinshipCoeff mean kinship coefficient among the founders
 #' @return sharing probability
-#' @keywords internal
 twoFounderSharingProb <- function(procPed, kinshipCoeff)
 {
     # set all founders to 0 (no variant)
@@ -83,13 +102,14 @@ twoFounderSharingProb <- function(procPed, kinshipCoeff)
     return(numer/denom)
 }
 
-#' \code{exactSharingProb} calculates the exact sharing probability given
-#'  allele frequency among the founders
+#' exact sharing probability calculation
+#' @keywords internal
 #'
+#' @description Calculate the exact sharing probability given the minor allele
+#'  frequency among the founders (population).
 #' @param procPed pedigree that has been through processPedigree()
 #' @param alleleFreq allele frequency among the founders
 #' @return sharing probability
-#' @keywords internal
 exactSharingProb <- function(procPed, alleleFreq)
 {
     # create network with founders having a prior based on the allele freq

@@ -2,7 +2,7 @@
 % Please edit documentation in R/relatedFoundersCorrection.R
 \name{computePFU}
 \alias{computePFU}
-\title{\code{computePFU} computation of P[FjU] using equation 21 of Bureay et al.}
+\title{computation of P[FjU] using equation 21 of Bureau et al.}
 \usage{
 computePFU(nf, theta, ord = 2)
 }
@@ -19,7 +19,7 @@ Must be <= 5}
 P[FjU] (scalar)
 }
 \description{
-\code{computePFU} computation of P[FjU] using equation 21 of Bureay et al.
+computation of P[FjU] using equation 21 of Bureau et al.
 }
 \keyword{internal}
 

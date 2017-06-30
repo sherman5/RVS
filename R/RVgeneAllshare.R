@@ -1,4 +1,4 @@
-#' Probability of sharing of rare variants among all affected relatives in
+#' probability of sharing of rare variants among all affected relatives in
 #' a family sample within a gene
 #' @export
 #'
@@ -65,7 +65,8 @@
 #'  by all affected subjects.
 #'  potentialp Minimum achievable p-value if all affected subjects were 
 #'  carriers of a rare variant.
-RVgene_allshare = function(ped.mat,ped.listfams,sites,fams,pshare.vec,type="alleles",minor.allele.vec,precomputed.prob=list(0),maxdim = 1e9)
+RVgene_allshare <- function(ped.mat, ped.listfams, sites, fams, pshare.vec,
+type="alleles", minor.allele.vec, precomputed.prob=list(0), maxdim = 1e9)
 {
     if (type=="alleles")
     {    
@@ -81,32 +82,32 @@ RVgene_allshare = function(ped.mat,ped.listfams,sites,fams,pshare.vec,type="alle
             minor.allele.alongfams = NULL
             for (i in 1:length(sites))
             {
-            fams.site = unique(ped.mat[ped.mat[,6]==2 & (ped.mat[,5+2*sites[i]]==minor.allele.vec[i] | ped.mat[,6+2*sites[i]]==minor.allele.vec[i]),1])
-            if (is.factor(fams.site)) fams.site=as.character(fams.site)
-            fams.vec = c(fams.vec,fams.site)
-            sites.alongfams = c(sites.alongfams,rep(sites[i],length(fams.site)))
-            minor.allele.alongfams = c(minor.allele.alongfams,rep(minor.allele.vec[i],length(fams.site)))
+                fams.site = unique(ped.mat[ped.mat[,6]==2 & (ped.mat[,5+2*sites[i]]==minor.allele.vec[i] | ped.mat[,6+2*sites[i]]==minor.allele.vec[i]),1])
+                if (is.factor(fams.site)) fams.site=as.character(fams.site)
+                fams.vec = c(fams.vec,fams.site)
+                sites.alongfams = c(sites.alongfams,rep(sites[i],length(fams.site)))
+                minor.allele.alongfams = c(minor.allele.alongfams,rep(minor.allele.vec[i],length(fams.site)))
             }
         }
         else
         {
             for (i in 1:length(sites))
             {
-            # Remove subjects with missing genotype
-            ped.obs = ped.mat[!is.na(ped.mat[,6+sites[i]]),]
-            fams.site = unique(ped.obs[ped.obs[,6]==2 & ped.obs[,6+sites[i]]>0,1])
-            if (is.factor(fams.site)) fams.site=as.character(fams.site)
-            fams.vec = c(fams.vec,fams.site)
-            sites.alongfams = c(sites.alongfams,rep(sites[i],length(fams.site)))            
+                # Remove subjects with missing genotype
+                ped.obs = ped.mat[!is.na(ped.mat[,6+sites[i]]),]
+                fams.site = unique(ped.obs[ped.obs[,6]==2 & ped.obs[,6+sites[i]]>0,1])
+                if (is.factor(fams.site)) fams.site=as.character(fams.site)
+                fams.vec = c(fams.vec,fams.site)
+                sites.alongfams = c(sites.alongfams,rep(sites[i],length(fams.site)))            
             }
         }
     }
     else 
     {
-    if (length(sites)!=length(fams)) stop ("Lengths of fams and sites vectors differs.")
-    fams.vec = fams
-    sites.alongfams = sites
-    if (type=="alleles") minor.allele.alongfams = minor.allele.vec
+        if (length(sites)!=length(fams)) stop ("Lengths of fams and sites vectors differs.")
+        fams.vec = fams
+        sites.alongfams = sites
+        if (type=="alleles") minor.allele.alongfams = minor.allele.vec
     }
             
     fams.vec = as.character(fams.vec)
@@ -119,13 +120,12 @@ RVgene_allshare = function(ped.mat,ped.listfams,sites,fams,pshare.vec,type="alle
     {
         # get carriers list
         if (type=="alleles")
-          carriers = extract_carriers(ped.mat,sites.alongfams[f],fams.vec[f],type="alleles",minor.allele.alongfams[f])
+            carriers = extract_carriers(ped.mat,sites.alongfams[f],fams.vec[f],type="alleles",minor.allele.alongfams[f])
         else carriers = extract_carriers(ped.mat,sites.alongfams[f],fams.vec[f],type=type)
                 
         # Computation of RV sharing probability
         if (length(carriers)>0) 
         {
-            #cat (f,"\n")
             if (fams.vec[f] %in% names(precomputed.prob)) 
                 tmp = precomputed.prob[[fams.vec[f]]][length(carriers)]
             else tmp = RVsharing(ped.listfams[[fams.vec[f]]],carriers=carriers)@pshare
@@ -136,12 +136,10 @@ RVgene_allshare = function(ped.mat,ped.listfams,sites,fams,pshare.vec,type="alle
                 famNcarriers[fams.vec[f]] = length(carriers)
             }
         }
-        #print(famRVprob)
     }
     # Identify number of informative families
     fam.info = names(famRVprob)[!is.na(famRVprob)]
-#    print(fam.info)
-        nfam.info = length(fam.info)
+    nfam.info = length(fam.info)
         
     if (nfam.info>1)
     {
@@ -155,12 +153,12 @@ RVgene_allshare = function(ped.mat,ped.listfams,sites,fams,pshare.vec,type="alle
         not = fam.info[famNcarriers[fam.info]<maxN]
         if (length(not)>0)
         {
-        if (2^nfam.info <= maxdim)
+            if (2^nfam.info <= maxdim)
             {
-              pshare = list(ped.tocompute.vec=fam.info,pshare=pshare.vec[fam.info])
-              pall = get.psubset(fam.info,not,pshare)
+                pshare = list(ped.tocompute.vec=fam.info,pshare=pshare.vec[fam.info])
+                pall = get.psubset(fam.info,not,pshare)
             }
-        else pall = NA
+            else pall = NA
         }
         else pall = potentialp
     }

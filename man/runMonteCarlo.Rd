@@ -7,18 +7,20 @@
 runMonteCarlo(procPed, founderDist, nSim)
 }
 \arguments{
-\item{procPed}{pedigree that has been through processPedigree()}
+\item{procPed}{pedigree that has been through \code{processPedigree}}
 
-\item{founderFunc}{function describing how to sample alleles
-for the founders}
+\item{founderDist}{custom distribution among founders - only used
+when simulating probability with nSim}
 
-\item{nSimulations}{number of simulations used in calculation}
+\item{nSim}{number of simulations used in monte carlo calculation}
 }
 \value{
-sharing probability
+sharing probability between all carriers in pedigree
 }
 \description{
-#TODO
+Given a number of simulations and a distribution
+ of variants in the founders, this function simulates possbile
+ outcomes of the pedigree and returns a sharing probability.
 }
 \keyword{internal}
 

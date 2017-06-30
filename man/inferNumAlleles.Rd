@@ -2,14 +2,21 @@
 % Please edit documentation in R/relatedFoundersCorrection.R
 \name{inferNumAlleles}
 \alias{inferNumAlleles}
-\title{\code{inferNumAlleles} Returns the most likely number of distinct alleles
- among nf founders based on mean estimated kinship phi}
+\title{most likely number of distinct alleles among founders}
 \usage{
 inferNumAlleles(phi, nf)
 }
+\arguments{
+\item{phi}{mean estimated kinship coefficient}
+
+\item{nf}{number of founders}
+}
+\value{
+number of distinct alleles
+}
 \description{
-\code{inferNumAlleles} Returns the most likely number of distinct alleles
- among nf founders based on mean estimated kinship phi
+Calculates the most likely number of distinct alleles
+ among nf founders based on the mean estimated kinship coefficient
 }
 \keyword{internal}
 

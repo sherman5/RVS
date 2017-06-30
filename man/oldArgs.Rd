@@ -7,13 +7,15 @@
 oldArgs(ped, data, dad.id, mom.id)
 }
 \arguments{
-\item{ped}{pedigree object}
+\item{ped}{a pedigree object}
 
-\item{data}{old argument}
+\item{data}{numeric/character vector of subject ids}
 
-\item{dad.id}{old argument}
+\item{dad.id}{numeric/character vector of father ids, founders' parents
+should be NA or 0}
 
-\item{mom.id}{old argument}
+\item{mom.id}{numeric/character vector of mother ids, founders' parents
+should be NA or 0}
 }
 \value{
 if old arguments are provided, a pedigree object is returned,

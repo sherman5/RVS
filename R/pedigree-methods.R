@@ -21,7 +21,10 @@ setOldClass('pedigree')
 #'  population to obtain a global estimate of the mean kinship among founders.
 #' @param ped pedigree object (S3)
 #' @return a symmetric matrix of ratios for all pair of final descendants
-#'  in the pedigree structure contained in the pedigree objectsetGeneric('ComputeKinshipPropCoef', function(ped)
+#'  in the pedigree structure contained in the pedigree
+#' @examples
+#'  data(samplePedigrees)
+#'  ComputeKinshipPropCoef(samplePedigrees$firstCousinTriple)
 setGeneric('ComputeKinshipPropCoef', function(ped)
     {standardGeneric('ComputeKinshipPropCoef')})
 
@@ -35,6 +38,9 @@ setGeneric('ComputeKinshipPropCoef', function(ped)
 #' @param ped pedigree object (S3)
 #' @param carriers subjects in which the rare variant is seen
 #' @return list containing relevant pedigree info
+#' @examples 
+#'  data(samplePedigrees)
+#'  processPedigree(samplePedigrees$firstCousinPair)
 setGeneric('processPedigree', function(ped, carriers)
     {standardGeneric('processPedigree')})
 
@@ -45,20 +51,24 @@ setGeneric('processPedigree', function(ped, carriers)
 setMethod('processPedigree', signature(ped='pedigree'),
 function(ped, carriers)
 {
-    # get affected/carriers
-    affected <- which(ped$affected == 1)
-    if (missing(carriers)) carriers <- affected
-    else carriers <- which(ped$id %in% carriers)
-
+    # relabel subjects and get basic ped info
     ped$id <- 1:length(ped$id)
     parents <- sapply(ped$id, function(i) c(ped$findex[i], ped$mindex[i]))
     founders <- which(parents[1,] == 0)
     finalDescendants <- which(!(ped$id %in% c(parents[1,], parents[2,])))
+
+    # get affected, default to finalDescendants if not provided
+    if (length(ped$affected)) affected <- which(ped$affected == 1)
+    else                      affected <- finalDescendants
+
+    # get carriers, default to affected if not provided
+    if (missing(carriers)) carriers <- affected
+    else                   carriers <- which(ped$id %in% carriers)
  
     # check pedigree is valid
     if (sum(affected %in% founders) > 0)
         stop('some founders are affected')
-    if (sum(ped$affected==1) < 2)
+    if (length(affected) < 2)
         stop('need at least 2 affected subjects')
 
     # save info in list
@@ -74,12 +84,14 @@ function(ped)
 {
     procPed <- processPedigree(ped)
 
+    # inner term in summation, equation (5) of supplement to Bureau et al.
     term <- function(i1, i2, f1, f2)
     {
         d <- ancestorDistance(procPed,f1,i1) + ancestorDistance(procPed,f2,i2)
         ifelse(areMating(procPed, f1, f2), 0.5^(d-1), 0.5^d)
     }
 
+    # sum inner term over all pairs of common ancestors among the founders
     sumTerm <- function(i1, i2)
     {
         f1 <- which(sapply(procPed$id, isDescendant, procPed=procPed, d=i1))
@@ -90,6 +102,7 @@ function(ped)
         sum(apply(pairs, 2, function(p) term(i1, i2, p[1], p[2])))
     }
 
+    # create matrix of coefficients
     N <- length(procPed$finalDescendants)
     mat <- matrix(0, N, N)
     genFunc <- function(i,j) ifelse(i==j, NA,
@@ -99,7 +112,13 @@ function(ped)
 
 #################### HELPER FUNCTIONS ####################
 
-# returns true if d descended from f
+#' determine if one subject is a descendant of another
+#' @keywords internal
+#'
+#' @param procPed pedigree that has been through \code{processPedigree}
+#' @param a ancestor subject
+#' @param d descendant subject
+#' @return true if d is descended from a
 isDescendant <- function(procPed, a, d)
 {
     if (d == 0) FALSE
@@ -107,7 +126,13 @@ isDescendant <- function(procPed, a, d)
     else any(sapply(procPed$parents[,d], isDescendant, procPed=procPed, a=a))
 }
 
-# calculates distance between ancester and descendant
+#' distance between a descendant and an ancestor
+#' @keywords internal
+#'
+#' @param procPed pedigree that has been through \code{processPedigree}
+#' @param a ancestor subject
+#' @param d descendant subject
+#' @return minimum distance (number generations) between a and d
 ancestorDistance <- function(procPed, a, d)
 {
     p1 <- procPed$parents[1,d]
@@ -125,7 +150,13 @@ ancestorDistance <- function(procPed, a, d)
         stop('founderDistance called on non-descendant')
 }
 
-# returns true if f1 and f2 have a child together
+#' determine if two subjects have a child together
+#' @keywords interal
+#'
+#' @param procPed pedigree that has been through \code{processPedigree}
+#' @param f1 subject 1
+#' @param f2 subject 2
+#' @return true if both subjects share a child
 areMating <- function(procPed, f1, f2)
 {
     sum(apply(procPed$parents, 2, function(p) f1 %in% p & f2 %in% p)) > 0
@@ -136,6 +167,7 @@ areMating <- function(procPed, f1, f2)
 #' @description This function is depreciated with version >= 2.0
 #'  and should not be used.
 #' @param ... arguments to the old function
+#' @return none
 ped2trio <- function(...)
 {
     stop(paste('function depreciated with version >= 2.0, no',

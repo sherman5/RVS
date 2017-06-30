@@ -2,24 +2,26 @@
 % Please edit documentation in R/RVsharing.R
 \docType{methods}
 \name{RVsharing}
-\alias{#TODO}
 \alias{RVsharing}
 \alias{RVsharing,list-method}
 \alias{RVsharing,pedigree-method}
-\title{compute rare variant sharing probabilities}
+\title{probability of sharing a rare variant among relatives}
 \usage{
-RVsharing(ped, carriers, alleleFreq, kinshipCoeff, nSim, founderDist, ...)
+RVsharing(ped, carriers, alleleFreq, kinshipCoeff, nSim, founderDist,
+  useAffected = FALSE, ...)
 
 \S4method{RVsharing}{pedigree}(ped, carriers, alleleFreq, kinshipCoeff, nSim,
-  founderDist, ...)
+  founderDist, useAffected = FALSE, ...)
 
 \S4method{RVsharing}{list}(ped, carriers, alleleFreq, kinshipCoeff, nSim,
-  founderDist, ...)
+  founderDist, useAffected = FALSE, ...)
 }
 \arguments{
 \item{ped}{S3 pedigree object or a list of pedigree objects}
 
-\item{carriers}{#TODO}
+\item{carriers}{subjects in pedigree that have the variant, if
+ped is a list, then this will also be a list of vectors specifying
+the carriers in each pedigree}
 
 \item{alleleFreq}{allele frequency among the founders}
 
@@ -27,16 +29,20 @@ RVsharing(ped, carriers, alleleFreq, kinshipCoeff, nSim, founderDist, ...)
 
 \item{nSim}{number of simulations used in monte carlo calculation}
 
-\item{founderDist}{#TODO}
+\item{founderDist}{custom distribution among founders - only used
+when simulating probability with nSim}
 
-\item{...}{#TODO}
+\item{useAffected}{allows the user to condition on seeing the variant
+among the affected subjects instead of the final descendants}
+
+\item{...}{allows for arguments in the style of v1.7}
 }
 \value{
 sharing probability between all carriers in pedigree
 }
 \description{
-calculates rare variant sharing probability between
- carriers in a pedigree given that the variant in seen in one of the
+computing probability that a rare variant is shared by a
+ set of subjects in a pedigree using the gRain package
 }
 \details{
 the function RVsharing computes the probability that all subjects
@@ -54,11 +60,9 @@ the function RVsharing computes the probability that all subjects
  rare variant given it was seen in any of the set members (ignoring the
  carrier status of final descendants not in the set), the pedigree must be
  trimmed of the other final descendants before calling RVsharing.
- Important note: the affected element of the pedigree object is ignored by
- RVsharing.
 }
 \examples{
  data("samplePedigrees")
- RVsharing(samplePedigrees[[1]])
+ RVsharing(samplePedigrees$firstCousinPair)
 }
 

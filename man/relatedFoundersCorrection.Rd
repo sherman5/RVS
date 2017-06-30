@@ -2,8 +2,8 @@
 % Please edit documentation in R/relatedFoundersCorrection.R
 \name{relatedFoundersCorrection}
 \alias{relatedFoundersCorrection}
-\title{\code{relatedFoundersCorrection} make the neccesary correction for 
- when founders have a non-zero kinship coefficient}
+\title{make the neccesary correction for when founders have a non-zero
+ kinship coefficient}
 \usage{
 relatedFoundersCorrection(nf, kinshipCoeff)
 }
@@ -16,8 +16,8 @@ relatedFoundersCorrection(nf, kinshipCoeff)
 weight used in probability calculation
 }
 \description{
-\code{relatedFoundersCorrection} make the neccesary correction for 
- when founders have a non-zero kinship coefficient
+make the neccesary correction for when founders have a non-zero
+ kinship coefficient
 }
 \keyword{internal}
 

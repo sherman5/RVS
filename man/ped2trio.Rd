@@ -9,6 +9,9 @@ ped2trio(...)
 \arguments{
 \item{...}{arguments to the old function}
 }
+\value{
+none
+}
 \description{
 This function is depreciated with version >= 2.0
  and should not be used.

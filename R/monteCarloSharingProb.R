@@ -9,7 +9,7 @@ NULL
 #'  This method allows for more flexibility in the scenarios considered.
 #' @param procPed pedigree that has been through \code{processPedigree}
 #' @inheritParams RVsharing
-#' @inherit RVsharing return
+#' @return sharing probability between all carriers in pedigree
 monteCarloSharingProb <- function(procPed, alleleFreq, kinshipCoeff,
 nSim, founderDist)
 {
@@ -39,7 +39,7 @@ nSim, founderDist)
 #'  of variants in the founders, this function simulates possbile
 #'  outcomes of the pedigree and returns a sharing probability.
 #' @inheritParams monteCarloSharingProb
-#' @inherit monteCarloSharingProb return
+#' @return sharing probability between all carriers in pedigree
 runMonteCarlo <- function(procPed, founderDist, nSim)
 {
     oneSim <- function(dummy)
@@ -102,6 +102,7 @@ simulatePedigree <- function(procPed, states)
 #' @description This function is depreciated with version >= 2.0
 #'  and should not be used, instead use RVsharing with nSim option
 #' @param ... arguments to the old function
+#' @return none
 GeneDrop <- function(...)
 {
     stop(paste('function depreciated with version >= 2.0, use the',

@@ -2,8 +2,7 @@
 % Please edit documentation in R/sharingProbabilityCalculation.R
 \name{exactSharingProb}
 \alias{exactSharingProb}
-\title{\code{exactSharingProb} calculates the exact sharing probability given
- allele frequency among the founders}
+\title{exact sharing probability calculation}
 \usage{
 exactSharingProb(procPed, alleleFreq)
 }
@@ -16,8 +15,8 @@ exactSharingProb(procPed, alleleFreq)
 sharing probability
 }
 \description{
-\code{exactSharingProb} calculates the exact sharing probability given
- allele frequency among the founders
+Calculate the exact sharing probability given the minor allele
+ frequency among the founders (population).
 }
 \keyword{internal}
 

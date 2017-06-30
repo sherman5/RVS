@@ -2,8 +2,7 @@
 % Please edit documentation in R/sharingProbabilityCalculation.R
 \name{oneFounderSharingProb}
 \alias{oneFounderSharingProb}
-\title{\code{oneFounderSharingProb} calculate sharing probability assuming one
- founder introduces the variant}
+\title{calculate sharing probability in basic case}
 \usage{
 oneFounderSharingProb(procPed)
 }
@@ -14,8 +13,9 @@ oneFounderSharingProb(procPed)
 sharing probability
 }
 \description{
-\code{oneFounderSharingProb} calculate sharing probability assuming one
- founder introduces the variant
+Assume that only one founder can introduce the variant to 
+ the pedigree. Condition on each founder and sum over all resulting
+ probabilities.
 }
 \keyword{internal}
 

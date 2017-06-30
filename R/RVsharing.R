@@ -1,14 +1,13 @@
 #' @include pedigree-methods.R
 NULL
 
-#' compute rare variant sharing probabilities
+#' probability of sharing a rare variant among relatives
 #' @export
 #' @docType methods
 #' @rdname RVsharing-methods
 #'
-#' @description calculates rare variant sharing probability between
-#'  carriers in a pedigree given that the variant in seen in one of the
-#   affected subjects
+#' @description computing probability that a rare variant is shared by a
+#'  set of subjects in a pedigree using the gRain package
 #' @details the function RVsharing computes the probability that all subjects
 #'  identified as carriers of a rare variant in the vector carriers
 #'  (or all final descendants in the pedigree if carriers == NULL) share that
@@ -24,33 +23,38 @@ NULL
 #'  rare variant given it was seen in any of the set members (ignoring the
 #'  carrier status of final descendants not in the set), the pedigree must be
 #'  trimmed of the other final descendants before calling RVsharing.
-#'  Important note: the affected element of the pedigree object is ignored by
-#'  RVsharing.
 #'
 #' @param ped S3 pedigree object or a list of pedigree objects
-#' @param carriers #TODO
+#' @param carriers subjects in pedigree that have the variant, if
+#'  ped is a list, then this will also be a list of vectors specifying
+#'  the carriers in each pedigree
 #' @param alleleFreq allele frequency among the founders
 #' @param kinshipCoeff mean kinship coefficient among the founders
 #' @param nSim number of simulations used in monte carlo calculation
-#' @param founderDist #TODO
-#' @param ... #TODO
+#' @param founderDist custom distribution among founders - only used
+#'  when simulating probability with nSim
+#' @param useAffected allows the user to condition on seeing the variant
+#'  among the affected subjects instead of the final descendants
+#' @param ... allows for arguments in the style of v1.7
 #' @return sharing probability between all carriers in pedigree
 #' @examples
 #'  data("samplePedigrees")
-#'  RVsharing(samplePedigrees[[1]])
+#'  RVsharing(samplePedigrees$firstCousinPair)
 setGeneric('RVsharing', function(ped, carriers, alleleFreq, kinshipCoeff,
-nSim, founderDist, ...) {standardGeneric('RVsharing')})
+nSim, founderDist, useAffected = FALSE, ...) {standardGeneric('RVsharing')})
 
 #' @rdname RVsharing-methods
-#' @aliases #TODO
+#' @aliases RVsharing
 setMethod('RVsharing', signature(ped='pedigree'),
-function(ped, carriers, alleleFreq, kinshipCoeff, nSim, founderDist, ...)
+function(ped, carriers, alleleFreq, kinshipCoeff, nSim,
+founderDist, useAffected, ...)
 {
     # needed for backwards compatibility with v1.7
     ped <- oldArgs(ped, list(...)$data, list(...)$dad.id, list(...)$mom.id)
 
     # pre-processing step
     checkArgs(alleleFreq, kinshipCoeff, nSim, founderDist)
+    if (!useAffected) ped$affected <- numeric(0)
     procPed <- processPedigree(ped, carriers)
 
     # calculate sharing prob with appropiate method
@@ -74,7 +78,7 @@ function(ped, carriers, alleleFreq, kinshipCoeff, nSim, founderDist, ...)
 })
 
 #' @rdname RVsharing-methods
-#' @aliases #TODO
+#' @aliases RVsharing
 setMethod('RVsharing', signature(ped='list'),
 function(ped, carriers, alleleFreq, kinshipCoeff, nSim, founderDist, ...)
 {
@@ -93,11 +97,7 @@ function(ped, carriers, alleleFreq, kinshipCoeff, nSim, founderDist, ...)
 #'
 #' @description verifies that arguments are valid, throws an error
 #'  if they are not
-#' @param alleleFreq see RVsharing
-#' @param kinshipCoeff see RVsharing
-#' @param nSim see RVsharing
-#' @param founderDist see RVsharing
-#' @param ... see RVsharing
+#' @inheritParams RVsharing
 #' @return throws error if arguments invalid
 checkArgs <- function(alleleFreq, kinshipCoeff, nSim, founderDist)
 {
@@ -114,10 +114,12 @@ checkArgs <- function(alleleFreq, kinshipCoeff, nSim, founderDist)
 #'  the user called RVsharing using a function signature from v1.7, this
 #'  will convert the arguments into a pedigree suitable for the
 #'  signature in version > 2.0
-#' @param ped pedigree object
-#' @param data old argument
-#' @param dad.id old argument
-#' @param mom.id old argument
+#' @param ped a pedigree object
+#' @param data numeric/character vector of subject ids
+#' @param dad.id numeric/character vector of father ids, founders' parents
+#'  should be NA or 0
+#' @param mom.id numeric/character vector of mother ids, founders' parents
+#'  should be NA or 0
 #' @return if old arguments are provided, a pedigree object is returned,
 #'  otherwise ped is returned
 oldArgs <- function(ped, data, dad.id, mom.id)
@@ -126,6 +128,11 @@ oldArgs <- function(ped, data, dad.id, mom.id)
     {
         if (!is.element('kinship2', installed.packages()[,1]))
             stop('kinship2 package required when using dad.id/mom.id')
+        data <- as.numeric(data)
+        dad.id <- as.numeric(dad.id)
+        dad.id[dad.id == NA] <- 0
+        mom.id <- as.numeric(mom.id)
+        mom.id[mom.id == NA] <- 0
         return(kinship2::pedigree(id=data, dadid=dad.id, momid=mom.id))
     }
     else if (is.null(data) & is.null(dad.id) & is.null(mom.id))

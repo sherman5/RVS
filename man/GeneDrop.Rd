@@ -18,6 +18,9 @@ GeneDropSimExcessSharing.fn(...)
 \arguments{
 \item{...}{arguments to the old function}
 }
+\value{
+none
+}
 \description{
 This function is depreciated with version >= 2.0
  and should not be used, instead use RVsharing with nSim option

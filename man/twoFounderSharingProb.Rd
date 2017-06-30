@@ -2,9 +2,7 @@
 % Please edit documentation in R/sharingProbabilityCalculation.R
 \name{twoFounderSharingProb}
 \alias{twoFounderSharingProb}
-\title{\code{twoFounderSharingProb} calculate the sharing probability assuming
- that at most two founders introduce the variant, accounting for 
- relatedness among founders}
+\title{calculate the sharing probability when two founders can introduce variant}
 \usage{
 twoFounderSharingProb(procPed, kinshipCoeff)
 }
@@ -17,9 +15,9 @@ twoFounderSharingProb(procPed, kinshipCoeff)
 sharing probability
 }
 \description{
-\code{twoFounderSharingProb} calculate the sharing probability assuming
- that at most two founders introduce the variant, accounting for 
- relatedness among founders
+In the case of relatedness among founders, assume that up
+ to two founders could introduce the variant and condition on all possible
+ pairs.
 }
 \keyword{internal}
 

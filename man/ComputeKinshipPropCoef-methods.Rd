@@ -17,7 +17,7 @@ ComputeKinshipPropCoef(ped)
 }
 \value{
 a symmetric matrix of ratios for all pair of final descendants
- in the pedigree structure contained in the pedigree objectsetGeneric('ComputeKinshipPropCoef', function(ped)
+ in the pedigree structure contained in the pedigree
 }
 \description{
 Computes, for each pair of final descendants in the
@@ -32,5 +32,9 @@ The ratio for each pair of final descendants is computed
  gives a pair-specific estimate of the mean kinship among founders, which
  can then be averaged over all pairs of final descendants from the same
  population to obtain a global estimate of the mean kinship among founders.
+}
+\examples{
+ data(samplePedigrees)
+ ComputeKinshipPropCoef(samplePedigrees$firstCousinTriple)
 }
 

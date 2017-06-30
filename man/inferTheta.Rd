@@ -2,9 +2,8 @@
 % Please edit documentation in R/relatedFoundersCorrection.R
 \name{inferTheta}
 \alias{inferTheta}
-\title{\code{inferTheta} solve the parameter theta for polynomial approximation
- of the distribution of the number of distinct alleles. This is a general
-function for polynomials of order 2 to 5.}
+\title{solve the parameter theta for polynomial approximation of the
+ distribution of the number of distinct alleles.}
 \usage{
 inferTheta(phi, phiVec)
 }
@@ -18,9 +17,8 @@ ord must be between 2 and 5}
 real roots of the polynomial approximation
 }
 \description{
-\code{inferTheta} solve the parameter theta for polynomial approximation
- of the distribution of the number of distinct alleles. This is a general
-function for polynomials of order 2 to 5.
+solve the parameter theta for polynomial approximation of the
+ distribution of the number of distinct alleles.
 }
 \keyword{internal}
 

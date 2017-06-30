@@ -22,4 +22,8 @@ list containing relevant pedigree info
 Extract key information from a pedigree object, which makes
  subsequent computations much easier.
 }
+\examples{
+ data(samplePedigrees)
+ processPedigree(samplePedigrees$firstCousinPair)
+}
 

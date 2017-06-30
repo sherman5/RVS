@@ -15,10 +15,11 @@ monteCarloSharingProb(procPed, alleleFreq, kinshipCoeff, nSim, founderDist)
 
 \item{nSim}{number of simulations used in monte carlo calculation}
 
-\item{founderDist}{#TODO}
+\item{founderDist}{custom distribution among founders - only used
+when simulating probability with nSim}
 }
 \value{
-sharing probability
+sharing probability between all carriers in pedigree
 }
 \description{
 Calculates the same exact probability as RVsharing,

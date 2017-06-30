@@ -2,18 +2,19 @@
 % Please edit documentation in R/multipleFamilyCalculations.R
 \name{multipleFamilyPValue}
 \alias{multipleFamilyPValue}
-\title{Probability of sharing of rare variants in a subset of families}
+\title{probability of sharing of rare variants in a subset of families}
 \usage{
 multipleFamilyPValue(probs, shared)
 }
 \arguments{
 \item{probs}{sharing probabilities for all families}
 
-\item{shared}{boolean vector describing if all affected subject
+\item{shared}{boolean vector describing if all affected subjects
 in the family share the variant (TRUE if all share)}
 }
 \value{
-p-value
+P-value of the exact rare variant sharing test requiring
+ sharing by all affected subjects
 }
 \description{
 Computing probability of sharing of rare variants in
@@ -29,5 +30,13 @@ All the subsets of families of size equal or inferior to the
  the pattern probabilities inferior or equal to the probability
  of the observed pattern of the not families not sharing a rare variant
  and the remaining families sharing a rare variant.
+}
+\examples{
+ data(samplePedigrees)
+ notSharedFams <- c(15159, 15053, 15157)
+ famids <- sapply(samplePedigrees, function(p) p$famid[1])
+ shared <- famids \%in\% notSharedFams
+ probs <- sapply(samplePedigrees, RVsharing)
+ multipleFamilyPValue(probs, shared)
 }
 

@@ -7,15 +7,14 @@
 checkArgs(alleleFreq, kinshipCoeff, nSim, founderDist)
 }
 \arguments{
-\item{alleleFreq}{see RVsharing}
+\item{alleleFreq}{allele frequency among the founders}
 
-\item{kinshipCoeff}{see RVsharing}
+\item{kinshipCoeff}{mean kinship coefficient among the founders}
 
-\item{nSim}{see RVsharing}
+\item{nSim}{number of simulations used in monte carlo calculation}
 
-\item{founderDist}{see RVsharing}
-
-\item{...}{see RVsharing}
+\item{founderDist}{custom distribution among founders - only used
+when simulating probability with nSim}
 }
 \value{
 throws error if arguments invalid

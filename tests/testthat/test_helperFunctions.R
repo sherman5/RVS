@@ -19,10 +19,12 @@ test_that('pre-process pedigree',
     expect_equal(procPed$size, 8)
     
     ped$affected[1] <- 1
-    expect_error(RVsharing(ped), 'some founders are affected')
+    expect_error(RVsharing(ped, useAffected=TRUE),
+        'some founders are affected')
 
     ped$affected <- rep(0, procPed$size)
-    expect_error(RVsharing(ped), 'need at least 2 affected subjects')
+    expect_error(RVsharing(ped, useAffected=TRUE),
+        'need at least 2 affected subjects')
 })
 
 test_that('pedigree simulation',
@@ -33,15 +35,15 @@ test_that('pedigree simulation',
 
     states <- c(2,2,NA,2,NA,2,NA,NA)
     simPed <- simulatePedigree(procPed, states)
-    expect_equal(simPed, c(2,2))
+    expect_equal(simPed$carriers, c(2,2))
 
     states <- c(0,0,NA,0,NA,0,NA,NA)
     simPed <- simulatePedigree(procPed, states)
-    expect_equal(simPed, c(0,0))
+    expect_equal(simPed$carriers, c(0,0))
 
     states <- c(2,2,NA,0,NA,0,NA,NA)
     simPed <- simulatePedigree(procPed, states)
-    expect_equal(simPed, c(1,1))
+    expect_equal(simPed$carriers, c(1,1))
 })
 
 test_that('full monte carlo simulation',
