@@ -2,7 +2,7 @@
 % Please edit documentation in R/monteCarloSharingProb.R
 \name{simulatePedigree}
 \alias{simulatePedigree}
-\title{\code{simulatePedigree} simulates pedigree given founder states}
+\title{simulates pedigree given founder states}
 \usage{
 simulatePedigree(procPed, states)
 }
@@ -15,7 +15,7 @@ simulatePedigree(procPed, states)
 states for all subjects in pedigree
 }
 \description{
-\code{simulatePedigree} simulates pedigree given founder states
+#TODO
 }
 \keyword{internal}
 

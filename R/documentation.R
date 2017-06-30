@@ -2,20 +2,14 @@
 #'
 #' @docType package
 #' @name RVsharing2
+#' @importFrom stats runif weighted.mean
+#' @importFrom utils combn data installed.packages
+#' @import methods
 NULL
 
-#' This data contains 8 sample pedigrees
+#' list of 8 sample pedigree objects
 #' 
 #' @docType data
 #' @name samplePedigrees
 #' @usage samplePedigrees
-NULL
-
-
-#' Table of mendelian inheritance probabilities
-#'
-#' @docType data
-#' @name mendelProbTable
-#' @usage mendelProbTable
-#' @keywords internal
 NULL

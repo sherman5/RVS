@@ -1,13 +1,17 @@
-#' \code{monteCarloSharingProb} calculates sharing probability by
-#'  simulating many outcomes of the pedigree
-#'
-#' @param procPed pedigree that has been through processPedigree()
-#' @param alleleFreq allele frequency among the founders
-#' @param kinshipCoeff mean kinship coefficient among the founders
-#' @param nSimulations number of simulations used in calculation
-#' @return sharing probability
+#' @include grainNetworkHelper.R
+NULL
+
+#' calculates sharing probability by simulating pedigree outcomes
 #' @keywords internal
-monteCarloSharingProb <- function(procPed, founderDist, alleleFreq, kinshipCoeff, nSimulations)
+#'
+#' @description Calculates the same exact probability as RVsharing,
+#'  except uses monte carlo simulation instead of exact computation.
+#'  This method allows for more flexibility in the scenarios considered.
+#' @param procPed pedigree that has been through \code{processPedigree}
+#' @inheritParams RVsharing
+#' @inherit RVsharing return
+monteCarloSharingProb <- function(procPed, alleleFreq, kinshipCoeff,
+nSim, founderDist)
 {
     if (!missing(alleleFreq))
     {
@@ -17,60 +21,58 @@ monteCarloSharingProb <- function(procPed, founderDist, alleleFreq, kinshipCoeff
     else if (!missing(kinshipCoeff))
     {
         w <- relatedFoundersCorrection(length(procPed$founders),
-            kinshipCoeff)
+            kinshipCoeff) # prob one founder introduces variant
         founderDist <- function(n)
-        {
-            if (runif(1) < w)
-                sample(c(rep(0,n-1),1)) # one founder introduces
-            else
-                sample(c(rep(0,n-2),c(1,1))) # two founders introduce
-        }        
+            {sample(c(rep(0,n-2), 1, ifelse(runif(1) < w, 0, 1)))}
     }
     else if (missing(founderDist)) # one founder introduces
     {
         founderDist <- function(n) sample(c(rep(0,n-1),1))
     }
-    return(runMonteCarlo(procPed, founderDist, nSimulations))
+    return(runMonteCarlo(procPed, founderDist, nSim))
 }
 
-#' \code{runMonteCarlo} run the monte carlo simulation
-#'
-#' @param procPed pedigree that has been through processPedigree()
-#' @param founderFunc function describing how to sample alleles
-#'  for the founders
-#' @param nSimulations number of simulations used in calculation
-#' @return sharing probability
+#' run the monte carlo simulation
 #' @keywords internal
-runMonteCarlo <- function(procPed, founderDist, nSimulations)
+#'
+#' @description Given a number of simulations and a distribution
+#'  of variants in the founders, this function simulates possbile
+#'  outcomes of the pedigree and returns a sharing probability.
+#' @inheritParams monteCarloSharingProb
+#' @inherit monteCarloSharingProb return
+runMonteCarlo <- function(procPed, founderDist, nSim)
 {
-    oneSim <- function(x)
+    oneSim <- function(dummy)
     {
         states <- rep(NA, procPed$size)
         states[procPed$founders] <- founderDist(length(procPed$founders))   
-        res <- simulatePedigree(procPed, states)
-        return(c(all(res >= 1), sum(res) >= 1))
+        sim <- simulatePedigree(procPed, states)
+        return(c(all(sim$carriers >= 1), sum(sim$affected) >= 1))
     }
 
-    if (is.element('parallel', installed.packages()[,1]) & nSimulations>2e4)
+    if (is.element('parallel', installed.packages()[,1]) & nSim > 2e4)
     {
         cl <- parallel::makeCluster(parallel::detectCores())
-        parallel::clusterExport(cl, 'mendelProbTable')
-        prob <- parallel::parSapply(cl, 1:nSimulations, oneSim)
+        parallel::clusterExport(cl, 'monteCarloSharingProb')
+        prob <- parallel::parSapply(cl, 1:nSim, oneSim)
         parallel::stopCluster(cl)
     }
     else
     {
-        prob <- sapply(1:nSimulations, oneSim)
+        prob <- sapply(1:nSim, oneSim)
     }
     return(sum(prob[1,]) / sum(prob[2,]))
 }
 
-#' \code{simulatePedigree} simulates pedigree given founder states
+#' simulates pedigree given founder states
+#' @keywords internal
 #'
+#' @description Given the states (number of allele copies) of the founders,
+#'  this function simulates mendelian inheritance and returns the states
+#'  of all subjects in the pedigree
 #' @param procPed pedigree that has been through processPedigree()
 #' @param states state of each founder (0,1,2 copies of variant)
 #' @return states for all subjects in pedigree
-#' @keywords internal
 simulatePedigree <- function(procPed, states)
 {
     remain <- which(is.na(states))
@@ -89,5 +91,33 @@ simulatePedigree <- function(procPed, states)
         }
         remain <- which(is.na(states))
     }
-    return(states[procPed$affected])
+    return(list(affected=states[procPed$affected],
+        carriers=states[procPed$carriers]))
 }
+
+#' depreciated function
+#' @export
+#' @rdname GeneDrop
+#'
+#' @description This function is depreciated with version >= 2.0
+#'  and should not be used, instead use RVsharing with nSim option
+#' @param ... arguments to the old function
+GeneDrop <- function(...)
+{
+    stop(paste('function depreciated with version >= 2.0, use the',
+        '\'RVsharing\' function with option \'nSim\''))
+}
+
+#' @export
+#' @rdname GeneDrop
+GeneDropSim.allsubsets.fn <- GeneDrop
+
+#' @export
+#' @rdname GeneDrop
+GeneDropSim.fn <- GeneDrop
+
+#' @export
+#' @rdname GeneDrop
+GeneDropSimExcessSharing.fn <- GeneDrop
+
+

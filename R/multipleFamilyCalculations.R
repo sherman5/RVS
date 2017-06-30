@@ -1,4 +1,4 @@
-#' Probability of sharing of rare variants in a subset of families
+#' probability of sharing of rare variants in a subset of families
 #' @export
 #'
 #' @description Computing probability of sharing of rare variants in
@@ -22,12 +22,12 @@ multipleFamilyPValue <- function(probs, shared)
     if (sum(!shared)==0)
         stop("number of families not sharing the RV is zero.")
 
-    # If all families share the variant, then return 1
-#    if (length(not)==length(vec)) return (1)
-
     vec <- 1:(length(shared))
     not <- which(shared==FALSE)
     pshare.data <- data.frame(pshare=probs, ped.tocompute.vec=vec)
+
+    # If all families share the variant, then return 1
+    if (length(not)==length(vec)) return (1)
     
     p.vec = pshare.data$pshare[pshare.data$ped.tocompute.vec%in%vec]
     names(p.vec) = pshare.data$ped.tocompute.vec[pshare.data$ped.tocompute.vec%in%vec]
@@ -42,7 +42,7 @@ multipleFamilyPValue <- function(probs, shared)
     for (h in 1:nnot)
     {
         comb.mat = combn(nf,h)
-        #	print(comb.mat)
+        # print(comb.mat)
         # plus the cases where the probability with two families not sharing the variant is less extreme than the observed
         # Compute probability for all pairs of families not sharing
         for (i in 1:ncol(comb.mat))
@@ -54,3 +54,27 @@ multipleFamilyPValue <- function(probs, shared)
     }
     return(p)
 }
+
+#' depreciated function
+#' @export
+#' @description This function is depreciated with version >= 2.0
+#'  and should not be used, instead use multipleFamilyPValue
+#' @param vec a vector of names of all families where a variant is seen
+#' @param not a vector of names of families where not all affected subjects
+#'  share the rare variant
+#' @param pshare.data a data frame with at least two of the following columns:
+#'  pshare: vector of RV sharing probabilities
+#'  ped.tocompute.vec: vector of names of the families whose sharing 
+#'      probability is contained in pshare. The names in the arguments
+#'      vec and not must be found in ped.tocompute.vec
+get.psubset <- function(vec, not, pshare.data)
+{
+    warning(paste('this function is depreciated with version >= 2.0',
+        'and should not be used, instead use multipleFamilyPValue'))
+    names <- pshare.data$ped.tocompute.vec
+    probs <- pshare.data$pshare[names %in% vec]
+    probNames <- names[names %in% vec]
+    shared <- !(probNames %in% not)
+    return(multipleFamilyPValue(probs, shared))
+}
+

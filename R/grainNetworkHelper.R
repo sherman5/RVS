@@ -1,9 +1,19 @@
-#' \code{createNetwork} create bayesian network from procPedigree
+# table of probabilties for mendelian inheritance
+mendelProbTable <- array(0, c(3,3,3))
+x <- expand.grid(p1=0:2, p2=0:2) # parents each having 0,1,2 copies of allele
+mendelProbTable[1,,] <- with(x, (2-p1)*(2-p2)/4) # 0 copies
+mendelProbTable[2,,] <- with(x, (p1+p2-p1*p2)/2) # 1 copy
+mendelProbTable[3,,] <- with(x, p1*p2/4)         # 2 copies
+
+#' create bayesian network from processed pedigree
+#' @keywords internal
 #'
+#' @description Creates a bayesian network using the gRain package.
+#'  The network is built based on the information in a pedigree object
+#'  that has been processed using \code{processPedigree}.
 #' @param procPed processed Pedigree object
 #' @param prior prior on number of alleles for founders
 #' @return bayesian network friom gRain package
-#' @keywords internal
 createNetwork <- function(procPed, prior=c(1,2,1))
 {
     # process founders
@@ -20,13 +30,21 @@ createNetwork <- function(procPed, prior=c(1,2,1))
     return(gRain::grain(condProbTable))
 }
 
-#' \code{marginalProb} calculates the probability
-#'  that a set of nodes are in given states
+#' calculates the marginal probability of a set of nodes
+#' @keywords internal
 #'
+#' @description Given a bayesian network from the gRain package and a 
+#'  named list of nodes - states, this function returns the joint-marginal
+#'  probability of each nodes taking a value in the specified set of states. 
+#' @details This function calculates the probability P(A,B,C) by factoring
+#'  it into conditional probabilities, i.e. P(A|B,C) * P(B|C) * P(C).
+#'  Starting at the right side, P(C) is computed and then evidence of C
+#'  being true is added to the network and P(B) is computed - effectively
+#'  giving the probability P(B|C). This process continues from right to
+#'  left until the entire product has been computed.
 #' @param net bayesian network from gRain package
 #' @param states named list of states for each node
-#' @return joint probability
-#' @keywords internal
+#' @return joint-marginal probability
 marginalProb <- function(net, states)
 {
     prob <- 1

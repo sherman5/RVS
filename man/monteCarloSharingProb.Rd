@@ -2,27 +2,28 @@
 % Please edit documentation in R/monteCarloSharingProb.R
 \name{monteCarloSharingProb}
 \alias{monteCarloSharingProb}
-\title{\code{monteCarloSharingProb} calculates sharing probability by
- simulating many outcomes of the pedigree}
+\title{calculates sharing probability by simulating pedigree outcomes}
 \usage{
-monteCarloSharingProb(procPed, founderDist, alleleFreq, kinshipCoeff,
-  nSimulations)
+monteCarloSharingProb(procPed, alleleFreq, kinshipCoeff, nSim, founderDist)
 }
 \arguments{
-\item{procPed}{pedigree that has been through processPedigree()}
+\item{procPed}{pedigree that has been through \code{processPedigree}}
 
 \item{alleleFreq}{allele frequency among the founders}
 
 \item{kinshipCoeff}{mean kinship coefficient among the founders}
 
-\item{nSimulations}{number of simulations used in calculation}
+\item{nSim}{number of simulations used in monte carlo calculation}
+
+\item{founderDist}{#TODO}
 }
 \value{
 sharing probability
 }
 \description{
-\code{monteCarloSharingProb} calculates sharing probability by
- simulating many outcomes of the pedigree
+Calculates the same exact probability as RVsharing,
+ except uses monte carlo simulation instead of exact computation.
+ This method allows for more flexibility in the scenarios considered.
 }
 \keyword{internal}
 

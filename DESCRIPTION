@@ -9,9 +9,12 @@ Description: Computes estimates of the probability of related individuals
     sharing a rare variant.
 License: GPL-2
 Depends:
-    R (>= 3.3.0)
+    R (>= 3.4.0)
 Imports:
-    gRain
+    gRain,
+    methods,
+    stats,
+    utils
 Suggests:
     knitr,
     testthat,
@@ -19,5 +22,17 @@ Suggests:
     BiocStyle,
     parallel,
     kinship2
+VignetteBuilder: knitr
 RoxygenNote: 5.0.1
 biocViews: Bayesian, Network
+Collate:
+    'RVgene.R'
+    'RVgeneAllshare.R'
+    'pedigree-methods.R'
+    'RVsharing.R'
+    'documentation.R'
+    'grainNetworkHelper.R'
+    'monteCarloSharingProb.R'
+    'multipleFamilyCalculations.R'
+    'relatedFoundersCorrection.R'
+    'sharingProbabilityCalculation.R'

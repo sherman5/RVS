@@ -2,7 +2,7 @@
 % Please edit documentation in R/grainNetworkHelper.R
 \name{createNetwork}
 \alias{createNetwork}
-\title{\code{createNetwork} create bayesian network from procPedigree}
+\title{create bayesian network from processed pedigree}
 \usage{
 createNetwork(procPed, prior = c(1, 2, 1))
 }
@@ -15,7 +15,9 @@ createNetwork(procPed, prior = c(1, 2, 1))
 bayesian network friom gRain package
 }
 \description{
-\code{createNetwork} create bayesian network from procPedigree
+Creates a bayesian network using the gRain package.
+ The network is built based on the information in a pedigree object
+ that has been processed using \code{processPedigree}.
 }
 \keyword{internal}
 

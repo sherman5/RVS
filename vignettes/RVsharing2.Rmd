@@ -1,7 +1,7 @@
 ---
 title: "The RVsharing Package"
 author: "Thomas Sherman"
-data: "`r doc_date()`"
+data: "`r Sys.Date()`"
 package: "`r pkg_ver('RVsharing2')`"
 bibliography: References.bib
 vignette: >
@@ -72,7 +72,7 @@ Similiar to Figure 2 in @METHODS
 
 ```{r}
 print(RVsharing(samplePedigrees$firstCousinPair))
-print(RVsharing(samplePedigrees$firstCousinPair, nSimulations=1e4))
+print(RVsharing(samplePedigrees$firstCousinPair, nSim=1e4))
 ```
 
 ## Sharing Probability in a subset of affected
@@ -92,13 +92,15 @@ sharingProb <- sapply(kCoeff, function(c) RVsharing(samplePedigrees$firstCousinP
 plot(kCoeff, sharingProb, type='l')
 ```
 
+### Estimating the mean kinship coefficient
+
 ## Using monte carlo with custom distribution for founders
 
 This method allows for more complex relationships among the founders to be given. 'RVsharing' allows for a complete distribution among the founders to be passed in as a parameter - 'founderDist'. This function should accept a single argument, N, and should return a vector of length N with values in {0,1,2} representing the number of copies of the variant each founder has.
 
 ```{r}
 fDist <- function(N) sample(c(rep(0,N-1), 1)) # assumption that 1 founder introduces
-print(RVsharing(samplePedigrees$firstCousinPair, nSimulations=1e4, founderDist=fDist))
+print(RVsharing(samplePedigrees$firstCousinPair, nSim=1e4, founderDist=fDist))
 print(RVsharing(samplePedigrees$firstCousinPair))
 ```
 
@@ -110,7 +112,9 @@ variantSharedPeds <- list(samplePedigrees$firstCousinPair, samplePedigrees$secon
 variantNotSharedPeds <- list(samplePedigrees$firstCousinTriple)
 sharedProbs <- sapply(variantSharedPeds, RVsharing)
 notSharedProbs <- sapply(variantNotSharedPeds, RVsharing)
-multipleFamilyPValue(sharedProbs, notSharedProbs)
+#multipleFamilyPValue(sharedProbs, notSharedProbs)
 ```
+
+# Sharing Probabilities in a Genomic Region
 
 # References

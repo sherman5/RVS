@@ -3,11 +3,11 @@
 \docType{data}
 \name{samplePedigrees}
 \alias{samplePedigrees}
-\title{This data contains 8 sample pedigrees}
+\title{list of 8 sample pedigree objects}
 \usage{
 samplePedigrees
 }
 \description{
-This data contains 8 sample pedigrees
+list of 8 sample pedigree objects
 }
 
