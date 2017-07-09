@@ -4,12 +4,12 @@
 \alias{multipleFamilyPValue}
 \title{probability of sharing of rare variants in a subset of families}
 \usage{
-multipleFamilyPValue(probs, shared)
+multipleFamilyPValue(sharingProbs, observedSharing)
 }
 \arguments{
-\item{probs}{sharing probabilities for all families}
+\item{sharingProbs}{sharing probabilities for all families}
 
-\item{shared}{boolean vector describing if all affected subjects
+\item{observedSharing}{boolean vector describing if all affected subjects
 in the family share the variant (TRUE if all share)}
 }
 \value{
@@ -35,7 +35,7 @@ All the subsets of families of size equal or inferior to the
  data(samplePedigrees)
  notSharedFams <- c(15159, 15053, 15157)
  famids <- sapply(samplePedigrees, function(p) p$famid[1])
- shared <- famids \%in\% notSharedFams
+ shared <- !famids \%in\% notSharedFams
  probs <- sapply(samplePedigrees, RVsharing)
  multipleFamilyPValue(probs, shared)
 }

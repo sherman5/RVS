@@ -12,8 +12,8 @@
 #'  the pattern probabilities inferior or equal to the probability
 #'  of the observed pattern of the not families not sharing a rare variant
 #'  and the remaining families sharing a rare variant.
-#' @param probs sharing probabilities for all families
-#' @param shared boolean vector describing if all affected subjects
+#' @param sharingProbs sharing probabilities for all families
+#' @param observedSharing boolean vector describing if all affected subjects
 #'  in the family share the variant (TRUE if all share)
 #' @return P-value of the exact rare variant sharing test requiring
 #'  sharing by all affected subjects
@@ -21,42 +21,41 @@
 #'  data(samplePedigrees)
 #'  notSharedFams <- c(15159, 15053, 15157)
 #'  famids <- sapply(samplePedigrees, function(p) p$famid[1])
-#'  shared <- famids %in% notSharedFams
+#'  shared <- !famids %in% notSharedFams
 #'  probs <- sapply(samplePedigrees, RVsharing)
 #'  multipleFamilyPValue(probs, shared)
-multipleFamilyPValue <- function(probs, shared)
+multipleFamilyPValue <- function(sharingProbs, observedSharing)
 {
-    # check: "not" contains at least one family 
-    if (sum(!shared) == 0)
-        stop("number of families not sharing the RV is zero.")
+    # remove name from sharing prob
+    sharingProbs <- unname(sharingProbs)
 
-    # If all families share the variant, then return 1
-    if (all(shared)) return (1)
-    
-    # total number, and number not sharing
-    nf <- length(probs)
-    nnot <- sum(!shared)
+    # probability of observed data
+    pObserved <- prod(sharingProbs[observedSharing]) * 
+        prod(1 - sharingProbs[!observedSharing])
 
-    # Probability of observed data
-    p.obs <- prod(probs[shared], 1 - probs[!shared])
-
-    # Tail probability includes case where all families share the variant
-    p = prod(probs)
-
-    for (h in 1:nnot)
+    # sum probabilities of both branches of the tree
+    sumBranches <- function(ndx, prod)
     {
-        comb.mat <- combn(nf, h)
-
-        # plus the cases where the probability with two families not sharing
-        # the variant is less extreme than the observed
-        # Compute probability for all pairs of families not sharing
-        for (i in 1:ncol(comb.mat))
+        # get sum of probs starting at leaf of this node
+        leafSum <- function(p)
         {
-            ptmp <- prod(probs[-comb.mat[,i]], 1 - probs[comb.mat[,i]])
-            if (ptmp <= p.obs) p <- p + ptmp
+            if (p <= pObserved) return(p)
+            else                return(sumBranches(ndx + 1, p))
         }
+    
+        # base case at end of tree == this path not extreme
+        if (ndx > length(sharingProbs)) return(0)
+        
+        # multiply cumulative prob by each marginal prob
+        prodLeft <- sharingProbs[ndx] * prod
+        prodRight <- (1 - sharingProbs[ndx]) * prod
+
+        # return sum of both directions
+        return(leafSum(prodLeft) + leafSum(prodRight))
     }
-    return(p)
+    
+    # start at root
+    return(sumBranches(1, 1))
 }
 
 #' depreciated function
