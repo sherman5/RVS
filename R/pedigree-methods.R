@@ -41,7 +41,7 @@ setGeneric('ComputeKinshipPropCoef', function(ped)
 #' @examples 
 #'  data(samplePedigrees)
 #'  processPedigree(samplePedigrees$firstCousinPair)
-setGeneric('processPedigree', function(ped, carriers)
+setGeneric('processPedigree', function(ped, carriers=NA)
     {standardGeneric('processPedigree')})
 
 #################### METHODS ####################
@@ -63,7 +63,7 @@ function(ped, carriers)
     else                      affected <- finalDescendants
 
     # get carriers, default to affected if not provided
-    if (missing(carriers)) carriers <- affected
+    if (is.na(carriers))   carriers <- affected
     else                   carriers <- which(ped$id %in% carriers)
  
     # check pedigree is valid

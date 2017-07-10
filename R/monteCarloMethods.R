@@ -10,22 +10,22 @@ NULL
 #' @param procPed pedigree that has been through \code{processPedigree}
 #' @inheritParams RVsharing
 #' @return sharing probability between all carriers in pedigree
-monteCarloSharingProb <- function(procPed, alleleFreq, kinshipCoeff,
-nSim, founderDist)
+monteCarloSharingProb <- function(procPed, alleleFreq=NA, kinshipCoeff=NA,
+nSim, founderDist=NA)
 {
-    if (!missing(alleleFreq)) # known allele frequency in population
+    if (!is.na(alleleFreq)) # known allele frequency in population
     {
         p <- with(data.frame(f=alleleFreq), c((1-f)^2, 2*f*(1-f), f^2))
         founderDist <- function(n) sample.int(3,n,TRUE,p) - 1
     }
-    else if (!missing(kinshipCoeff)) # related founders
+    else if (!is.na(kinshipCoeff)) # related founders
     {
         w <- relatedFoundersCorrection(length(procPed$founders),
             kinshipCoeff) # prob one founder introduces variant
         founderDist <- function(n)
             {sample(c(rep(0,n-2), 1, ifelse(runif(1) < w, 0, 1)))}
     }
-    else if (missing(founderDist)) # one founder introduces
+    else if (is.na(founderDist)) # one founder introduces
     {
         founderDist <- function(n) sample(c(rep(0,n-1),1))
     }
@@ -55,14 +55,9 @@ runMonteCarlo <- function(procPed, founderDist, nSim)
 
     if (is.element('parallel', installed.packages()[,1]) & nSim > 2e4)
     {
-<<<<<<< HEAD:R/monteCarloSharingProb.R
-        cl <- parallel::makeCluster(parallel::detectCores())
-#        parallel::clusterExport(cl list('mendelProbTable')
-=======
         nCores <- parallel::detectCores()
-        print(paste('RVsharing running in parallel with:', nCores, 'cores'))
+        message(paste('RVsharing running in parallel with:', nCores, 'cores'))
         cl <- parallel::makeCluster(nCores)
->>>>>>> dc92b113f8f9a5ec7bef29a2d9d3c385cdde1cae:R/monteCarloMethods.R
         prob <- parallel::parSapply(cl, 1:nSim, oneSim)
         parallel::stopCluster(cl)
     }
@@ -70,8 +65,7 @@ runMonteCarlo <- function(procPed, founderDist, nSim)
     {
         prob <- sapply(1:nSim, oneSim)
     }
-    variantPresent <- prob[2,]
-    return(sum(prob[1,variantPresent]) / sum(variantPresent))
+    return(sum(prob[1,]) / sum(prob[2,]))
 }
 
 #' simulates pedigree given founder states

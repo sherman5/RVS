@@ -16,16 +16,15 @@ test_that('list of pedigrees',
     data(samplePedigrees)
     result <- RVsharing(samplePedigrees)
     print(result)
-
 })
 
 test_that('monte carlo close to exact',
 {
-    monteCarloComp <- function(ped, freq, kin)
+    monteCarloComp <- function(ped, freq=NA, kin=NA)
     {
         abs(RVsharing(ped, alleleFreq=freq, kinshipCoeff=kin) - 
             RVsharing(ped, alleleFreq=freq, kinshipCoeff=kin,
-            nSim=15000))
+            nSim=2e4))
     }
 
     data(samplePedigrees)

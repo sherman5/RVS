@@ -40,8 +40,9 @@ NULL
 #' @examples
 #'  data("samplePedigrees")
 #'  RVsharing(samplePedigrees$firstCousinPair)
-setGeneric('RVsharing', function(ped, carriers, alleleFreq, kinshipCoeff,
-nSim, founderDist, useAffected = FALSE, ...) {standardGeneric('RVsharing')})
+setGeneric('RVsharing', function(ped, carriers=NA, alleleFreq=NA,
+kinshipCoeff=NA, nSim=NA, founderDist=NA, useAffected=FALSE, ...)
+    {standardGeneric('RVsharing')})
 
 #' @rdname RVsharing-methods
 #' @aliases RVsharing
@@ -58,16 +59,16 @@ founderDist, useAffected, ...)
     procPed <- processPedigree(ped, carriers)
 
     # calculate sharing prob with appropiate method
-    if (!missing(nSim))
+    if (!is.na(nSim))
     {
         prob <- monteCarloSharingProb(procPed=procPed, alleleFreq=alleleFreq,
             kinshipCoeff=kinshipCoeff, nSim=nSim, founderDist=founderDist)
     }
-    else if (!missing(alleleFreq))
+    else if (!is.na(alleleFreq))
     {
         prob <- exactSharingProb(procPed, alleleFreq)
     }        
-    else if (!missing(kinshipCoeff))
+    else if (!is.na(kinshipCoeff))
     {
         prob <- twoFounderSharingProb(procPed, kinshipCoeff)
     }
@@ -79,7 +80,7 @@ founderDist, useAffected, ...)
     # print and return result
     carrierText <- paste(procPed$origID[procPed$carriers], collapse=' ')
     affectedText <- paste(procPed$origID[procPed$affected], collapse=' ')
-    print(paste('Probability subjects', carrierText, 'among',
+    message(paste('Probability subjects', carrierText, 'among',
         affectedText, 'share a rare variant:', round(prob, 4)))
     return(prob)
 })
@@ -87,17 +88,15 @@ founderDist, useAffected, ...)
 #' @rdname RVsharing-methods
 #' @aliases RVsharing
 setMethod('RVsharing', signature(ped='list'),
-function(ped, carriers, alleleFreq, kinshipCoeff, nSim, founderDist, ...)
+function(ped, carriers, alleleFreq, kinshipCoeff, nSim,
+founderDist, useAffected, ...)
 {
-    print(alleleFreq)
-    sapply(1:length(ped), function(i)
-    {
-        prob <- RVsharing(ped[[i]], carriers[[i]], alleleFreq,
-            kinshipCoeff, nSim, founderDist, ...)
-        if (!is.null(ped[[i]]@famid)) id <- as.character(ped[[i]]@famid)
-        else id <- 'no_id'
-        return(c(id, prob))
-    })
+    if (is.na(carriers)) carriers <- rep(NA, length(ped))
+    probs <- sapply(1:length(ped), function(i) RVsharing(ped[[i]],
+        carriers[[i]], alleleFreq, kinshipCoeff, nSim, founderDist, ...))
+    id <- as.character(sapply(ped, function(p) p$famid[1]))
+    names(probs) <- id
+    return(probs)
 })
 
 #' check arguments provided to RVsharing for validty
@@ -109,9 +108,9 @@ function(ped, carriers, alleleFreq, kinshipCoeff, nSim, founderDist, ...)
 #' @return throws error if arguments invalid
 checkArgs <- function(alleleFreq, kinshipCoeff, nSim, founderDist)
 {
-    if (!missing(alleleFreq) & !missing(founderDist))
+    if (!is.na(alleleFreq) & !is.na(founderDist))
         warning('founderDist ignored since alleleFreq was provided')
-    if (!missing(alleleFreq) & !missing(kinshipCoeff))
+    if (!is.na(alleleFreq) & !is.na(kinshipCoeff))
         stop('can\'t use both alleleFreq and kinshipCoeff')   
 }
 

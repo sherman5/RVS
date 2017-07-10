@@ -77,7 +77,7 @@ twoFounderSharingProb <- function(procPed, kinshipCoeff)
         rep('0', length(procPed$founders)))
 
     # calculate kinship correction and initialize variables
-    numer1 <- denom1 <- numer2 <- denom2 <- 0
+    numer <- denom <- 0
     remainingFounders <- procPed$founders
     cor <- relatedFoundersCorrection(length(procPed$founders), kinshipCoeff)
     for (f1 in procPed$founders) #TODO: use sapply here
@@ -93,23 +93,13 @@ twoFounderSharingProb <- function(procPed, kinshipCoeff)
             net2 <- gRain::setEvidence(net2, as.character(f2), '1')
 
             # calculate (weighted) conditional probability
-#            w <- ifelse(f1==f2, cor, 1 - cor)
-#            numer <- numer + w * numerProb(net2, procPed)
-#            denom <- denom + w * denomProb(net2, procPed)
-            if (f1 == f2)
-            {
-                numer1 <- numer1 + numerProb(net2, procPed)
-                denom1 <- denom1 + denomProb(net2, procPed)
-            }
-            else
-            {
-                numer2 <- numer2 + numerProb(net2, procPed)
-                denom2 <- denom2 + denomProb(net2, procPed)
-            }
+            w <- ifelse(f1==f2, cor, 1 - cor)
+            numer <- numer + w * numerProb(net2, procPed)
+            denom <- denom + w * denomProb(net2, procPed)
         }
         remainingFounders <- setdiff(remainingFounders, f1)
     }
-    return(cor * numer1/denom1 + (1 - cor) * numer2/denom2)
+    return(numer/denom)
 }
 
 #' exact sharing probability calculation

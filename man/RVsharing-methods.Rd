@@ -7,14 +7,16 @@
 \alias{RVsharing,pedigree-method}
 \title{probability of sharing a rare variant among relatives}
 \usage{
-RVsharing(ped, carriers, alleleFreq, kinshipCoeff, nSim, founderDist,
-  useAffected = FALSE, ...)
+RVsharing(ped, carriers = NA, alleleFreq = NA, kinshipCoeff = NA,
+  nSim = NA, founderDist = NA, useAffected = FALSE, ...)
 
-\S4method{RVsharing}{pedigree}(ped, carriers, alleleFreq, kinshipCoeff, nSim,
-  founderDist, useAffected = FALSE, ...)
+\S4method{RVsharing}{pedigree}(ped, carriers = NA, alleleFreq = NA,
+  kinshipCoeff = NA, nSim = NA, founderDist = NA, useAffected = FALSE,
+  ...)
 
-\S4method{RVsharing}{list}(ped, carriers, alleleFreq, kinshipCoeff, nSim,
-  founderDist, useAffected = FALSE, ...)
+\S4method{RVsharing}{list}(ped, carriers = NA, alleleFreq = NA,
+  kinshipCoeff = NA, nSim = NA, founderDist = NA, useAffected = FALSE,
+  ...)
 }
 \arguments{
 \item{ped}{S3 pedigree object or a list of pedigree objects}
