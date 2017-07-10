@@ -16,8 +16,8 @@ joint-marginal probability
 }
 \description{
 Given a bayesian network from the gRain package and a 
- named list of nodes - states, this function returns the joint-marginal
- probability of each nodes taking a value in the specified set of states.
+ named list of (nodes, states), this function returns the joint-marginal
+ probability of each node taking a value in the specified set of states.
 }
 \details{
 This function calculates the probability P(A,B,C) by factoring

@@ -1,4 +1,4 @@
-context('multiple family calculatios')
+context('multiple family calculations')
 
 test_that('multiple family p-value',
 {

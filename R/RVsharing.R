@@ -60,21 +60,26 @@ founderDist, useAffected, ...)
     # calculate sharing prob with appropiate method
     if (!missing(nSim))
     {
-        return(monteCarloSharingProb(procPed=procPed, alleleFreq=alleleFreq,
-            kinshipCoeff=kinshipCoeff, nSim=nSim, founderDist=founderDist))
+        prob <- monteCarloSharingProb(procPed=procPed, alleleFreq=alleleFreq,
+            kinshipCoeff=kinshipCoeff, nSim=nSim, founderDist=founderDist)
     }
     else if (!missing(alleleFreq))
     {
-        return(exactSharingProb(procPed, alleleFreq))
+        prob <- exactSharingProb(procPed, alleleFreq)
     }        
     else if (!missing(kinshipCoeff))
     {
-        return(twoFounderSharingProb(procPed, kinshipCoeff))
+        prob <- twoFounderSharingProb(procPed, kinshipCoeff)
     }
     else
     {
-        return(oneFounderSharingProb(procPed))
+        prob <- oneFounderSharingProb(procPed)
     }
+    carrierText <- paste(procPed$carriers, collapse=' ')
+    affectedText <- paste(procPed$affected, collapse=' ')
+    print(paste('Probability subjects', carrierText, 'among',
+        affectedText, 'share a rare variant:', round(prob, 4)))
+    return(prob)
 })
 
 #' @rdname RVsharing-methods
@@ -82,6 +87,7 @@ founderDist, useAffected, ...)
 setMethod('RVsharing', signature(ped='list'),
 function(ped, carriers, alleleFreq, kinshipCoeff, nSim, founderDist, ...)
 {
+    print(alleleFreq)
     sapply(1:length(ped), function(i)
     {
         prob <- RVsharing(ped[[i]], carriers[[i]], alleleFreq,

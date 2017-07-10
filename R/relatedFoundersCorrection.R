@@ -78,7 +78,6 @@ relatedFoundersCorrection <- function(nf, kinshipCoeff)
     phiVec <- computePhiVec(nf, 2*nf-5)
     theta <- inferTheta(kinshipCoeff, phiVec)
     PFU <- computePFU(nf, theta, 5)
-    print(nf + PFU)
     return(nf * PFU)
 }
 
