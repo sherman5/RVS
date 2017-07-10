@@ -52,6 +52,7 @@ setMethod('processPedigree', signature(ped='pedigree'),
 function(ped, carriers)
 {
     # relabel subjects and get basic ped info
+    origID <- ped$id
     ped$id <- 1:length(ped$id)
     parents <- sapply(ped$id, function(i) c(ped$findex[i], ped$mindex[i]))
     founders <- which(parents[1,] == 0)
@@ -72,9 +73,9 @@ function(ped, carriers)
         stop('need at least 2 affected subjects')
 
     # save info in list
-    return(list('ped'=ped, 'parents'=parents, 'founders'=founders,
-        'affected'=affected, 'size'=length(ped$id), 'carriers'=carriers,
-        'id'=ped$id, 'finalDescendants'=finalDescendants))
+    return(list('origID'=origID, 'ped'=ped, 'parents'=parents,
+        'founders'=founders, 'affected'=affected, 'size'=length(ped$id),
+        'carriers'=carriers, 'id'=ped$id, 'finalDescendants'=finalDescendants))
 })
 
 #' @rdname ComputeKinshipPropCoef-methods

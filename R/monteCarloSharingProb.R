@@ -53,7 +53,7 @@ runMonteCarlo <- function(procPed, founderDist, nSim)
     if (is.element('parallel', installed.packages()[,1]) & nSim > 2e4)
     {
         cl <- parallel::makeCluster(parallel::detectCores())
-        parallel::clusterExport(cl, 'monteCarloSharingProb')
+#        parallel::clusterExport(cl list('mendelProbTable')
         prob <- parallel::parSapply(cl, 1:nSim, oneSim)
         parallel::stopCluster(cl)
     }
