@@ -12,7 +12,7 @@ createNetwork(procPed, prior = c(1, 2, 1))
 \item{prior}{prior on number of alleles for founders}
 }
 \value{
-bayesian network friom gRain package
+bayesian network from gRain package
 }
 \description{
 Creates a bayesian network using the gRain package.

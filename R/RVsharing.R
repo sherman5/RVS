@@ -75,6 +75,8 @@ founderDist, useAffected, ...)
     {
         prob <- oneFounderSharingProb(procPed)
     }
+    
+    # print and return result
     carrierText <- paste(procPed$origID[procPed$carriers], collapse=' ')
     affectedText <- paste(procPed$origID[procPed$affected], collapse=' ')
     print(paste('Probability subjects', carrierText, 'among',
@@ -87,6 +89,7 @@ founderDist, useAffected, ...)
 setMethod('RVsharing', signature(ped='list'),
 function(ped, carriers, alleleFreq, kinshipCoeff, nSim, founderDist, ...)
 {
+    print(alleleFreq)
     sapply(1:length(ped), function(i)
     {
         prob <- RVsharing(ped[[i]], carriers[[i]], alleleFreq,

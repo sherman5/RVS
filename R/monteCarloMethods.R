@@ -13,12 +13,12 @@ NULL
 monteCarloSharingProb <- function(procPed, alleleFreq, kinshipCoeff,
 nSim, founderDist)
 {
-    if (!missing(alleleFreq))
+    if (!missing(alleleFreq)) # known allele frequency in population
     {
         p <- with(data.frame(f=alleleFreq), c((1-f)^2, 2*f*(1-f), f^2))
         founderDist <- function(n) sample.int(3,n,TRUE,p) - 1
     }
-    else if (!missing(kinshipCoeff))
+    else if (!missing(kinshipCoeff)) # related founders
     {
         w <- relatedFoundersCorrection(length(procPed$founders),
             kinshipCoeff) # prob one founder introduces variant
@@ -38,11 +38,14 @@ nSim, founderDist)
 #' @description Given a number of simulations and a distribution
 #'  of variants in the founders, this function simulates possbile
 #'  outcomes of the pedigree and returns a sharing probability.
+#' @details If the number of simulations is greater than 20,000
+#'  then the computation is done in parallel (as long as the package
+#'  parallel is available)
 #' @inheritParams monteCarloSharingProb
 #' @return sharing probability between all carriers in pedigree
 runMonteCarlo <- function(procPed, founderDist, nSim)
 {
-    oneSim <- function(dummy)
+    oneSim <- function(dummy) # carry out one simulation of the pedigree
     {
         states <- rep(NA, procPed$size)
         states[procPed$founders] <- founderDist(length(procPed$founders))   
@@ -52,8 +55,14 @@ runMonteCarlo <- function(procPed, founderDist, nSim)
 
     if (is.element('parallel', installed.packages()[,1]) & nSim > 2e4)
     {
+<<<<<<< HEAD:R/monteCarloSharingProb.R
         cl <- parallel::makeCluster(parallel::detectCores())
 #        parallel::clusterExport(cl list('mendelProbTable')
+=======
+        nCores <- parallel::detectCores()
+        print(paste('RVsharing running in parallel with:', nCores, 'cores'))
+        cl <- parallel::makeCluster(nCores)
+>>>>>>> dc92b113f8f9a5ec7bef29a2d9d3c385cdde1cae:R/monteCarloMethods.R
         prob <- parallel::parSapply(cl, 1:nSim, oneSim)
         parallel::stopCluster(cl)
     }
@@ -61,7 +70,8 @@ runMonteCarlo <- function(procPed, founderDist, nSim)
     {
         prob <- sapply(1:nSim, oneSim)
     }
-    return(sum(prob[1,]) / sum(prob[2,]))
+    variantPresent <- prob[2,]
+    return(sum(prob[1,variantPresent]) / sum(variantPresent))
 }
 
 #' simulates pedigree given founder states
@@ -75,21 +85,21 @@ runMonteCarlo <- function(procPed, founderDist, nSim)
 #' @return states for all subjects in pedigree
 simulatePedigree <- function(procPed, states)
 {
-    remain <- which(is.na(states))
-    while (length(remain))
+    remain <- which(is.na(states)) # undecided states
+    while (length(remain)) # loop until all states decided
     {
-        for (i in remain)
+        for (i in remain) # check if each state is ready to be decided
         {
-            p1 <- states[procPed$parents[1,i]]
+            p1 <- states[procPed$parents[1,i]] # find parent states
             p2 <- states[procPed$parents[2,i]]
 
-            if (!is.na(p1) & !is.na(p2))
+            if (!is.na(p1) & !is.na(p2)) # both parents decided
             {
                 states[i] <- sample.int(3, 1,
-                    prob=mendelProbTable[,p1+1,p2+1]) - 1
+                    prob=mendelProbTable[,p1+1,p2+1]) - 1 # decide state
             }
         }
-        remain <- which(is.na(states))
+        remain <- which(is.na(states)) # update which states remaining
     }
     return(list(affected=states[procPed$affected],
         carriers=states[procPed$carriers]))

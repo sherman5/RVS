@@ -1,0 +1,16 @@
+_ unit tests
+_ documentation
+_ man page citations
+_ examples
+_ vignette
+_ biocViews
+_ inst/NEWS
+_ package name
+_ function hierarchy
+_ R CMD check
+_ R CMD BiocCheck
+_ R CMD build size < 4MB
+_ R CMD check --no-build-vignettes < 5 min
+
+
+

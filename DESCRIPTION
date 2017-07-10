@@ -20,8 +20,8 @@ Suggests:
     testthat,
     rmarkdown,
     BiocStyle,
-    parallel,
     kinship2
+Enhances: parallel
 VignetteBuilder: knitr
 RoxygenNote: 5.0.1
 biocViews: Bayesian, Network
@@ -32,7 +32,7 @@ Collate:
     'RVsharing.R'
     'documentation.R'
     'grainNetworkHelper.R'
-    'monteCarloSharingProb.R'
+    'monteCarloMethods.R'
     'multipleFamilyCalculations.R'
     'relatedFoundersCorrection.R'
-    'sharingProbabilityCalculation.R'
+    'sharingProbabilityCalculations.R'

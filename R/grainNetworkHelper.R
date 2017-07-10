@@ -1,9 +1,9 @@
 # table of probabilties for mendelian inheritance
 mendelProbTable <- array(0, c(3,3,3))
 x <- expand.grid(p1=0:2, p2=0:2) # parents each having 0,1,2 copies of allele
-mendelProbTable[1,,] <- with(x, (2-p1)*(2-p2)/4) # 0 copies
-mendelProbTable[2,,] <- with(x, (p1+p2-p1*p2)/2) # 1 copy
-mendelProbTable[3,,] <- with(x, p1*p2/4)         # 2 copies
+mendelProbTable[1,,] <- with(x, (2-p1)*(2-p2)/4) # 0 copies in offspring
+mendelProbTable[2,,] <- with(x, (p1+p2-p1*p2)/2) # 1 copy in offspring
+mendelProbTable[3,,] <- with(x, p1*p2/4)         # 2 copies in offspring
 
 #' create bayesian network from processed pedigree
 #' @keywords internal
@@ -13,7 +13,7 @@ mendelProbTable[3,,] <- with(x, p1*p2/4)         # 2 copies
 #'  that has been processed using \code{processPedigree}.
 #' @param procPed processed Pedigree object
 #' @param prior prior on number of alleles for founders
-#' @return bayesian network friom gRain package
+#' @return bayesian network from gRain package
 createNetwork <- function(procPed, prior=c(1,2,1))
 {
     # process founders
@@ -34,8 +34,8 @@ createNetwork <- function(procPed, prior=c(1,2,1))
 #' @keywords internal
 #'
 #' @description Given a bayesian network from the gRain package and a 
-#'  named list of nodes - states, this function returns the joint-marginal
-#'  probability of each nodes taking a value in the specified set of states. 
+#'  named list of (nodes, states), this function returns the joint-marginal
+#'  probability of each node taking a value in the specified set of states. 
 #' @details This function calculates the probability P(A,B,C) by factoring
 #'  it into conditional probabilities, i.e. P(A|B,C) * P(B|C) * P(C).
 #'  Starting at the right side, P(C) is computed and then evidence of C
