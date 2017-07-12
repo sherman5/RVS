@@ -2,44 +2,44 @@ context('RVsharing top level')
 
 test_that('args processed correctly',
 {
+    data(samplePedigrees)
+    ped <- samplePedigrees[[1]]
+    f <- function(n) rep(1,n)
 
-})
-
-test_that('old args processed correctly',
-{
-
-
+    expect_error(RVsharing(ped, alleleFreq=0.1, kinshipCoeff=0.1))
+    expect_warning(RVsharing(ped, alleleFreq=0.1, founderDist=f))
+    expect_warning(RVsharing(ped, kinshipCoeff=0.1, founderDist=f))
 })
 
 test_that('list of pedigrees',
 {
     data(samplePedigrees)
+
+    probs <- sapply(samplePedigrees, RVsharing)
+    ids <- as.character(sapply(samplePedigrees, function(p) p$famid[1]))
     result <- RVsharing(samplePedigrees)
-    print(result)
+
+    expect_equal(names(result), ids)
+    expect_equal(unname(result), unname(probs))
 })
 
 test_that('monte carlo close to exact',
 {
+    set.seed(0)
+
     monteCarloComp <- function(ped, freq=NA, kin=NA)
     {
         abs(RVsharing(ped, alleleFreq=freq, kinshipCoeff=kin) - 
-            RVsharing(ped, alleleFreq=freq, kinshipCoeff=kin,
-            nSim=2e4))
+            RVsharing(ped, alleleFreq=freq, kinshipCoeff=kin, nSim=1e5))
     }
 
     data(samplePedigrees)
-    tol <- 0.01
-    set.seed(2)
+    tol <- 0.02
+    MAF <- 0.01
 
     expect_equal(monteCarloComp(samplePedigrees$firstCousinPair),
         0, tolerance=tol)
     expect_equal(monteCarloComp(samplePedigrees$secondCousinPair),
-        0, tolerance=tol)
-    expect_equal(monteCarloComp(samplePedigrees$thirdCousinPair),
-        0, tolerance=tol)
-    expect_equal(monteCarloComp(samplePedigrees$firstCousinTriple),
-        0, tolerance=tol)
-    expect_equal(monteCarloComp(samplePedigrees$secondCousinTriple),
         0, tolerance=tol)
     expect_equal(monteCarloComp(samplePedigrees$secondCousinPairWithLoop),
         0, tolerance=tol)
@@ -49,36 +49,13 @@ test_that('monte carlo close to exact',
         0, tolerance=tol)
 
     expect_equal(monteCarloComp(samplePedigrees$firstCousinPair,
-        freq=0.01), 0, tolerance=tol)
-    expect_equal(monteCarloComp(samplePedigrees$secondCousinPair,
-        freq=0.01), 0, tolerance=tol)
-    expect_equal(monteCarloComp(samplePedigrees$thirdCousinPair,
-        freq=0.01), 0, tolerance=tol)
-    expect_equal(monteCarloComp(samplePedigrees$firstCousinTriple,
-        freq=0.01), 0, tolerance=tol)
+        freq=MAF), 0, tolerance=tol)
     expect_equal(monteCarloComp(samplePedigrees$secondCousinTriple,
-        freq=0.01), 0, tolerance=tol)
+        freq=MAF), 0, tolerance=tol)
     expect_equal(monteCarloComp(samplePedigrees$secondCousinPairWithLoop,
-        freq=0.01), 0, tolerance=tol)
+        freq=MAF), 0, tolerance=tol)
     expect_equal(monteCarloComp(samplePedigrees$firstCousinInbreeding,
-        freq=0.01), 0, tolerance=tol)
+        freq=MAF), 0, tolerance=tol)
     expect_equal(monteCarloComp(samplePedigrees$twoGenerationsInbreeding,
-        freq=0.01), 0, tolerance=tol)
-
-    expect_equal(monteCarloComp(samplePedigrees$firstCousinPair,
-        kin=0.01), 0, tolerance=tol)
-    expect_equal(monteCarloComp(samplePedigrees$secondCousinPair,
-        kin=0.01), 0, tolerance=tol)
-    expect_equal(monteCarloComp(samplePedigrees$thirdCousinPair,
-        kin=0.01), 0, tolerance=tol)
-    expect_equal(monteCarloComp(samplePedigrees$firstCousinTriple,
-        kin=0.01), 0, tolerance=tol)
-    expect_equal(monteCarloComp(samplePedigrees$secondCousinTriple,
-        kin=0.01), 0, tolerance=tol)
-    expect_equal(monteCarloComp(samplePedigrees$secondCousinPairWithLoop,
-        kin=0.01), 0, tolerance=tol)
-    expect_equal(monteCarloComp(samplePedigrees$firstCousinInbreeding,
-        kin=0.01), 0, tolerance=tol)
-    expect_equal(monteCarloComp(samplePedigrees$twoGenerationsInbreeding,
-        kin=0.01), 0, tolerance=tol)
+        freq=MAF), 0, tolerance=tol)
 })

@@ -1,11 +1,11 @@
-_ unit tests
+X unit tests
 X documentation
-_ man page citations
-_ examples
-_ vignette
-_ biocViews
-_ inst/NEWS
-_ package name
+X man page citations
+X vignette
+X biocViews
+X inst/NEWS
+X package name
+X RVgene & RVgeneAllShare match old results
 _ R CMD check
 _ R CMD BiocCheck
 _ R CMD build size < 4MB

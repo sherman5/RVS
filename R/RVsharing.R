@@ -40,8 +40,13 @@ NULL
 #' @examples
 #'  data("samplePedigrees")
 #'  RVsharing(samplePedigrees$firstCousinPair)
-setGeneric('RVsharing', function(ped, carriers=NA, alleleFreq=NA,
-kinshipCoeff=NA, nSim=NA, founderDist=NA, useAffected=FALSE, ...)
+#' @references Bureau, A., Younkin, S., Parker, M.M., Bailey-Wilson, J.E.,
+#'  Marazita, M.L., Murray, J.C., Mangold, E., Albacha-Hejazi, H., Beaty, T.H.
+#'  and Ruczinski, I. (2014) Inferring rare disease risk variants based on
+#'  exact probabilities of sharing by multiple affected relatives.
+#'  Bioinformatics, 30(15): 2189-96, doi:10.1093/bioinformatics/btu198.
+setGeneric('RVsharing', function(ped, carriers=NULL, alleleFreq=NA,
+kinshipCoeff=NA, nSim=NA, founderDist=NULL, useAffected=FALSE, ...)
     {standardGeneric('RVsharing')})
 
 #' @rdname RVsharing-methods
@@ -91,7 +96,7 @@ setMethod('RVsharing', signature(ped='list'),
 function(ped, carriers, alleleFreq, kinshipCoeff, nSim,
 founderDist, useAffected, ...)
 {
-    if (is.na(carriers)) carriers <- rep(NA, length(ped))
+    if (is.null(carriers)) carriers <- rep(NULL, length(ped))
     probs <- sapply(1:length(ped), function(i) RVsharing(ped[[i]],
         carriers[[i]], alleleFreq, kinshipCoeff, nSim, founderDist, ...))
     id <- as.character(sapply(ped, function(p) p$famid[1]))
@@ -108,8 +113,10 @@ founderDist, useAffected, ...)
 #' @return throws error if arguments invalid
 checkArgs <- function(alleleFreq, kinshipCoeff, nSim, founderDist)
 {
-    if (!is.na(alleleFreq) & !is.na(founderDist))
+    if (!is.na(alleleFreq) & !is.null(founderDist))
         warning('founderDist ignored since alleleFreq was provided')
+    if (!is.na(kinshipCoeff) & !is.null(founderDist))
+        warning('founderDist ignored since kinshipCoeff was provided')
     if (!is.na(alleleFreq) & !is.na(kinshipCoeff))
         stop('can\'t use both alleleFreq and kinshipCoeff')   
 }

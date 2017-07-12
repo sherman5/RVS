@@ -11,7 +11,7 @@ NULL
 #' @inheritParams RVsharing
 #' @return sharing probability between all carriers in pedigree
 monteCarloSharingProb <- function(procPed, alleleFreq=NA, kinshipCoeff=NA,
-nSim, founderDist=NA)
+nSim, founderDist=NULL)
 {
     if (!is.na(alleleFreq)) # known allele frequency in population
     {
@@ -25,7 +25,7 @@ nSim, founderDist=NA)
         founderDist <- function(n)
             {sample(c(rep(0,n-2), 1, ifelse(runif(1) < w, 0, 1)))}
     }
-    else if (is.na(founderDist)) # one founder introduces
+    else if (is.null(founderDist)) # one founder introduces
     {
         founderDist <- function(n) sample(c(rep(0,n-1),1))
     }
@@ -45,12 +45,21 @@ nSim, founderDist=NA)
 #' @return sharing probability between all carriers in pedigree
 runMonteCarlo <- function(procPed, founderDist, nSim)
 {
-    oneSim <- function(dummy) # carry out one simulation of the pedigree
+    # carry out one simulation of the pedigree, return relevant events
+    oneSim <- function(dummy)
     {
+        # simulate pedigree states
         states <- rep(NA, procPed$size)
         states[procPed$founders] <- founderDist(length(procPed$founders))   
-        sim <- simulatePedigree(procPed, states)
-        return(c(all(sim$carriers >= 1), sum(sim$affected) >= 1))
+        states <- simulatePedigree(procPed, states)
+
+        # compute TRUE/FALSE needed for numerator and denominator probabilities
+        denom <- sum(states[procPed$affected]) >= 1
+        numer <- all(states[procPed$carriers] >= 1)        
+        nonCarriers <- setdiff(procPed$affected, procPed$carriers)
+        if (length(nonCarriers))
+            numer <- numer & all(states[nonCarriers] == 0)
+        return(c(numer, denom))
     }
 
     if (is.element('parallel', installed.packages()[,1]) & nSim > 2e4)
@@ -95,8 +104,7 @@ simulatePedigree <- function(procPed, states)
         }
         remain <- which(is.na(states)) # update which states remaining
     }
-    return(list(affected=states[procPed$affected],
-        carriers=states[procPed$carriers]))
+    return(states)
 }
 
 #' depreciated function

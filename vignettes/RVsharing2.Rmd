@@ -1,6 +1,6 @@
 ---
 title: "The RVS (Rare Variant Sharing) Package"
-author: "Thomas Sherman"
+author: "Alexandre Bureau, Ingo Ruczinski, Samuel Younkin, Thomas Sherman"
 data: "`r Sys.Date()`"
 package: "`r pkg_ver('RVsharing2')`"
 bibliography: References.bib
@@ -19,11 +19,11 @@ library(kinship2)
 
 # Introduction
 
-The primary use of the *RVS* package is to compute rare variant sharing probabilities outlined in @METHODS.
+The primary use of the *RVS* package is to compute the rare variant sharing probabilities outlined in @METHODS.
 
 # Pedigree format
 
-The primary input used in this package is a *Pedigree* object from the *kinship2* package on CRAN (@KINSHIP_PKG). The package vignette outlines the basic steps to creating a *Pedigree* object, see here (https://cran.r-project.org/web/packages/kinship2/vignettes/pedigree.pdf). Only the *id*, *findex*, *mindex* fields are necessary for computing sharing probabilities. The *RVS* package comes with 8 sample pedigrees.
+The main input used in this package is a *Pedigree* object from the *kinship2* package on CRAN (@KINSHIP_PKG). The package vignette (https://cran.r-project.org/web/packages/kinship2/vignettes/pedigree.pdf) outlines the basic steps to creating a *Pedigree*. Only the *id*, *findex*, *mindex* fields are necessary for computing sharing probabilities. The *RVS* package comes with 8 sample pedigrees.
 
 ```{r}
 data(samplePedigrees) # load sample pedigrees
@@ -32,23 +32,22 @@ kinship2::plot.pedigree(samplePedigrees$firstCousinPair) # plot pedigree
 
 # Computing Standard Sharing Probabilities
 
-The primary function is *RVsharing*. Most of the package features are accessible through this function. 
+The primary function for computing sharing probabilities is *RVsharing*. There are two simple cases in which the calculation is straightforward.
 
 ## Assuming One Founder Introduces the Variant
 
+In this case, we assume the variant is rare enough so that the probability of more than one founder introducing it to the pedigree is negligible. This is the default scenario for *RVsharing*.
+
 ```{r}
-data(samplePedigrees)
-firstCousinProb <- RVsharing(samplePedigrees$firstCousinPair)
+RVsharing(samplePedigrees$firstCousinPair)
 ```
 
 ## When Allele Frequency is Known in the Founder Population
 
+In this case, we know the allele freqeuncy of the rare variant in the population the founders are drawn from. This allows for quick, exact calculation of the sharing probability. To specify the allele frequency, use the argument *alleleFreq*.
+
 ```{r}
-defaultProbs <- c()
-suppressMessages(defaultProbs[1] <- RVsharing(samplePedigrees$firstCousinPair))
-suppressMessages(defaultProbs[2] <- RVsharing(samplePedigrees$secondCousinPair))
-suppressMessages(defaultProbs[3] <- RVsharing(samplePedigrees$firstCousinTriple))
-suppressMessages(defaultProbs[4] <- RVsharing(samplePedigrees$secondCousinTriple))
+defaultProbs <- sapply(samplePedigrees[1:4], function(p) suppressMessages(RVsharing(p)))
 
 exactProbs <- list()
 freq <- c(0.001,0.0025,0.005,0.01,0.025,0.05)
@@ -68,55 +67,89 @@ Similiar to Figure 2 in @METHODS
 
 ## Sharing Probabilties in a Subset of a Pedigree
 
+By default, *RVsharing* will compute the probability that all of the final descendants share the variant given that it is seen in at least one of them. Final descendants are defined as subjects of the pedigree with no children. This event can be customized with the *carriers* and *useAffected* arguments.
+
+If the argument *carriers* is provided, then the probability of all carriers having the variant given it is seen in at least one final descendant will be computed.
+
+If the argument *useAffected* is TRUE and the pedigree has a slot for *affected*, then the probability of all carriers having the variant given it is seen in at least one affected will be computed.
+
+These two arguments can be used individually or in combination, the only restriction is that carriers must be a subset of affected.
+
+```{r}
+ped <- samplePedigrees$firstCousinTriple
+ped$affected[9] <- 0
+plot(ped)
+
+p <- RVsharing(ped)
+p <- RVsharing(ped, useAffected=TRUE)
+p <- RVsharing(ped, carriers=c(9,10))
+p <- RVsharing(ped, carriers=c(10,11), useAffected=TRUE)
+```
+
 # Correcting for Related Founders
 
-When founders of the pedigree are related, the computation is more tricky. 'RVsharing' allows the user to apply a correction for this fact in two different ways.
+When founders of the pedigree are related, the computation is more tricky. *RVsharing* allows the user to apply a correction for this fact in two different ways. The first way, explained below, is a method from @METHODS that uses the mean kinship ceofficient among founders to apply a correction. More detailed corrections can be made when doing a monte carlo simulation, and that method is outlined in the following section.
 
 ## Exact Computation with Kinship Coefficient
 
-In this method, a mean kinship coefficient among the founders is given. Using the methods from @METHODS, RVsharing then computes the sharing probability on the assumption one or two founders introduce the variant. Weighting each probability using a calculation based on the mean kinship coefficient. To use this correction, provide the parameter 'kinshipCoeff'.
+In this method, a mean kinship coefficient among the founders is passed in with the *kinshipCoeff* parameter. Using the methods from @METHODS, *RVsharing* then computes the sharing probability on the assumption one or two founders introduce the variant. Weighing each probability using a calculation based on the mean kinship coefficient.
 
 ```{r}
-print(RVsharing(samplePedigrees$firstCousinPair, kinshipCoeff = 0.05))
-kCoeff <- seq(0.005,0.15,0.005)
-sharingProb <- sapply(kCoeff, function(c) RVsharing(samplePedigrees$firstCousinPair, kinshipCoeff=c))
+p <- RVsharing(samplePedigrees$firstCousinPair)
+p <- RVsharing(samplePedigrees$firstCousinPair, kinshipCoeff = 0.05)
+kCoeff <- seq(0.01,0.2,0.01)
+sharingProb <- sapply(kCoeff, function(c) suppressMessages(RVsharing(samplePedigrees$firstCousinPair, kinshipCoeff=c)))
 plot(kCoeff, sharingProb, type='l')
 ```
 
-## Estimating Kinship Coefficient Among Founders
+## Estimating Mean Kinship Coefficient Among Founders
+
+Given the observed kinship between two subjects, $\hat{\phi}_{i,j}$, and the expected kinship , $\phi^p_{i,j}$, it is possible to estimate the mean kinship among the founders, $\hat{\phi^f}_{i,j}$. Averaging this estimate over all sequenced subjects gives a global estimate for the mean kinship coefficient. The relationship is given by:
+
+$\hat{\phi^f}_{i,j} \kappa_{i,j} = \hat{\phi}_{i,j} - \phi^p_{i,j}$
+
+Where $\kappa_{i,j}$ is computed with the function *ComputeKinshipPropCoeff*. This function returns a matrix where the ith row and jth column correspond to $\kappa_{i,j}$.
+
+```{r}
+plot(samplePedigrees$twoGenerationsInbreeding)
+ComputeKinshipPropCoef(samplePedigrees$twoGenerationsInbreeding)
+```
 
 # Using Monte Carlo Simulation
 
-'RVsharing' also allows for estimating sharing probabilities through monte carlo simulation. The primary use of this feature is for calculating sharing probabilities under non standard assumptions about the founders. See [Calculating P-Values across multiple families](#Calculating P Values across multiple families). However, this feature is available for the standard assumptions as well. To run a monte carlo simulation, specify all parameters as normal and additionally provide the 'nSimulations' parameter.
+*RVsharing* also allows for estimating sharing probabilities through monte carlo simulation. The primary use of this feature is for calculating sharing probabilities under non standard assumptions about the founders. However, this feature is available for the standard assumptions as well. To run a monte carlo simulation, specify all parameters as normal and additionally provide the *nSim* parameter specifying how many simulations should be run.
+
+## Standard Sharing Probabilties
 
 ```{r}
-print(RVsharing(samplePedigrees$firstCousinPair))
-print(RVsharing(samplePedigrees$firstCousinPair, nSim=1e4))
-```
+p <- RVsharing(samplePedigrees$firstCousinPair)
+p <- RVsharing(samplePedigrees$firstCousinPair, nSim=1e4)
 
-## Standard Sharing Probabilities
+p <- RVsharing(samplePedigrees$firstCousinPair, alleleFreq=0.01)
+p <- RVsharing(samplePedigrees$firstCousinPair, alleleFreq=0.01, nSim=1e4)
+
+p <- RVsharing(samplePedigrees$firstCousinPair, kinshipCoeff=0.05)
+p <- RVsharing(samplePedigrees$firstCousinPair, kinshipCoeff=0.05, nSim=1e4)
+```
 
 ## Custom Founder Distributions 
 
-This method allows for more complex relationships among the founders to be given. 'RVsharing' allows for a complete distribution among the founders to be passed in as a parameter - 'founderDist'. This function should accept a single argument, N, and should return a vector of length N with values in {0,1,2} representing the number of copies of the variant each founder has.
+This method allows for more complex relationships among the founders to be given. *RVsharing* allows for a complete distribution among the founders to be passed in as the parameter *founderDist*. This function should accept a single argument, N, and should return a vector of length N with values in {0,1,2} representing the number of copies of the variant each founder has.
 
 ```{r}
 fDist <- function(N) sample(c(rep(0,N-1), 1)) # assumption that 1 founder introduces
-print(RVsharing(samplePedigrees$firstCousinPair, nSim=1e4, founderDist=fDist))
-print(RVsharing(samplePedigrees$firstCousinPair))
+RVsharing(samplePedigrees$firstCousinPair, nSim=1e4, founderDist=fDist)
+RVsharing(samplePedigrees$firstCousinPair)
 ```
 
 # Calculating Sharing Probabilties Across Multiple Families
 
-For variants seen in only one family, the RVsharing probability can be interpreted directly as a P-value from a Bernoulli trial. For variants seen in M families and shared by affected relatives in a subset S of them, the P-value can be obtained as the sum of the probability of events as (or more) extreme as the observed sharing in the family subset S. 
-```{r}
-variantSharedPeds <- list(samplePedigrees$firstCousinPair, samplePedigrees$secondCousinPair)
-variantNotSharedPeds <- list(samplePedigrees$firstCousinTriple)
-sharedProbs <- sapply(variantSharedPeds, RVsharing)
-notSharedProbs <- sapply(variantNotSharedPeds, RVsharing)
-#multipleFamilyPValue(sharedProbs, notSharedProbs)
-```
+For variants seen in only one family, the sharing probability can be interpreted directly as a P-value from a Bernoulli trial. For variants seen in M families and shared by affected relatives in a subset S of them, the P-value can be obtained as the sum of the probability of events as (or more) extreme as the observed sharing in the family subset S. The function *multipleFamilyPValue* takes a vector of sharing probabilities and a vector of TRUE/FALSE describing whether or not the variant was shared among the carriers.
 
-# Sharing Probabilities in a Genomic Region
+```{r}
+probs <- sapply(samplePedigrees, function(p) suppressMessages(RVsharing(p)))
+observed <- c(F,F,F,T,T,F,F,F)
+multipleFamilyPValue(probs, observed)
+```
 
 # References

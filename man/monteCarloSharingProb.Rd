@@ -5,7 +5,7 @@
 \title{calculates sharing probability by simulating pedigree outcomes}
 \usage{
 monteCarloSharingProb(procPed, alleleFreq = NA, kinshipCoeff = NA, nSim,
-  founderDist = NA)
+  founderDist = NULL)
 }
 \arguments{
 \item{procPed}{pedigree that has been through \code{processPedigree}}

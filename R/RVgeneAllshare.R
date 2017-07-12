@@ -65,6 +65,12 @@
 #'  by all affected subjects.
 #'  potentialp Minimum achievable p-value if all affected subjects were 
 #'  carriers of a rare variant.
+#' @references http://pngu.mgh.harvard.edu/~purcell/plink/data.shtml#ped	
+#' @references Bureau, A., Younkin, S., Parker, M.M., Bailey-Wilson, J.E.,
+#'  Marazita, M.L., Murray, J.C., Mangold, E., Albacha-Hejazi, H., Beaty, T.H.
+#'  and Ruczinski, I. (2014) Inferring rare disease risk variants based on
+#'  exact probabilities of sharing by multiple affected relatives.
+#'  Bioinformatics, 30(15): 2189-96, doi:10.1093/bioinformatics/btu198.
 RVgene_allshare <- function(ped.mat, ped.listfams, sites, fams, pshare.vec,
 type="alleles", minor.allele.vec, precomputed.prob=list(0), maxdim = 1e9)
 {
@@ -128,7 +134,7 @@ type="alleles", minor.allele.vec, precomputed.prob=list(0), maxdim = 1e9)
         {
             if (fams.vec[f] %in% names(precomputed.prob)) 
                 tmp = precomputed.prob[[fams.vec[f]]][length(carriers)]
-            else tmp = RVsharing(ped.listfams[[fams.vec[f]]],carriers=carriers)@pshare
+            else tmp = suppressMessages(RVsharing(ped.listfams[[fams.vec[f]]],carriers=carriers))
             # If the RV has lower sharing probability, we keep it for this family
             if (is.na(famRVprob[fams.vec[f]]) || tmp < famRVprob[fams.vec[f]])
             {
@@ -156,7 +162,7 @@ type="alleles", minor.allele.vec, precomputed.prob=list(0), maxdim = 1e9)
             if (2^nfam.info <= maxdim)
             {
                 pshare = list(ped.tocompute.vec=fam.info,pshare=pshare.vec[fam.info])
-                pall = get.psubset(fam.info,not,pshare)
+                pall = suppressWarnings(get.psubset(fam.info,not,pshare))
             }
             else pall = NA
         }

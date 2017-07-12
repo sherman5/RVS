@@ -25,6 +25,11 @@ setOldClass('pedigree')
 #' @examples
 #'  data(samplePedigrees)
 #'  ComputeKinshipPropCoef(samplePedigrees$firstCousinTriple)
+#' @references Bureau, A., Younkin, S., Parker, M.M., Bailey-Wilson, J.E.,
+#'  Marazita, M.L., Murray, J.C., Mangold, E., Albacha-Hejazi, H., Beaty, T.H.
+#'  and Ruczinski, I. (2014) Inferring rare disease risk variants based on
+#'  exact probabilities of sharing by multiple affected relatives.
+#'  Bioinformatics, 30(15): 2189-96, doi:10.1093/bioinformatics/btu198.
 setGeneric('ComputeKinshipPropCoef', function(ped)
     {standardGeneric('ComputeKinshipPropCoef')})
 
@@ -41,7 +46,7 @@ setGeneric('ComputeKinshipPropCoef', function(ped)
 #' @examples 
 #'  data(samplePedigrees)
 #'  processPedigree(samplePedigrees$firstCousinPair)
-setGeneric('processPedigree', function(ped, carriers=NA)
+setGeneric('processPedigree', function(ped, carriers=NULL)
     {standardGeneric('processPedigree')})
 
 #################### METHODS ####################
@@ -63,14 +68,16 @@ function(ped, carriers)
     else                      affected <- finalDescendants
 
     # get carriers, default to affected if not provided
-    if (is.na(carriers))   carriers <- affected
-    else                   carriers <- which(ped$id %in% carriers)
+    if (is.null(carriers))   carriers <- affected
+    else                      carriers <- which(ped$id %in% carriers)
  
     # check pedigree is valid
     if (sum(affected %in% founders) > 0)
         stop('some founders are affected')
     if (length(affected) < 2)
         stop('need at least 2 affected subjects')
+    if (sum(!carriers %in% affected) > 0)
+        stop('carriers must be a subset of affected')
 
     # save info in list
     return(list('origID'=origID, 'ped'=ped, 'parents'=parents,

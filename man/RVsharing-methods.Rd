@@ -7,15 +7,15 @@
 \alias{RVsharing,pedigree-method}
 \title{probability of sharing a rare variant among relatives}
 \usage{
-RVsharing(ped, carriers = NA, alleleFreq = NA, kinshipCoeff = NA,
-  nSim = NA, founderDist = NA, useAffected = FALSE, ...)
+RVsharing(ped, carriers = NULL, alleleFreq = NA, kinshipCoeff = NA,
+  nSim = NA, founderDist = NULL, useAffected = FALSE, ...)
 
-\S4method{RVsharing}{pedigree}(ped, carriers = NA, alleleFreq = NA,
-  kinshipCoeff = NA, nSim = NA, founderDist = NA, useAffected = FALSE,
+\S4method{RVsharing}{pedigree}(ped, carriers = NULL, alleleFreq = NA,
+  kinshipCoeff = NA, nSim = NA, founderDist = NULL, useAffected = FALSE,
   ...)
 
-\S4method{RVsharing}{list}(ped, carriers = NA, alleleFreq = NA,
-  kinshipCoeff = NA, nSim = NA, founderDist = NA, useAffected = FALSE,
+\S4method{RVsharing}{list}(ped, carriers = NULL, alleleFreq = NA,
+  kinshipCoeff = NA, nSim = NA, founderDist = NULL, useAffected = FALSE,
   ...)
 }
 \arguments{

@@ -6,9 +6,9 @@
 \alias{processPedigree,pedigree-method}
 \title{extract useful information from a pedigree}
 \usage{
-processPedigree(ped, carriers = NA)
+processPedigree(ped, carriers = NULL)
 
-\S4method{processPedigree}{pedigree}(ped, carriers = NA)
+\S4method{processPedigree}{pedigree}(ped, carriers = NULL)
 }
 \arguments{
 \item{ped}{pedigree object (S3)}

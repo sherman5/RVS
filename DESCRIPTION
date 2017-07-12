@@ -1,12 +1,12 @@
 Package: RVS
 Type: Package
-Title: Probability of Sharing Rare Variants among Relatives
+Title: Computes estimates of the probability of related individuals sharing a rare variant
 Version: 0.99.0
-Date: 2017-02-03
+Date: 2017-07-11
 Author: Alexandre Bureau, Ingo Ruczinski, Samuel Younkin, Thomas Sherman
 Maintainer: Thomas Sherman <tsherma4@jhu.edu>
-Description: Computes the probability of related individuals
-    sharing a rare variant.
+Description: The RVS package computes rare variant sharing probabilities
+    under several different conditions.
 License: GPL-2
 Depends:
     R (>= 3.4.0)
@@ -24,7 +24,8 @@ Suggests:
 Enhances: parallel
 VignetteBuilder: knitr
 RoxygenNote: 5.0.1
-biocViews: Genetics
+biocViews: Genetics, GenomeWideAssociation, VariantDetection, ExomeSeq,
+    WholeGenome
 Collate:
     'RVgene.R'
     'RVgeneAllshare.R'

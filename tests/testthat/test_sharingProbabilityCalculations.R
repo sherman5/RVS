@@ -44,26 +44,4 @@ test_that('one founder sharing probability',
         37/1975)
 })
 
-test_that('two founder sharing probability',
-{
-    data(samplePedigrees)
 
-    phi <- 0.01
-
-#    expect_equal(RVsharing(samplePedigrees$firstCousinPair,
-#        kin=phi), 0.074, tol=1e-3)
-#    expect_equal(RVsharing(samplePedigrees$secondCousinPair,
-#        kin=phi), 0.0228, tol=1e-3)
-#    expect_equal(RVsharing(samplePedigrees$thirdCousinPair,
-#        kin=phi), 0.0106, tol=1e-3)
-#    expect_equal(RVsharing(samplePedigrees$firstCousinTriple,
-#        kin=phi), 0.0134, tol=1e-3)
-#    expect_equal(RVsharing(samplePedigrees$secondCousinTriple,
-#        kin=phi), 0.00174, tol=1e-3)
-#    expect_equal(RVsharing(samplePedigrees$secondCousinPairWithLoop,
-#        kin=phi), 0.056, tol=1e-3)
-#    expect_equal(RVsharing(samplePedigrees$firstCousinInbreeding,
-#        kin=phi), 0.119, tol=1e-3)
-#    expect_equal(RVsharing(samplePedigrees$twoGenerationsInbreeding,
-#        kin=phi), 0.0251, tol=1e-3)
-})

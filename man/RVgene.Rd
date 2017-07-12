@@ -103,6 +103,11 @@ The function extracts the carriers of the minor allele at each
  are determined by verifying if the length of the carrier vector equals
  the maximum value of N.list for that family. The p-value of the test
  requiring sharing by all affected subjects is computed by calling
- get.psubset.
+ multipleFamilyPValue.
+}
+\references{
+http://pngu.mgh.harvard.edu/~purcell/plink/data.shtml#ped
+
+Bureau, A., Younkin, S., Parker, M.M., Bailey-Wilson, J.E., Marazita, M.L., Murray, J.C., Mangold, E., Albacha-Hejazi, H., Beaty, T.H. and Ruczinski, I. (2014) Inferring rare disease risk variants based on exact probabilities of sharing by multiple affected relatives. Bioinformatics, 30(15): 2189-96, doi:10.1093/bioinformatics/btu198.
 }
 
