@@ -9,15 +9,15 @@
 \usage{
 RVsharing(ped, carriers = NULL, alleleFreq = NA, kinshipCoeff = NA,
   nSim = NA, founderDist = NULL, useAffected = FALSE,
-  runParallel = FALSE, ...)
+  runParallel = FALSE, kinshipOrder = 5, ...)
 
 \S4method{RVsharing}{pedigree}(ped, carriers = NULL, alleleFreq = NA,
   kinshipCoeff = NA, nSim = NA, founderDist = NULL, useAffected = FALSE,
-  runParallel = FALSE, ...)
+  runParallel = FALSE, kinshipOrder = 5, ...)
 
 \S4method{RVsharing}{list}(ped, carriers = NULL, alleleFreq = NA,
   kinshipCoeff = NA, nSim = NA, founderDist = NULL, useAffected = FALSE,
-  runParallel = FALSE, ...)
+  runParallel = FALSE, kinshipOrder = 5, ...)
 }
 \arguments{
 \item{ped}{S3 pedigree object or a list of pedigree objects}
@@ -39,6 +39,10 @@ when simulating probability with nSim}
 among the affected subjects instead of the final descendants}
 
 \item{runParallel}{run simulation in parallel}
+
+\item{kinshipOrder}{order of the polynomial approximation to the distribtion
+of the number of distinct alleles in the founders (d in Bureau et al.).
+Must be <= 5}
 
 \item{...}{allows for arguments in the style of v1.7}
 }

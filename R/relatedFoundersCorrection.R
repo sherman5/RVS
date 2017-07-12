@@ -58,7 +58,7 @@ inferTheta <- function(phi, phiVec)
 #'  number of distinct alleles in the founders (noted d in Bureay et al.).
 #'  Must be <= 5
 #' @return P[FjU] (scalar)
-computePFU <- function(nf, theta, ord=2)
+computePFU <- function(nf, theta, ord=5)
 {
     a = (2*nf):(2*nf-ord)
     dist = c(1,theta,theta^2/2,theta^3/6,theta^4/24,theta^5/120)[1:(ord+1)]
@@ -70,14 +70,17 @@ computePFU <- function(nf, theta, ord=2)
 #' @keywords internal
 #'
 #' @param nf number of founders
-#' @param  kinshipCoeff mean kinship coefficient among all founders
+#' @param kinshipCoeff mean kinship coefficient among all founders
+#' @param ord order of the polynomial approximation to the distribtion of the
+#'  number of distinct alleles in the founders (noted d in Bureay et al.).
+#'  Must be <= 5
 #' @return weight used in probability calculation
 #' @keywords internal
-relatedFoundersCorrection <- function(nf, kinshipCoeff)
+relatedFoundersCorrection <- function(nf, kinshipCoeff, ord=5)
 {
-    phiVec <- computePhiVec(nf, 2*nf-5)
+    phiVec <- computePhiVec(nf, 2*nf-ord)
     theta <- inferTheta(kinshipCoeff, phiVec)
-    PFU <- computePFU(nf, theta, 5)
+    PFU <- computePFU(nf, theta, ord)
     return(nf * PFU)
 }
 

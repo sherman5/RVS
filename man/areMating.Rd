@@ -19,5 +19,5 @@ true if both subjects share a child
 \description{
 determine if two subjects have a child together
 }
-\keyword{interal}
+\keyword{internal}
 

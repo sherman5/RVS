@@ -4,12 +4,16 @@
 \alias{twoFounderSharingProb}
 \title{calculate the sharing probability when two founders can introduce variant}
 \usage{
-twoFounderSharingProb(procPed, kinshipCoeff)
+twoFounderSharingProb(procPed, kinshipCoeff, kinshipOrder)
 }
 \arguments{
 \item{procPed}{pedigree that has been through processPedigree()}
 
 \item{kinshipCoeff}{mean kinship coefficient among the founders}
+
+\item{kinshipOrder}{order of the polynomial approximation to the distribtion
+of the number of distinct alleles in the founders (d in Bureau et al.).
+Must be <= 5}
 }
 \value{
 sharing probability

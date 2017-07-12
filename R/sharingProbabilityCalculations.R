@@ -68,8 +68,11 @@ oneFounderSharingProb <- function(procPed)
 #'  pairs.
 #' @param procPed pedigree that has been through processPedigree()
 #' @param kinshipCoeff mean kinship coefficient among the founders
+#' @param kinshipOrder order of the polynomial approximation to the distribtion
+#'  of the number of distinct alleles in the founders (d in Bureau et al.).
+#'  Must be <= 5
 #' @return sharing probability
-twoFounderSharingProb <- function(procPed, kinshipCoeff)
+twoFounderSharingProb <- function(procPed, kinshipCoeff, kinshipOrder)
 {
     # set all founders to 0 (no variant)
     net <- createNetwork(procPed)
@@ -79,7 +82,8 @@ twoFounderSharingProb <- function(procPed, kinshipCoeff)
     # calculate kinship correction and initialize variables
     numer <- denom <- 0
     remainingFounders <- procPed$founders
-    cor <- relatedFoundersCorrection(length(procPed$founders), kinshipCoeff)
+    cor <- relatedFoundersCorrection(length(procPed$founders),
+        kinshipCoeff, kinshipOrder)
     for (f1 in procPed$founders) #TODO: use sapply here
     {
         # condition on founder

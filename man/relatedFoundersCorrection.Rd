@@ -5,12 +5,16 @@
 \title{make the neccesary correction for when founders have a non-zero
  kinship coefficient}
 \usage{
-relatedFoundersCorrection(nf, kinshipCoeff)
+relatedFoundersCorrection(nf, kinshipCoeff, ord = 5)
 }
 \arguments{
 \item{nf}{number of founders}
 
 \item{kinshipCoeff}{mean kinship coefficient among all founders}
+
+\item{ord}{order of the polynomial approximation to the distribtion of the
+number of distinct alleles in the founders (noted d in Bureay et al.).
+Must be <= 5}
 }
 \value{
 weight used in probability calculation

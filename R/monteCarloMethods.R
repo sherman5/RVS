@@ -11,7 +11,7 @@ NULL
 #' @inheritParams RVsharing
 #' @return sharing probability between all carriers in pedigree
 monteCarloSharingProb <- function(procPed, alleleFreq=NA, kinshipCoeff=NA,
-nSim, founderDist=NULL, runParallel=FALSE)
+nSim, founderDist=NULL, runParallel=FALSE, kinshipOrder=5)
 {
     if (!is.na(alleleFreq)) # known allele frequency in population
     {
@@ -21,7 +21,7 @@ nSim, founderDist=NULL, runParallel=FALSE)
     else if (!is.na(kinshipCoeff)) # related founders
     {
         w <- relatedFoundersCorrection(length(procPed$founders),
-            kinshipCoeff) # prob one founder introduces variant
+            kinshipCoeff, kinshipOrder) # prob one founder introduces variant
         founderDist <- function(n)
             {sample(c(rep(0,n-2), 1, ifelse(runif(1) < w, 0, 1)))}
     }

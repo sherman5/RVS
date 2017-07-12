@@ -4,7 +4,7 @@
 \alias{computePFU}
 \title{computation of P[FjU] using equation 21 of Bureau et al.}
 \usage{
-computePFU(nf, theta, ord = 2)
+computePFU(nf, theta, ord = 5)
 }
 \arguments{
 \item{nf}{number of founders of the pedigree}

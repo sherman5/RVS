@@ -159,7 +159,7 @@ ancestorDistance <- function(procPed, a, d)
 }
 
 #' determine if two subjects have a child together
-#' @keywords interal
+#' @keywords internal
 #'
 #' @param procPed pedigree that has been through \code{processPedigree}
 #' @param f1 subject 1

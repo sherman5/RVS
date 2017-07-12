@@ -36,6 +36,9 @@ NULL
 #' @param useAffected allows the user to condition on seeing the variant
 #'  among the affected subjects instead of the final descendants
 #' @param runParallel run simulation in parallel
+#' @param kinshipOrder order of the polynomial approximation to the distribtion
+#'  of the number of distinct alleles in the founders (d in Bureau et al.).
+#'  Must be <= 5
 #' @param ... allows for arguments in the style of v1.7
 #' @return sharing probability between all carriers in pedigree
 #' @examples
@@ -48,14 +51,14 @@ NULL
 #'  Bioinformatics, 30(15): 2189-96, doi:10.1093/bioinformatics/btu198.
 setGeneric('RVsharing', function(ped, carriers=NULL, alleleFreq=NA,
 kinshipCoeff=NA, nSim=NA, founderDist=NULL, useAffected=FALSE,
-runParallel=FALSE, ...)
+runParallel=FALSE, kinshipOrder=5, ...)
     {standardGeneric('RVsharing')})
 
 #' @rdname RVsharing-methods
 #' @aliases RVsharing
 setMethod('RVsharing', signature(ped='pedigree'),
 function(ped, carriers, alleleFreq, kinshipCoeff, nSim,
-founderDist, useAffected, runParallel, ...)
+founderDist, useAffected, runParallel, kinshipOrder, ...)
 {
     # needed for backwards compatibility with v1.7
     ped <- oldArgs(ped, list(...)$data, list(...)$dad.id, list(...)$mom.id)
@@ -70,7 +73,7 @@ founderDist, useAffected, runParallel, ...)
     {
         prob <- monteCarloSharingProb(procPed=procPed, alleleFreq=alleleFreq,
             kinshipCoeff=kinshipCoeff, nSim=nSim, founderDist=founderDist,
-            runParallel=runParallel)
+            runParallel=runParallel, kinshipOrder=kinshipOrder)
     }
     else if (!is.na(alleleFreq))
     {
@@ -78,7 +81,7 @@ founderDist, useAffected, runParallel, ...)
     }        
     else if (!is.na(kinshipCoeff))
     {
-        prob <- twoFounderSharingProb(procPed, kinshipCoeff)
+        prob <- twoFounderSharingProb(procPed, kinshipCoeff, kinshipOrder)
     }
     else
     {
@@ -97,11 +100,12 @@ founderDist, useAffected, runParallel, ...)
 #' @aliases RVsharing
 setMethod('RVsharing', signature(ped='list'),
 function(ped, carriers, alleleFreq, kinshipCoeff, nSim,
-founderDist, useAffected, runParallel, ...)
+founderDist, useAffected, runParallel, kinshipOrder, ...)
 {
     if (is.null(carriers)) carriers <- rep(NULL, length(ped))
     probs <- sapply(1:length(ped), function(i) RVsharing(ped[[i]],
-        carriers[[i]], alleleFreq, kinshipCoeff, nSim, founderDist, ...))
+        carriers[[i]], alleleFreq, kinshipCoeff, nSim, founderDist,
+        runParallel, kinshipOrder, ...))
     id <- as.character(sapply(ped, function(p) p$famid[1]))
     names(probs) <- id
     return(probs)
