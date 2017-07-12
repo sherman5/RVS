@@ -176,6 +176,7 @@ areMating <- function(procPed, f1, f2)
 #'  and should not be used.
 #' @param ... arguments to the old function
 #' @return none
+#' @examples tryCatch(ped2trio(), error = function(e) message(e))
 ped2trio <- function(...)
 {
     stop(paste('function depreciated with version >= 2.0, no',

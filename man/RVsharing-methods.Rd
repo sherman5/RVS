@@ -8,15 +8,16 @@
 \title{probability of sharing a rare variant among relatives}
 \usage{
 RVsharing(ped, carriers = NULL, alleleFreq = NA, kinshipCoeff = NA,
-  nSim = NA, founderDist = NULL, useAffected = FALSE, ...)
+  nSim = NA, founderDist = NULL, useAffected = FALSE,
+  runParallel = FALSE, ...)
 
 \S4method{RVsharing}{pedigree}(ped, carriers = NULL, alleleFreq = NA,
   kinshipCoeff = NA, nSim = NA, founderDist = NULL, useAffected = FALSE,
-  ...)
+  runParallel = FALSE, ...)
 
 \S4method{RVsharing}{list}(ped, carriers = NULL, alleleFreq = NA,
   kinshipCoeff = NA, nSim = NA, founderDist = NULL, useAffected = FALSE,
-  ...)
+  runParallel = FALSE, ...)
 }
 \arguments{
 \item{ped}{S3 pedigree object or a list of pedigree objects}
@@ -36,6 +37,8 @@ when simulating probability with nSim}
 
 \item{useAffected}{allows the user to condition on seeing the variant
 among the affected subjects instead of the final descendants}
+
+\item{runParallel}{run simulation in parallel}
 
 \item{...}{allows for arguments in the style of v1.7}
 }
@@ -66,5 +69,12 @@ the function RVsharing computes the probability that all subjects
 \examples{
  data("samplePedigrees")
  RVsharing(samplePedigrees$firstCousinPair)
+}
+\references{
+Bureau, A., Younkin, S., Parker, M.M., Bailey-Wilson, J.E.,
+ Marazita, M.L., Murray, J.C., Mangold, E., Albacha-Hejazi, H., Beaty, T.H.
+ and Ruczinski, I. (2014) Inferring rare disease risk variants based on
+ exact probabilities of sharing by multiple affected relatives.
+ Bioinformatics, 30(15): 2189-96, doi:10.1093/bioinformatics/btu198.
 }
 

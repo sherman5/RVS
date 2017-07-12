@@ -26,4 +26,12 @@ P-value of the exact rare variant sharing test requiring
 This function is depreciated with version >= 2.0
  and should not be used, instead use multipleFamilyPValue
 }
+\examples{
+ data(samplePedigrees)
+ notSharedFams <- c(15159, 15053, 15157)
+ famids <- sapply(samplePedigrees, function(p) p$famid[1])
+ notShared <- famids \%in\% notSharedFams
+ probs <- sapply(samplePedigrees, RVsharing)
+ get.psubset(famids, notShared, data.frame(pshare=probs, ped.tocompute.vec=famids))
+}
 

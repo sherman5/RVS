@@ -11,7 +11,7 @@ NULL
 #' @inheritParams RVsharing
 #' @return sharing probability between all carriers in pedigree
 monteCarloSharingProb <- function(procPed, alleleFreq=NA, kinshipCoeff=NA,
-nSim, founderDist=NULL)
+nSim, founderDist=NULL, runParallel=FALSE)
 {
     if (!is.na(alleleFreq)) # known allele frequency in population
     {
@@ -43,7 +43,7 @@ nSim, founderDist=NULL)
 #'  parallel is available)
 #' @inheritParams monteCarloSharingProb
 #' @return sharing probability between all carriers in pedigree
-runMonteCarlo <- function(procPed, founderDist, nSim)
+runMonteCarlo <- function(procPed, founderDist, nSim, runParallel=FALSE)
 {
     # carry out one simulation of the pedigree, return relevant events
     oneSim <- function(dummy)
@@ -62,7 +62,7 @@ runMonteCarlo <- function(procPed, founderDist, nSim)
         return(c(numer, denom))
     }
 
-    if (is.element('parallel', installed.packages()[,1]) & nSim > 2e4)
+    if (runParallel)
     {
         nCores <- parallel::detectCores()
         message(paste('RVsharing running in parallel with:', nCores, 'cores'))
@@ -115,6 +115,7 @@ simulatePedigree <- function(procPed, states)
 #'  and should not be used, instead use RVsharing with nSim option
 #' @param ... arguments to the old function
 #' @return none
+#' @examples tryCatch(GeneDrop(), error = function(e) message(e))
 GeneDrop <- function(...)
 {
     stop(paste('function depreciated with version >= 2.0, use the',

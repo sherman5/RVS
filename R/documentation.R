@@ -1,7 +1,7 @@
-#' RVsharing2
+#' RVS
 #'
 #' @docType package
-#' @name RVsharing2
+#' @name RVS
 #' @importFrom stats runif weighted.mean
 #' @importFrom utils combn data installed.packages
 #' @import methods
@@ -12,4 +12,11 @@ NULL
 #' @docType data
 #' @name samplePedigrees
 #' @usage samplePedigrees
+NULL
+
+#' matrix of pedigree information stored in the LINKAGE format
+#' 
+#' @docType data
+#' @name ex.ped.mat
+#' @usage ex.ped.mat
 NULL

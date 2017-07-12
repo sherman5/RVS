@@ -2,7 +2,7 @@
 title: "The RVS (Rare Variant Sharing) Package"
 author: "Alexandre Bureau, Ingo Ruczinski, Samuel Younkin, Thomas Sherman"
 data: "`r Sys.Date()`"
-package: "`r pkg_ver('RVsharing2')`"
+package: "`r pkg_ver('RVS')`"
 bibliography: References.bib
 vignette: >
     %\VignetteIndexEntry{The RVS Package}
@@ -148,7 +148,7 @@ For variants seen in only one family, the sharing probability can be interpreted
 
 ```{r}
 probs <- sapply(samplePedigrees, function(p) suppressMessages(RVsharing(p)))
-observed <- c(F,F,F,T,T,F,F,F)
+observed <- c(rep(FALSE, 3), rep(TRUE, 2), rep(FALSE, 3))
 multipleFamilyPValue(probs, observed)
 ```
 

@@ -4,7 +4,7 @@
 \alias{runMonteCarlo}
 \title{run the monte carlo simulation}
 \usage{
-runMonteCarlo(procPed, founderDist, nSim)
+runMonteCarlo(procPed, founderDist, nSim, runParallel = FALSE)
 }
 \arguments{
 \item{procPed}{pedigree that has been through \code{processPedigree}}
@@ -13,6 +13,8 @@ runMonteCarlo(procPed, founderDist, nSim)
 when simulating probability with nSim}
 
 \item{nSim}{number of simulations used in monte carlo calculation}
+
+\item{runParallel}{run simulation in parallel}
 }
 \value{
 sharing probability between all carriers in pedigree

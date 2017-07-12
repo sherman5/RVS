@@ -77,6 +77,13 @@ multipleFamilyPValue <- function(sharingProbs, observedSharing)
 #'      vec and not must be found in ped.tocompute.vec
 #' @return P-value of the exact rare variant sharing test requiring
 #'  sharing by all affected subjects.
+#' @examples
+#'  data(samplePedigrees)
+#'  notSharedFams <- c(15159, 15053, 15157)
+#'  famids <- sapply(samplePedigrees, function(p) p$famid[1])
+#'  notShared <- famids %in% notSharedFams
+#'  probs <- sapply(samplePedigrees, RVsharing)
+#'  get.psubset(famids, notShared, data.frame(pshare=probs, ped.tocompute.vec=famids))
 get.psubset <- function(vec, not, pshare.data)
 {
     warning(paste('this function is depreciated with version >= 2.0',

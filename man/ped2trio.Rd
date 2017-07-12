@@ -16,4 +16,7 @@ none
 This function is depreciated with version >= 2.0
  and should not be used.
 }
+\examples{
+tryCatch(ped2trio(), error = function(e) message(e))
+}
 

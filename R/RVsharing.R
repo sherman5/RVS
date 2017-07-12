@@ -35,6 +35,7 @@ NULL
 #'  when simulating probability with nSim
 #' @param useAffected allows the user to condition on seeing the variant
 #'  among the affected subjects instead of the final descendants
+#' @param runParallel run simulation in parallel
 #' @param ... allows for arguments in the style of v1.7
 #' @return sharing probability between all carriers in pedigree
 #' @examples
@@ -46,14 +47,15 @@ NULL
 #'  exact probabilities of sharing by multiple affected relatives.
 #'  Bioinformatics, 30(15): 2189-96, doi:10.1093/bioinformatics/btu198.
 setGeneric('RVsharing', function(ped, carriers=NULL, alleleFreq=NA,
-kinshipCoeff=NA, nSim=NA, founderDist=NULL, useAffected=FALSE, ...)
+kinshipCoeff=NA, nSim=NA, founderDist=NULL, useAffected=FALSE,
+runParallel=FALSE, ...)
     {standardGeneric('RVsharing')})
 
 #' @rdname RVsharing-methods
 #' @aliases RVsharing
 setMethod('RVsharing', signature(ped='pedigree'),
 function(ped, carriers, alleleFreq, kinshipCoeff, nSim,
-founderDist, useAffected, ...)
+founderDist, useAffected, runParallel, ...)
 {
     # needed for backwards compatibility with v1.7
     ped <- oldArgs(ped, list(...)$data, list(...)$dad.id, list(...)$mom.id)
@@ -67,7 +69,8 @@ founderDist, useAffected, ...)
     if (!is.na(nSim))
     {
         prob <- monteCarloSharingProb(procPed=procPed, alleleFreq=alleleFreq,
-            kinshipCoeff=kinshipCoeff, nSim=nSim, founderDist=founderDist)
+            kinshipCoeff=kinshipCoeff, nSim=nSim, founderDist=founderDist,
+            runParallel=runParallel)
     }
     else if (!is.na(alleleFreq))
     {
@@ -94,7 +97,7 @@ founderDist, useAffected, ...)
 #' @aliases RVsharing
 setMethod('RVsharing', signature(ped='list'),
 function(ped, carriers, alleleFreq, kinshipCoeff, nSim,
-founderDist, useAffected, ...)
+founderDist, useAffected, runParallel, ...)
 {
     if (is.null(carriers)) carriers <- rep(NULL, length(ped))
     probs <- sapply(1:length(ped), function(i) RVsharing(ped[[i]],

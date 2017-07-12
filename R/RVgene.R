@@ -135,6 +135,27 @@ extract_carriers = function(ped,site,fam,type="alleles",minor.allele=2)
 #'  by all affected subjects.
 #'  potentialp Minimum achievable p-value if all affected subjects were
 #'  carriers of a rare variant.
+#' @examples
+#'  data(samplePedigrees)
+#'  data(ex.ped.mat)
+#'  fam15157 <- samplePedigrees$secondCousinTriple
+#'  fam15157.pattern.prob = c(RVsharing(fam15157,carriers=c(15,16,17)),
+#'                            RVsharing(fam15157,carriers=c(15,16)),
+#'                            RVsharing(fam15157,carriers=c(15)))
+#'  fam15157.nequiv = c(1,3,3)
+#'  # check that distribution sums to 1
+#'  sum(fam15157.pattern.prob*fam15157.nequiv)
+#'  fam15157.N = 3:1
+#'  # Creating lists
+#'  ex.pattern.prob.list = list("15157"=fam15157.pattern.prob)
+#'  ex.nequiv.list = list("15157"=fam15157.nequiv)
+#'  ex.N.list = list("15157"=fam15157.N)
+#'  ex.ped.obj = list(fam15157)
+#'  names(ex.ped.obj) = c("15157")
+#'  sites = c(92,119)
+#'  minor.allele.vec=c(1,4)
+#'  RVgene(ex.ped.mat[1:17,],ex.ped.obj,sites,pattern.prob.list=ex.pattern.prob.list,
+#'  nequiv.list=ex.nequiv.list,N.list=ex.N.list,minor.allele.vec=minor.allele.vec)
 #' @references http://pngu.mgh.harvard.edu/~purcell/plink/data.shtml#ped	
 #' @references Bureau, A., Younkin, S., Parker, M.M., Bailey-Wilson, J.E.,
 #'  Marazita, M.L., Murray, J.C., Mangold, E., Albacha-Hejazi, H., Beaty, T.H.

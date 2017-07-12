@@ -5,7 +5,7 @@
 \title{calculates sharing probability by simulating pedigree outcomes}
 \usage{
 monteCarloSharingProb(procPed, alleleFreq = NA, kinshipCoeff = NA, nSim,
-  founderDist = NULL)
+  founderDist = NULL, runParallel = FALSE)
 }
 \arguments{
 \item{procPed}{pedigree that has been through \code{processPedigree}}
@@ -18,6 +18,8 @@ monteCarloSharingProb(procPed, alleleFreq = NA, kinshipCoeff = NA, nSim,
 
 \item{founderDist}{custom distribution among founders - only used
 when simulating probability with nSim}
+
+\item{runParallel}{run simulation in parallel}
 }
 \value{
 sharing probability between all carriers in pedigree

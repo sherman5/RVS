@@ -30,7 +30,7 @@ test_that('monte carlo close to exact',
     monteCarloComp <- function(ped, freq=NA, kin=NA)
     {
         abs(RVsharing(ped, alleleFreq=freq, kinshipCoeff=kin) - 
-            RVsharing(ped, alleleFreq=freq, kinshipCoeff=kin, nSim=1e5))
+            RVsharing(ped, alleleFreq=freq, kinshipCoeff=kin, nSim=2e4))
     }
 
     data(samplePedigrees)
