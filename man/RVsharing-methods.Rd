@@ -41,8 +41,7 @@ among the affected subjects instead of the final descendants}
 \item{runParallel}{run simulation in parallel}
 
 \item{kinshipOrder}{order of the polynomial approximation to the distribtion
-of the number of distinct alleles in the founders (d in Bureau et al.).
-Must be <= 5}
+of the number of distinct alleles in the founders (d in Bureau et al.).}
 
 \item{...}{allows for arguments in the style of v1.7}
 }
