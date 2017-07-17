@@ -98,8 +98,13 @@ twoFounderSharingProb <- function(procPed, kinshipCoeff, kinshipOrder)
 
             # calculate (weighted) conditional probability
             w <- ifelse(f1==f2, cor, 1 - cor)
-            numer <- numer + w * numerProb(net2, procPed)
-            denom <- denom + w * denomProb(net2, procPed)
+            nP <- numerProb(net2, procPed)
+            dP <- denomProb(net2, procPed)
+            numer <- numer + w * nP
+            denom <- denom + w * dP
+            print(paste('f1=', f1, ', f2=', f2, ', w=', round(w, 4),
+                ', numer=', sprintf("%.5f", round(nP, 5)),
+                ', denom=', sprintf("%.5f", round(dP, 5)), sep=''))
         }
         remainingFounders <- setdiff(remainingFounders, f1)
     }
