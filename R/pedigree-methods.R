@@ -170,15 +170,15 @@ areMating <- function(procPed, f1, f2)
     sum(apply(procPed$parents, 2, function(p) f1 %in% p & f2 %in% p)) > 0
 }
 
-#' depreciated function
+#' deprecated function
 #' @export
-#' @description This function is depreciated with version >= 2.0
+#' @description This function is deprecated with version >= 2.0
 #'  and should not be used.
 #' @param ... arguments to the old function
 #' @return none
 #' @examples tryCatch(ped2trio(), error = function(e) message(e))
 ped2trio <- function(...)
 {
-    stop(paste('function depreciated with version >= 2.0, no',
+    stop(paste('function deprecated with version >= 2.0, no',
         'longer neccesary to process pedigrees into trios'))
 }

@@ -8,16 +8,16 @@
 \title{probability of sharing a rare variant among relatives}
 \usage{
 RVsharing(ped, carriers = NULL, alleleFreq = NA, kinshipCoeff = NA,
-  nSim = NA, founderDist = NULL, useAffected = FALSE,
-  runParallel = FALSE, kinshipOrder = 5, ...)
+  nSim = NA, founderDist = NULL, useAffected = FALSE, kinshipOrder = 5,
+  ...)
 
 \S4method{RVsharing}{pedigree}(ped, carriers = NULL, alleleFreq = NA,
   kinshipCoeff = NA, nSim = NA, founderDist = NULL, useAffected = FALSE,
-  runParallel = FALSE, kinshipOrder = 5, ...)
+  kinshipOrder = 5, ...)
 
 \S4method{RVsharing}{list}(ped, carriers = NULL, alleleFreq = NA,
   kinshipCoeff = NA, nSim = NA, founderDist = NULL, useAffected = FALSE,
-  runParallel = FALSE, kinshipOrder = 5, ...)
+  kinshipOrder = 5, ...)
 }
 \arguments{
 \item{ped}{S3 pedigree object or a list of pedigree objects}
@@ -37,8 +37,6 @@ when simulating probability with nSim}
 
 \item{useAffected}{allows the user to condition on seeing the variant
 among the affected subjects instead of the final descendants}
-
-\item{runParallel}{run simulation in parallel}
 
 \item{kinshipOrder}{order of the polynomial approximation to the distribtion
 of the number of distinct alleles in the founders (d in Bureau et al.).

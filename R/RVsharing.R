@@ -35,7 +35,6 @@ NULL
 #'  when simulating probability with nSim
 #' @param useAffected allows the user to condition on seeing the variant
 #'  among the affected subjects instead of the final descendants
-#' @param runParallel run simulation in parallel
 #' @param kinshipOrder order of the polynomial approximation to the distribtion
 #'  of the number of distinct alleles in the founders (d in Bureau et al.).
 #'  Must be <= 5
@@ -51,14 +50,14 @@ NULL
 #'  Bioinformatics, 30(15): 2189-96, doi:10.1093/bioinformatics/btu198.
 setGeneric('RVsharing', function(ped, carriers=NULL, alleleFreq=NA,
 kinshipCoeff=NA, nSim=NA, founderDist=NULL, useAffected=FALSE,
-runParallel=FALSE, kinshipOrder=5, ...)
+kinshipOrder=5, ...)
     {standardGeneric('RVsharing')})
 
 #' @rdname RVsharing-methods
 #' @aliases RVsharing
 setMethod('RVsharing', signature(ped='pedigree'),
 function(ped, carriers, alleleFreq, kinshipCoeff, nSim,
-founderDist, useAffected, runParallel, kinshipOrder, ...)
+founderDist, useAffected, kinshipOrder, ...)
 {
     # needed for backwards compatibility with v1.7
     ped <- oldArgs(ped, list(...)$data, list(...)$dad.id, list(...)$mom.id)
@@ -73,7 +72,7 @@ founderDist, useAffected, runParallel, kinshipOrder, ...)
     {
         prob <- monteCarloSharingProb(procPed=procPed, alleleFreq=alleleFreq,
             kinshipCoeff=kinshipCoeff, nSim=nSim, founderDist=founderDist,
-            runParallel=runParallel, kinshipOrder=kinshipOrder)
+            kinshipOrder=kinshipOrder)
     }
     else if (!is.na(alleleFreq))
     {
@@ -100,12 +99,12 @@ founderDist, useAffected, runParallel, kinshipOrder, ...)
 #' @aliases RVsharing
 setMethod('RVsharing', signature(ped='list'),
 function(ped, carriers, alleleFreq, kinshipCoeff, nSim,
-founderDist, useAffected, runParallel, kinshipOrder, ...)
+founderDist, useAffected, kinshipOrder, ...)
 {
     if (is.null(carriers)) carriers <- rep(NULL, length(ped))
     probs <- sapply(1:length(ped), function(i) RVsharing(ped[[i]],
         carriers[[i]], alleleFreq, kinshipCoeff, nSim, founderDist,
-        runParallel, kinshipOrder, ...))
+        kinshipOrder, ...))
     id <- as.character(sapply(ped, function(p) p$famid[1]))
     names(probs) <- id
     return(probs)

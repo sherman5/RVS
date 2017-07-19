@@ -11,7 +11,7 @@ NULL
 #' @inheritParams RVsharing
 #' @return sharing probability between all carriers in pedigree
 monteCarloSharingProb <- function(procPed, alleleFreq=NA, kinshipCoeff=NA,
-nSim, founderDist=NULL, runParallel=FALSE, kinshipOrder=5)
+nSim, founderDist=NULL, kinshipOrder=5)
 {
     if (!is.na(alleleFreq)) # known allele frequency in population
     {
@@ -43,7 +43,7 @@ nSim, founderDist=NULL, runParallel=FALSE, kinshipOrder=5)
 #'  parallel is available)
 #' @inheritParams monteCarloSharingProb
 #' @return sharing probability between all carriers in pedigree
-runMonteCarlo <- function(procPed, founderDist, nSim, runParallel=FALSE)
+runMonteCarlo <- function(procPed, founderDist, nSim)
 {
     # carry out one simulation of the pedigree, return relevant events
     oneSim <- function(dummy)
@@ -62,18 +62,7 @@ runMonteCarlo <- function(procPed, founderDist, nSim, runParallel=FALSE)
         return(c(numer, denom))
     }
 
-    if (runParallel)
-    {
-        nCores <- parallel::detectCores()
-        message(paste('RVsharing running in parallel with:', nCores, 'cores'))
-        cl <- parallel::makeCluster(nCores)
-        prob <- parallel::parSapply(cl, 1:nSim, oneSim)
-        parallel::stopCluster(cl)
-    }
-    else
-    {
-        prob <- sapply(1:nSim, oneSim)
-    }
+    prob <- sapply(1:nSim, oneSim)
     return(sum(prob[1,]) / sum(prob[2,]))
 }
 
@@ -107,18 +96,18 @@ simulatePedigree <- function(procPed, states)
     return(states)
 }
 
-#' depreciated function
+#' deprecated function
 #' @export
 #' @rdname GeneDrop
 #'
-#' @description This function is depreciated with version >= 2.0
+#' @description This function is deprecated with version >= 2.0
 #'  and should not be used, instead use RVsharing with nSim option
 #' @param ... arguments to the old function
 #' @return none
 #' @examples tryCatch(GeneDrop(), error = function(e) message(e))
 GeneDrop <- function(...)
 {
-    stop(paste('function depreciated with version >= 2.0, use the',
+    stop(paste('function deprecated with version >= 2.0, use the',
         '\'RVsharing\' function with option \'nSim\''))
 }
 
