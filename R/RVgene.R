@@ -1,3 +1,44 @@
+#' convert a list of SnpMatrices to a single matrix in LINKAGE format
+#' @export
+#'
+#' @description creates a matrix in LINKAGE format using pedigree information
+#'  from a list of pedigree objects and genotype information from a list of
+#'  SnpMatrices
+#' @param matList list of SnpMatrices
+#' @param pedList list of pedigrees
+#' @return matrix in LINKAGE format
+SnpMatrixToLinkage <- function(matList, pedList)
+{
+    if (length(matList) != length(pedList))
+        stop('number of pedigrees and SnpMatrices do not match')
+    matList <- lapply(matList, function(mat) as(mat$genotypes, 'numeric'))
+
+    matList <- lapply(1:length(matList), function(i)
+    {
+        mat <- matrix(NA, nrow=length(pedList[[i]]$id), ncol=6)
+        mat[,1] <- pedList[[i]]$famid
+        mat[,2] <- pedList[[i]]$id
+        mat[,6] <- pedList[[i]]$affected
+
+        ndx <- match(as.numeric(rownames(matList[[i]])), mat[,2])
+        if (!all(!is.na(ndx)))
+            stop('SnpMatrix has subjects not in pedigree')        
+        mat <- mat[ndx,]
+        return(cbind(mat, matList[[i]]))   
+    })
+
+    mat <- matList[[1]]
+    if (length(matList) > 1)    
+    {
+        for (i in 2:length(matList))
+        {
+            mat <- merge(mat, matList[[i]], all=TRUE)
+        }
+    }
+    return(mat)
+}
+
+
 #' extract carriers of minor allele
 #' @keywords internal
 #' 
