@@ -44,7 +44,7 @@ RVsharing(samplePedigrees$firstCousinPair)
 
 ## When Allele Frequency is Known in the Founder Population
 
-In this case, we know the allele freqeuncy of the rare variant in the population the founders are drawn from. This allows for quick, exact calculation of the sharing probability. To specify the allele frequency, use the argument *alleleFreq*.
+In this case, we know the allele frequency of the rare variant in the population the founders are drawn from. This allows for quick, exact calculation of the sharing probability. To specify the allele frequency, use the argument *alleleFreq*.
 
 ```{r}
 defaultProbs <- sapply(samplePedigrees[1:4], function(p) suppressMessages(RVsharing(p)))
@@ -88,11 +88,11 @@ p <- RVsharing(ped, carriers=c(10,11), useAffected=TRUE)
 
 # Correcting for Related Founders
 
-When founders of the pedigree are related, the computation is more tricky. *RVsharing* allows the user to apply a correction for this fact in two different ways. The first way, explained below, is a method from @METHODS that uses the mean kinship ceofficient among founders to apply a correction. More detailed corrections can be made when doing a monte carlo simulation, and that method is outlined in the following section.
+When founders of the pedigree are related, the computation is more tricky. *RVsharing* allows the user to apply a correction for this fact in two different ways. The first way, explained below, is a method from @METHODS that uses the mean kinship coefficient among founders to apply a correction. More detailed corrections can be made when doing a Monte Carlo simulation, and that method is outlined in the following section.
 
 ## Exact Computation with Kinship Coefficient
 
-In this method, a mean kinship coefficient among the founders is passed in with the *kinshipCoeff* parameter. Using the methods from @METHODS, *RVsharing* then computes the sharing probability on the assumption one or two founders introduce the variant. Weighing each probability using a calculation based on the mean kinship coefficient.
+In this method, a mean kinship coefficient among the founders is passed in with the *kinshipCoeff* parameter. Using the methods from @METHODS, *RVsharing* then computes the sharing probability on the assumption one or two founders introduce the variant, weighting each probability using a calculation based on the mean kinship coefficient.
 
 ```{r}
 p <- RVsharing(samplePedigrees$firstCousinPair)
