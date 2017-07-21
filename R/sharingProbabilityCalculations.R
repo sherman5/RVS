@@ -97,9 +97,15 @@ twoFounderSharingProb <- function(procPed, kinshipCoeff, kinshipOrder)
             net2 <- gRain::setEvidence(net2, as.character(f2), '1')
 
             # calculate (weighted) conditional probability
-            w <- ifelse(f1==f2, cor, 1 - cor)
-            numer <- numer + w * numerProb(net2, procPed)
-            denom <- denom + w * denomProb(net2, procPed)
+            # Correction to formula 2 of Bioinformatics paper
+            w <- ifelse(f1==f2, cor, 2*(1 - cor)/(length(procPed$founders)-1))
+            nP <- numerProb(net2, procPed)
+            dP <- denomProb(net2, procPed)
+            numer <- numer + w * nP
+            denom <- denom + w * dP
+            print(paste('f1=', f1, ', f2=', f2, ', w=', round(w, 4),
+                ', numer=', sprintf("%.5f", round(nP, 5)),
+                ', denom=', sprintf("%.5f", round(dP, 5)), sep=''))
         }
         remainingFounders <- setdiff(remainingFounders, f1)
     }
