@@ -39,7 +39,8 @@ when simulating probability with nSim}
 among the affected subjects instead of the final descendants}
 
 \item{kinshipOrder}{order of the polynomial approximation to the distribtion
-of the number of distinct alleles in the founders (d in Bureau et al.).}
+of the number of distinct alleles in the founders (d in Bureau et al.).
+Must be <= 5}
 
 \item{...}{allows for arguments in the style of v1.7}
 }
