@@ -63,9 +63,9 @@ multipleFamilyPValue <- function(sharingProbs, observedSharing)
     return(sumBranches(1, 1))
 }
 
-#' depreciated function
+#' deprecated function
 #' @export
-#' @description This function is depreciated with version >= 2.0
+#' @description This function is deprecated with version >= 2.0
 #'  and should not be used, instead use multipleFamilyPValue
 #' @param vec a vector of names of all families where a variant is seen
 #' @param not a vector of names of families where not all affected subjects
@@ -86,7 +86,7 @@ multipleFamilyPValue <- function(sharingProbs, observedSharing)
 #'  get.psubset(famids, notShared, data.frame(pshare=probs, ped.tocompute.vec=famids))
 get.psubset <- function(vec, not, pshare.data)
 {
-    warning(paste('this function is depreciated with version >= 2.0',
+    warning(paste('this function is deprecated with version >= 2.0',
         'and should not be used, instead use multipleFamilyPValue'))
     names <- pshare.data$ped.tocompute.vec
     probs <- pshare.data$pshare[names %in% vec]

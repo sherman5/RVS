@@ -1,3 +1,48 @@
+#' convert a list of SnpMatrices to a single matrix in LINKAGE format
+#' @export
+#'
+#' @description creates a matrix in LINKAGE format using pedigree information
+#'  from a list of pedigree objects and genotype information from a list of
+#'  SnpMatrices
+#' @param matList list of SnpMatrices
+#' @param pedList list of pedigrees
+#' @return matrix in LINKAGE format
+#' @examples
+#'  data(samplePedigrees)
+#'  data(snpMat)
+#'  ped <- samplePedigrees$secondCousinTriple
+#'  ex.ped.mat <- SnpMatrixToLinkage(list(snpMat), list(ped))
+SnpMatrixToLinkage <- function(matList, pedList)
+{
+    if (length(matList) != length(pedList))
+        stop('number of pedigrees and SnpMatrices do not match')
+    matList <- lapply(matList, function(mat) as(mat, 'numeric'))
+
+    matList <- lapply(1:length(matList), function(i)
+    {
+        mat <- matrix(NA, nrow=length(pedList[[i]]$id), ncol=6)
+        mat[,1] <- pedList[[i]]$famid
+        mat[,2] <- pedList[[i]]$id
+        mat[,6] <- pedList[[i]]$affected + 1
+
+        ndx <- match(as.numeric(rownames(matList[[i]])), mat[,2])
+        if (!all(!is.na(ndx)))
+            stop('SnpMatrix has subjects not in pedigree')        
+        mat <- mat[ndx,]
+        return(cbind(mat, matList[[i]]))   
+    })
+
+    mat <- matList[[1]]
+    if (length(matList) > 1)    
+    {
+        for (i in 2:length(matList))
+        {
+            mat <- merge(mat, matList[[i]], all=TRUE)
+        }
+    }
+    return(mat)
+}
+
 #' extract carriers of minor allele
 #' @keywords internal
 #' 
@@ -78,15 +123,16 @@ extract_carriers = function(ped,site,fam,type="alleles",minor.allele=2)
 #'  requiring sharing by all affected subjects is computed by calling
 #'  multipleFamilyPValue.
 #'
-#' @param ped.mat a data.frame or matrix encoding the pedigree information
-#'  and genotype data in the standard LINKAGE ped format (see PLINK web
-#'  site [1]). In fact, only the family ID in the first column, the subject
-#'  ID in the second column, the affection status in the sixth column and
-#'  the genotype data starting in the seventh column are used (columns 3 to
-#'  5 are ignored). Also, family members without genotype data do not need
-#'  to appear in this matrix. The genotype of each variant can be coded in
-#'  two ways, each corresponding to a different value of the type option:
-#'  a minor allele count on one column, as returned for example by the
+#' @param data A list of SnpMatrix objects corresponding to each pedigree
+#'  object in ped.listfams, alternatively a data.frame or matrix encoding
+#'  the pedigree information and genotype data in the standard LINKAGE ped
+#'  format (see PLINK web site [1]). In fact, only the family ID in the first
+#'  column, the subject ID in the second column, the affection status in the
+#'  sixth column and the genotype data starting in the seventh column are used
+#'  (columns 3 to 5 are ignored). Also, family members without genotype data do
+#'  not need to appear in this matrix. The genotype of each variant can be
+#'  coded in two ways, each corresponding to a different value of the type
+#'  option: a minor allele count on one column, as returned for example by the
 #'  genotypeToSnpMatrix function, with missing values coded NA
 #'  (type="count") or the identity of the two alleles on two consecutive
 #'  columns, with missing values coded 0 (type="alleles")
@@ -156,16 +202,30 @@ extract_carriers = function(ped,site,fam,type="alleles",minor.allele=2)
 #'  minor.allele.vec=c(1,4)
 #'  RVgene(ex.ped.mat[1:17,],ex.ped.obj,sites,pattern.prob.list=ex.pattern.prob.list,
 #'  nequiv.list=ex.nequiv.list,N.list=ex.N.list,minor.allele.vec=minor.allele.vec)
+#'  # calling with a SnpMatrix
+#'  data(snpMat)
+#'  RVgene(list(snpMat),ex.ped.obj,sites,pattern.prob.list=ex.pattern.prob.list,
+#'  nequiv.list=ex.nequiv.list,N.list=ex.N.list,minor.allele.vec=minor.allele.vec)
 #' @references http://pngu.mgh.harvard.edu/~purcell/plink/data.shtml#ped	
 #' @references Bureau, A., Younkin, S., Parker, M.M., Bailey-Wilson, J.E.,
 #'  Marazita, M.L., Murray, J.C., Mangold, E., Albacha-Hejazi, H., Beaty, T.H.
 #'  and Ruczinski, I. (2014) Inferring rare disease risk variants based on
 #'  exact probabilities of sharing by multiple affected relatives.
 #'  Bioinformatics, 30(15): 2189-96, doi:10.1093/bioinformatics/btu198.
-RVgene <- function(ped.mat, ped.listfams, sites, fams, pattern.prob.list,
+RVgene <- function(data, ped.listfams, sites, fams, pattern.prob.list,
 nequiv.list, N.list, type="alleles", minor.allele.vec,
 precomputed.prob=list(0), maxdim = 1e9)
 {
+    if (class(data) == 'list')
+    {
+        ped.mat <- SnpMatrixToLinkage(data, ped.listfams)
+        type <- 'count'
+    }
+    else
+    {
+        ped.mat <- data
+    }
+
     if (missing(nequiv.list))
     {
         nequiv.list = rep(1,length(pattern.prob.list))

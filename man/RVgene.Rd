@@ -4,20 +4,21 @@
 \alias{RVgene}
 \title{Probability of sharing of rare variants in a family sample within a gene}
 \usage{
-RVgene(ped.mat, ped.listfams, sites, fams, pattern.prob.list, nequiv.list,
-  N.list, type = "alleles", minor.allele.vec, precomputed.prob = list(0),
+RVgene(data, ped.listfams, sites, fams, pattern.prob.list, nequiv.list, N.list,
+  type = "alleles", minor.allele.vec, precomputed.prob = list(0),
   maxdim = 1e+09)
 }
 \arguments{
-\item{ped.mat}{a data.frame or matrix encoding the pedigree information
-and genotype data in the standard LINKAGE ped format (see PLINK web
-site [1]). In fact, only the family ID in the first column, the subject
-ID in the second column, the affection status in the sixth column and
-the genotype data starting in the seventh column are used (columns 3 to
-5 are ignored). Also, family members without genotype data do not need
-to appear in this matrix. The genotype of each variant can be coded in
-two ways, each corresponding to a different value of the type option:
-a minor allele count on one column, as returned for example by the
+\item{data}{A list of SnpMatrix objects corresponding to each pedigree
+object in ped.listfams, alternatively a data.frame or matrix encoding
+the pedigree information and genotype data in the standard LINKAGE ped
+format (see PLINK web site [1]). In fact, only the family ID in the first
+column, the subject ID in the second column, the affection status in the
+sixth column and the genotype data starting in the seventh column are used
+(columns 3 to 5 are ignored). Also, family members without genotype data do
+not need to appear in this matrix. The genotype of each variant can be
+coded in two ways, each corresponding to a different value of the type
+option: a minor allele count on one column, as returned for example by the
 genotypeToSnpMatrix function, with missing values coded NA
 (type="count") or the identity of the two alleles on two consecutive
 columns, with missing values coded 0 (type="alleles")}
@@ -125,6 +126,10 @@ The function extracts the carriers of the minor allele at each
  sites = c(92,119)
  minor.allele.vec=c(1,4)
  RVgene(ex.ped.mat[1:17,],ex.ped.obj,sites,pattern.prob.list=ex.pattern.prob.list,
+ nequiv.list=ex.nequiv.list,N.list=ex.N.list,minor.allele.vec=minor.allele.vec)
+ # calling with a SnpMatrix
+ data(snpMat)
+ RVgene(list(snpMat),ex.ped.obj,sites,pattern.prob.list=ex.pattern.prob.list,
  nequiv.list=ex.nequiv.list,N.list=ex.N.list,minor.allele.vec=minor.allele.vec)
 }
 \references{

@@ -2,7 +2,7 @@
 % Please edit documentation in R/pedigree-methods.R
 \name{ped2trio}
 \alias{ped2trio}
-\title{depreciated function}
+\title{deprecated function}
 \usage{
 ped2trio(...)
 }
@@ -13,7 +13,7 @@ ped2trio(...)
 none
 }
 \description{
-This function is depreciated with version >= 2.0
+This function is deprecated with version >= 2.0
  and should not be used.
 }
 \examples{
