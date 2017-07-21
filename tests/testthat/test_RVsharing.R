@@ -26,7 +26,6 @@ test_that('list of pedigrees',
 test_that('monte carlo close to exact',
 {
     set.seed(0)
-
     monteCarloComp <- function(ped, freq=NA, kin=NA)
     {
         abs(RVsharing(ped, alleleFreq=freq, kinshipCoeff=kin) - 
@@ -34,8 +33,9 @@ test_that('monte carlo close to exact',
     }
 
     data(samplePedigrees)
-    tol <- 0.02
+    tol <- 0.01
     MAF <- 0.01
+    kCoeff <- 0.01
 
     expect_equal(monteCarloComp(samplePedigrees$firstCousinPair),
         0, tolerance=tol)
@@ -58,4 +58,15 @@ test_that('monte carlo close to exact',
         freq=MAF), 0, tolerance=tol)
     expect_equal(monteCarloComp(samplePedigrees$twoGenerationsInbreeding,
         freq=MAF), 0, tolerance=tol)
+
+    expect_equal(monteCarloComp(samplePedigrees$firstCousinPair,
+        kin=kCoeff), 0, tolerance=tol)
+    expect_equal(monteCarloComp(samplePedigrees$secondCousinTriple,
+        kin=kCoeff), 0, tolerance=tol)
+    expect_equal(monteCarloComp(samplePedigrees$secondCousinPairWithLoop,
+        kin=kCoeff), 0, tolerance=tol)
+    expect_equal(monteCarloComp(samplePedigrees$firstCousinInbreeding,
+        kin=kCoeff), 0, tolerance=tol)
+    expect_equal(monteCarloComp(samplePedigrees$twoGenerationsInbreeding,
+        kin=kCoeff), 0, tolerance=tol)
 })
