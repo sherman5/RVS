@@ -19,7 +19,7 @@ library(kinship2)
 
 # Introduction
 
-The primary use of the *RVS* package is to compute the rare variant sharing probabilities outlined in @METHODS.
+The primary use of the *RVS* package is to compute the rare variant (RV) sharing probabilities outlined in @METHODS.
 
 # Pedigree format
 
@@ -32,11 +32,26 @@ kinship2::plot.pedigree(samplePedigrees$firstCousinPair) # plot pedigree
 
 # Computing Standard Sharing Probabilities
 
-The primary function for computing sharing probabilities is *RVsharing*. There are two simple cases in which the calculation is straightforward.
+The primary function for computing sharing probabilities is *RVsharing*. 
+There are two simple cases in which the calculation is straightforward.
 
 ## Assuming One Founder Introduces the Variant
 
 In this case, we assume the variant is rare enough so that the probability of more than one founder introducing it to the pedigree is negligible. This is the default scenario for *RVsharing*.
+
+We define the following random variables:
+
+*$C_i$: Number of copies of the RV received by subject $i$,
+*$F_j$: Indicator variable that founder $j$ introduced one copy of the RV into the pedigree,
+
+For a set of $n$ subjects descendants of $n_f$ founders we want to compute the probability
+\begin{eqnarray*}
+P[\mbox{RV shared}] &=& P[C_1 = \dots = C_n = 1 | C_1 + \dots + C_n \geq 1] \nonumber \\[0.5em] 
+&=& \frac{P[C_1 = \dots = C_n = 1 ]}{P[C_1 + \dots + C_n \geq 1]}  \nonumber \\[0.5em] 
+ &=& \frac{\sum_{j=1}^{n_f} P[C_1 = \dots = C_n = 1 | F_j] P[F_j]}{\sum_{j=1}^{n_f} P[C_1 + \dots + C_n \geq 1 | F_j]P[F_j]}, 
+ \label{sharingp}
+\end{eqnarray*}
+where the expression on the third line results from our assumption of a single copy of that RV among all alleles present in the $n_f$ founders. The probabilities $P[F_j] = {1 \over n_f}$ cancel from the numerator and denominator.
 
 ```{r}
 RVsharing(samplePedigrees$firstCousinPair)
@@ -93,6 +108,14 @@ When founders of the pedigree are related, the computation is more tricky. *RVsh
 ## Exact Computation with Kinship Coefficient
 
 In this method, a mean kinship coefficient among the founders is passed in with the *kinshipCoeff* parameter. Using the methods from @METHODS, *RVsharing* then computes the sharing probability on the assumption one or two founders introduce the variant, weighting each probability using a calculation based on the mean kinship coefficient.
+
+More precisely, an estimation of $P^U$, the probability that a founder alone introduces the rare variant, is obtained from equation (2) of @METHODS. Then, $P_2$, the probability that a founder pair introduces the rare variant is obtained from $n_f P_U + {1 \over 2} n_f (n_f-1) P_2 = 1$, where $n_f$ is the number of founders. The corrected rare variant sharing probability is then 
+
+ \begin{eqnarray}
+P[\mbox{RV shared}] &=&  \label{RVsimplified} \\[0.5em]
+&& \frac{ \begin{array}{l} w {1 \over n_f} \sum_{j=1}^{n_f} P[C_1 = \dots = C_n = 1 | F_j^U] \\ \quad + (1-w) {2 \over n_f (n_f - 1)} \sum_j \sum_{k>j}  P[C_1 = \dots = C_n = 1 | F_j, F_k] \end{array} }{\begin{array}{l}  w {1 \over n_f} \sum_{j=1}^{n_f} P[C_1 + \dots + C_n \geq 1 | F_j^U]\\ \quad + (1-w) {2 \over n_f (n_f - 1)} \sum_j  \sum_{k>j} P[C_1 + \dots + C_n \geq 1 | F_j, F_k] \end{array} } \nonumber
+\end{eqnarray} 
+where $w = n_f P_U$. Notice that the above equation corrects equation (3) of @METHODS, where the divisions by the number of terms in the summations where missing.
 
 ```{r}
 p <- RVsharing(samplePedigrees$firstCousinPair)
