@@ -5,22 +5,22 @@
 \title{probability of sharing of rare variants among all affected relatives in
 a family sample within a gene}
 \usage{
-RVgene_allshare(ped.mat, ped.listfams, sites, fams, pshare.vec,
-  type = "alleles", minor.allele.vec, precomputed.prob = list(0),
-  maxdim = 1e+09)
+RVgene_allshare(data, ped.listfams, sites, fams, pshare.vec, type = "alleles",
+  minor.allele.vec, precomputed.prob = list(0), maxdim = 1e+09)
 }
 \arguments{
-\item{ped.mat}{a data.frame or matrix encoding the pedigree information 
-and genotype data in the standard LINKAGE ped format (see PLINK web site
-[1]). In fact, only the family ID in the first column, the subject ID 
-in the second column, the affection status in the sixth column and the 
-genotype data starting in the seventh column are used (columns 3 to 5 
-are ignored). Also, family members without genotype data do not need to 
-appear in this matrix. The genotype of each variant can be coded in two 
-ways, each corresponding to a different value of the type option: a 
-minor allele count on one column, as returned for example by the 
-genotypeToSnpMatrix function, with missing values coded NA 
-(type="count") or the identity of the two alleles on two consecutive 
+\item{data}{A list of SnpMatrix objects corresponding to each pedigree
+object in ped.listfams, alternatively a data.frame or matrix encoding
+the pedigree information and genotype data in the standard LINKAGE ped
+format (see PLINK web site [1]). In fact, only the family ID in the first
+column, the subject ID in the second column, the affection status in the
+sixth column and the genotype data starting in the seventh column are used
+(columns 3 to 5 are ignored). Also, family members without genotype data do
+not need to appear in this matrix. The genotype of each variant can be
+coded in two ways, each corresponding to a different value of the type
+option: a minor allele count on one column, as returned for example by the
+genotypeToSnpMatrix function, with missing values coded NA
+(type="count") or the identity of the two alleles on two consecutive
 columns, with missing values coded 0 (type="alleles")}
 
 \item{ped.listfams}{a list of pedigree objects, one object for each 

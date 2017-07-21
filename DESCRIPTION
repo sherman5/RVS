@@ -25,7 +25,8 @@ Suggests:
     testthat,
     rmarkdown,
     BiocStyle,
-    kinship2
+    kinship2,
+    snpStats
 VignetteBuilder: knitr
 RoxygenNote: 5.0.1
 biocViews: Genetics, GenomeWideAssociation, VariantDetection, ExomeSeq,

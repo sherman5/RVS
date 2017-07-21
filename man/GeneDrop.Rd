@@ -5,7 +5,7 @@
 \alias{GeneDropSim.allsubsets.fn}
 \alias{GeneDropSim.fn}
 \alias{GeneDropSimExcessSharing.fn}
-\title{depreciated function}
+\title{deprecated function}
 \usage{
 GeneDrop(...)
 
@@ -22,7 +22,7 @@ GeneDropSimExcessSharing.fn(...)
 none
 }
 \description{
-This function is depreciated with version >= 2.0
+This function is deprecated with version >= 2.0
  and should not be used, instead use RVsharing with nSim option
 }
 \examples{

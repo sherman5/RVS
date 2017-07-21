@@ -2,7 +2,7 @@
 % Please edit documentation in R/multipleFamilyCalculations.R
 \name{get.psubset}
 \alias{get.psubset}
-\title{depreciated function}
+\title{deprecated function}
 \usage{
 get.psubset(vec, not, pshare.data)
 }
@@ -23,7 +23,7 @@ P-value of the exact rare variant sharing test requiring
  sharing by all affected subjects.
 }
 \description{
-This function is depreciated with version >= 2.0
+This function is deprecated with version >= 2.0
  and should not be used, instead use multipleFamilyPValue
 }
 \examples{

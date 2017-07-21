@@ -20,3 +20,10 @@ NULL
 #' @name ex.ped.mat
 #' @usage ex.ped.mat
 NULL
+
+#' SnpMatrix with genotype information from ex.ped.mat
+#' 
+#' @docType data
+#' @name snpMat
+#' @usage snpMat
+NULL

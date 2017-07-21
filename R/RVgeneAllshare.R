@@ -19,17 +19,18 @@
 #'  requiring sharing by all affected subjects is computed by calling 
 #'  multipleFamilyPValue
 #'
-#' @param ped.mat a data.frame or matrix encoding the pedigree information 
-#'  and genotype data in the standard LINKAGE ped format (see PLINK web site
-#'  [1]). In fact, only the family ID in the first column, the subject ID 
-#'  in the second column, the affection status in the sixth column and the 
-#'  genotype data starting in the seventh column are used (columns 3 to 5 
-#'  are ignored). Also, family members without genotype data do not need to 
-#'  appear in this matrix. The genotype of each variant can be coded in two 
-#'  ways, each corresponding to a different value of the type option: a 
-#'  minor allele count on one column, as returned for example by the 
-#'  genotypeToSnpMatrix function, with missing values coded NA 
-#'  (type="count") or the identity of the two alleles on two consecutive 
+#' @param data A list of SnpMatrix objects corresponding to each pedigree
+#'  object in ped.listfams, alternatively a data.frame or matrix encoding
+#'  the pedigree information and genotype data in the standard LINKAGE ped
+#'  format (see PLINK web site [1]). In fact, only the family ID in the first
+#'  column, the subject ID in the second column, the affection status in the
+#'  sixth column and the genotype data starting in the seventh column are used
+#'  (columns 3 to 5 are ignored). Also, family members without genotype data do
+#'  not need to appear in this matrix. The genotype of each variant can be
+#'  coded in two ways, each corresponding to a different value of the type
+#'  option: a minor allele count on one column, as returned for example by the
+#'  genotypeToSnpMatrix function, with missing values coded NA
+#'  (type="count") or the identity of the two alleles on two consecutive
 #'  columns, with missing values coded 0 (type="alleles")
 #' @param ped.listfams a list of pedigree objects, one object for each 
 #'  pedigree in ped.mat
@@ -71,9 +72,19 @@
 #'  and Ruczinski, I. (2014) Inferring rare disease risk variants based on
 #'  exact probabilities of sharing by multiple affected relatives.
 #'  Bioinformatics, 30(15): 2189-96, doi:10.1093/bioinformatics/btu198.
-RVgene_allshare <- function(ped.mat, ped.listfams, sites, fams, pshare.vec,
+RVgene_allshare <- function(data, ped.listfams, sites, fams, pshare.vec,
 type="alleles", minor.allele.vec, precomputed.prob=list(0), maxdim = 1e9)
 {
+    if (class(data) == 'list')
+    {
+        ped.mat <- SnpMatrixToLinkage(data, ped.listfams)
+        type <- 'count'
+    }
+    else
+    {
+        ped.mat <- data
+    }
+
     if (type=="alleles")
     {    
         if (missing(minor.allele.vec)) minor.allele.vec = rep(2,length(sites))    
