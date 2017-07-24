@@ -61,8 +61,8 @@ inferTheta <- function(phi, phiVec)
 computePFU <- function(nf, theta, ord=5)
 {
     a = (2*nf):(2*nf-ord)
-    dist = c(1,theta,theta^2/2,theta^3/6,theta^4/24,theta^5/120)[1:(ord+1)]
-    return(weighted.mean(2/nf - 2/a,dist))
+	distri = theta^(0:ord)/factorial(0:ord)
+	return(weighted.mean(2/nf - 2/a,distri))
 }
 
 #' make the neccesary correction for when founders have a non-zero
