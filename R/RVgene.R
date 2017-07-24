@@ -1,4 +1,5 @@
-#' convert a list of SnpMatrices to a single matrix in LINKAGE format
+#' convert a list of SnpMatrices to a single matrix in a similiar format
+#'  as LINKAGE except with minor allele counts
 #' @export
 #'
 #' @description creates a matrix in LINKAGE format using pedigree information
@@ -11,11 +12,13 @@
 #'  data(samplePedigrees)
 #'  data(snpMat)
 #'  ped <- samplePedigrees$secondCousinTriple
-#'  ex.ped.mat <- SnpMatrixToLinkage(list(snpMat), list(ped))
-SnpMatrixToLinkage <- function(matList, pedList)
+#'  ex.ped.mat <- SnpMatrixToCount(list(snpMat), list(ped))
+SnpMatrixToCount <- function(matList, pedList)
 {
     if (length(matList) != length(pedList))
         stop('number of pedigrees and SnpMatrices do not match')
+
+    # convert to {NA,0,1,2}
     matList <- lapply(matList, function(mat) as(mat, 'numeric'))
 
     matList <- lapply(1:length(matList), function(i)
@@ -218,7 +221,7 @@ precomputed.prob=list(0), maxdim = 1e9)
 {
     if (class(data) == 'list')
     {
-        ped.mat <- SnpMatrixToLinkage(data, ped.listfams)
+        ped.mat <- SnpMatrixToCount(data, ped.listfams)
         type <- 'count'
     }
     else

@@ -77,7 +77,7 @@ type="alleles", minor.allele.vec, precomputed.prob=list(0), maxdim = 1e9)
 {
     if (class(data) == 'list')
     {
-        ped.mat <- SnpMatrixToLinkage(data, ped.listfams)
+        ped.mat <- SnpMatrixToCount(data, ped.listfams)
         type <- 'count'
     }
     else
