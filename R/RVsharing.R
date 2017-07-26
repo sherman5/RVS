@@ -91,7 +91,7 @@ founderDist, useAffected, kinshipOrder, ...)
     carrierText <- paste(procPed$origID[procPed$carriers], collapse=' ')
     affectedText <- paste(procPed$origID[procPed$affected], collapse=' ')
     message(paste('Probability subjects', carrierText, 'among',
-        affectedText, 'share a rare variant:', round(prob, 4)))
+        affectedText, 'share a rare variant:', signif(prob, 4)))
     return(prob)
 })
 
