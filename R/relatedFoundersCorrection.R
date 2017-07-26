@@ -46,7 +46,7 @@ inferTheta <- function(phi, phiVec)
     phi.diff = (phi - phiVec)
     coef.vec = 1/factorial(1:ord)
     racines = polyroot(c(phi,phi.diff[ord:1]*coef.vec))
-    return(Re(racines)[abs(Im(racines))<1e-10]) # Return only the real roots
+    return(max(Re(racines)[abs(Im(racines))<1e-10])) # Return only the maximal real roots
 }
 
 #' computation of P[FjU] using equation 21 of Bureau et al.
