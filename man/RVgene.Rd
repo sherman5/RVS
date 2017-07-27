@@ -12,14 +12,16 @@ RVgene(data, ped.listfams, sites, fams, pattern.prob.list, nequiv.list, N.list,
 \item{data}{A list of SnpMatrix objects corresponding to each pedigree
 object in ped.listfams, alternatively a data.frame or matrix encoding
 the pedigree information and genotype data in the standard LINKAGE ped
-format or the PLINK raw format with additive component only (see PLINK web site [1]). In fact, only the family ID in the first
+format (see PLINK web site [1]). In fact, only the family ID in the first
 column, the subject ID in the second column, the affection status in the
 sixth column and the genotype data starting in the seventh column are used
 (columns 3 to 5 are ignored). Also, family members without genotype data do
 not need to appear in this matrix. The genotype of each variant can be
 coded in two ways, each corresponding to a different value of the type
-option: a minor allele count on one column with missing values coded NA, obtained for example by converting a SnpMatrix object into a numeric matrix, and corresponding to the PLINK raw format with additive component only (type="count") or the identity of the two alleles on two consecutive
-columns, with missing values coded 0 corresponding to the standard LINKAGE ped format (type="alleles")}
+option: a minor allele count on one column, as returned for example by the
+genotypeToSnpMatrix function, with missing values coded NA
+(type="count") or the identity of the two alleles on two consecutive
+columns, with missing values coded 0 (type="alleles")}
 
 \item{ped.listfams}{a list of pedigree objects, one object for each
 pedigree in ped.mat.}
@@ -131,7 +133,7 @@ The function extracts the carriers of the minor allele at each
  nequiv.list=ex.nequiv.list,N.list=ex.N.list,minor.allele.vec=minor.allele.vec)
 }
 \references{
-http://www.cog-genomics.org/plink2/formats
+http://pngu.mgh.harvard.edu/~purcell/plink/data.shtml#ped
 
 Bureau, A., Younkin, S., Parker, M.M., Bailey-Wilson, J.E.,
  Marazita, M.L., Murray, J.C., Mangold, E., Albacha-Hejazi, H., Beaty, T.H.
