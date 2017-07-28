@@ -19,13 +19,13 @@ should be NA or 0}
 }
 \value{
 if old arguments are provided, a pedigree object is returned,
- otherwise ped is returned
+otherwise ped is returned
 }
 \description{
 check arguments provided in ... to see if
- the user called RVsharing using a function signature from v1.7, this
- will convert the arguments into a pedigree suitable for the
- signature in version > 2.0
+the user called RVsharing using a function signature from v1.7, this
+will convert the arguments into a pedigree suitable for the
+signature in version > 2.0
 }
 \keyword{internal}
 

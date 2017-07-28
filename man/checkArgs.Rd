@@ -21,7 +21,7 @@ throws error if arguments invalid
 }
 \description{
 verifies that arguments are valid, throws an error
- if they are not
+if they are not
 }
 \keyword{internal}
 

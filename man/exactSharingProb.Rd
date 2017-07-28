@@ -16,7 +16,7 @@ sharing probability
 }
 \description{
 Calculate the exact sharing probability given the minor allele
- frequency among the founders (population).
+frequency among the founders (population).
 }
 \keyword{internal}
 

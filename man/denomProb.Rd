@@ -16,7 +16,7 @@ denominator value
 }
 \description{
 calculates the denominator of the sharing probability
- outline in section 2.1 of Bureau et al.
+outline in section 2.1 of Bureau et al.
 }
 \keyword{internal}
 

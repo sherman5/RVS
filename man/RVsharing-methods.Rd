@@ -49,34 +49,34 @@ sharing probability between all carriers in pedigree
 }
 \description{
 computing probability that a rare variant is shared by a
- set of subjects in a pedigree using the gRain package
+set of subjects in a pedigree using the gRain package
 }
 \details{
 the function RVsharing computes the probability that all subjects
- identified as carriers of a rare variant in the vector carriers
- (or all final descendants in the pedigree if carriers == NULL) share that
- rare variant AND the final descendants not included in carriers do not
- carry it, given that the rare variant has been detected in any subject
- in the union of the carriers and the final descendants of the pedigree.
- A final descendant is defined as a subject without descendant in the
- pedigree, it it not necessarily in the youngest generation. If carriers
- enumerates a subset of pedigree members, the function will then compute
- the probability these carriers share the rare variant AND the final
- descendants not included in carriers do not carry it based on the above
- terms. To obtain the probability that a set of pedigree members carry a
- rare variant given it was seen in any of the set members (ignoring the
- carrier status of final descendants not in the set), the pedigree must be
- trimmed of the other final descendants before calling RVsharing.
+identified as carriers of a rare variant in the vector carriers
+(or all final descendants in the pedigree if carriers == NULL) share that
+rare variant AND the final descendants not included in carriers do not
+carry it, given that the rare variant has been detected in any subject
+in the union of the carriers and the final descendants of the pedigree.
+A final descendant is defined as a subject without descendant in the
+pedigree, it it not necessarily in the youngest generation. If carriers
+enumerates a subset of pedigree members, the function will then compute
+the probability these carriers share the rare variant AND the final
+descendants not included in carriers do not carry it based on the above
+terms. To obtain the probability that a set of pedigree members carry a
+rare variant given it was seen in any of the set members (ignoring the
+carrier status of final descendants not in the set), the pedigree must be
+trimmed of the other final descendants before calling RVsharing.
 }
 \examples{
- data("samplePedigrees")
- RVsharing(samplePedigrees$firstCousinPair)
+data("samplePedigrees")
+RVsharing(samplePedigrees$firstCousinPair)
 }
 \references{
 Bureau, A., Younkin, S., Parker, M.M., Bailey-Wilson, J.E.,
- Marazita, M.L., Murray, J.C., Mangold, E., Albacha-Hejazi, H., Beaty, T.H.
- and Ruczinski, I. (2014) Inferring rare disease risk variants based on
- exact probabilities of sharing by multiple affected relatives.
- Bioinformatics, 30(15): 2189-96, doi:10.1093/bioinformatics/btu198.
+Marazita, M.L., Murray, J.C., Mangold, E., Albacha-Hejazi, H., Beaty, T.H.
+and Ruczinski, I. (2014) Inferring rare disease risk variants based on
+exact probabilities of sharing by multiple affected relatives.
+Bioinformatics, 30(15): 2189-96, doi:10.1093/bioinformatics/btu198.
 }
 

@@ -28,8 +28,8 @@ sharing probability between all carriers in pedigree
 }
 \description{
 Calculates the same exact probability as RVsharing,
- except uses monte carlo simulation instead of exact computation.
- This method allows for more flexibility in the scenarios considered.
+except uses monte carlo simulation instead of exact computation.
+This method allows for more flexibility in the scenarios considered.
 }
 \keyword{internal}
 

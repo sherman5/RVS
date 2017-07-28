@@ -3,7 +3,7 @@
 \name{relatedFoundersCorrection}
 \alias{relatedFoundersCorrection}
 \title{make the neccesary correction for when founders have a non-zero
- kinship coefficient}
+kinship coefficient}
 \usage{
 relatedFoundersCorrection(nf, kinshipCoeff, ord = 5)
 }
@@ -21,7 +21,7 @@ weight used in probability calculation
 }
 \description{
 make the neccesary correction for when founders have a non-zero
- kinship coefficient
+kinship coefficient
 }
 \keyword{internal}
 

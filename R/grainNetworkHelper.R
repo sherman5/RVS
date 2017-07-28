@@ -9,8 +9,8 @@ mendelProbTable[3,,] <- with(x, p1*p2/4)         # 2 copies in offspring
 #' @keywords internal
 #'
 #' @description Creates a bayesian network using the gRain package.
-#'  The network is built based on the information in a pedigree object
-#'  that has been processed using \code{processPedigree}.
+#' The network is built based on the information in a pedigree object
+#' that has been processed using \code{processPedigree}.
 #' @param procPed processed Pedigree object
 #' @param prior prior on number of alleles for founders
 #' @return bayesian network from gRain package
@@ -34,14 +34,14 @@ createNetwork <- function(procPed, prior=c(1,2,1))
 #' @keywords internal
 #'
 #' @description Given a bayesian network from the gRain package and a 
-#'  named list of (nodes, states), this function returns the joint-marginal
-#'  probability of each node taking a value in the specified set of states. 
+#' named list of (nodes, states), this function returns the joint-marginal
+#' probability of each node taking a value in the specified set of states. 
 #' @details This function calculates the probability P(A,B,C) by factoring
-#'  it into conditional probabilities, i.e. P(A|B,C) * P(B|C) * P(C).
-#'  Starting at the right side, P(C) is computed and then evidence of C
-#'  being true is added to the network and P(B) is computed - effectively
-#'  giving the probability P(B|C). This process continues from right to
-#'  left until the entire product has been computed.
+#' it into conditional probabilities, i.e. P(A|B,C) * P(B|C) * P(C).
+#' Starting at the right side, P(C) is computed and then evidence of C
+#' being true is added to the network and P(B) is computed - effectively
+#' giving the probability P(B|C). This process continues from right to
+#' left until the entire product has been computed.
 #' @param net bayesian network from gRain package
 #' @param states named list of states for each node
 #' @return joint-marginal probability

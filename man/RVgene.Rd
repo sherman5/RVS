@@ -12,16 +12,18 @@ RVgene(data, ped.listfams, sites, fams, pattern.prob.list, nequiv.list, N.list,
 \item{data}{A list of SnpMatrix objects corresponding to each pedigree
 object in ped.listfams, alternatively a data.frame or matrix encoding
 the pedigree information and genotype data in the standard LINKAGE ped
-format (see PLINK web site [1]). In fact, only the family ID in the first
+format or the PLINK raw format with additive component only 
+(see PLINK web site [1]). In fact, only the family ID in the first
 column, the subject ID in the second column, the affection status in the
 sixth column and the genotype data starting in the seventh column are used
 (columns 3 to 5 are ignored). Also, family members without genotype data do
 not need to appear in this matrix. The genotype of each variant can be
 coded in two ways, each corresponding to a different value of the type
-option: a minor allele count on one column, as returned for example by the
-genotypeToSnpMatrix function, with missing values coded NA
-(type="count") or the identity of the two alleles on two consecutive
-columns, with missing values coded 0 (type="alleles")}
+option: a minor allele count on one column with missing values coded NA,
+obtained for example by converting a Snpmatrix object (type="count")
+or the identity of the two alleles on two consecutive columns, with missing
+values coded 0 corresponding to the standard
+LINKAGE ped format (type="alleles")}
 
 \item{ped.listfams}{a list of pedigree objects, one object for each
 pedigree in ped.mat.}
@@ -73,72 +75,75 @@ joint distribution of the sharing patterns for all families in fams
 }
 \value{
 A list with items:
- p P-value of the exact rare variant sharing test allowing for sharing
- by a subset of affected subjects.
- pall P-value of the exact rare variant sharing test requiring sharing
- by all affected subjects.
- potentialp Minimum achievable p-value if all affected subjects were
- carriers of a rare variant.
+p P-value of the exact rare variant sharing test allowing for sharing
+by a subset of affected subjects.
+pall P-value of the exact rare variant sharing test requiring sharing
+by all affected subjects.
+potentialp Minimum achievable p-value if all affected subjects were
+carriers of a rare variant.
 }
 \description{
 Computing probability of sharing of rare variants in
- a family sample within a genomic region such as a gene.
+a family sample within a genomic region such as a gene.
 }
 \details{
 The function extracts the carriers of the minor allele at each
- entry in sites in each family where it is present in ped.mat (or in the
- families specified in fams if that argument is specified). It then
- computes exact rare variant sharing probabilities in each family for
- each variant by calling RVsharing. If multiple rare variants are seen
- in the same family, the smallest sharing probability among all rare
- variants is retained. The joint rare variant sharing probability over
- all families is obtained as the product of the family-specific
- probabilities. The p-value of the test allowing for sharing by a subset
- of affected subjects over the rare variants in the genomic region is
- then computed as the sum of the probabilities of the possible
- combinations of sharing patterns among all families with a probability
- less than or equal to the observed joint probability and a total number
- of carriers greater than or equal to the sum of the number of carriers
- in all families, using the values in pattern.prob.list, nequiv.list and
- N.list. The families where all affected subjects share a rare variant
- are determined by verifying if the length of the carrier vector equals
- the maximum value of N.list for that family. The p-value of the test
- requiring sharing by all affected subjects is computed by calling
- multipleFamilyPValue.
+entry in sites in each family where it is present in ped.mat (or in the
+families specified in fams if that argument is specified). It then
+computes exact rare variant sharing probabilities in each family for
+each variant by calling RVsharing. If multiple rare variants are seen
+in the same family, the smallest sharing probability among all rare
+variants is retained. The joint rare variant sharing probability over
+all families is obtained as the product of the family-specific
+probabilities. The p-value of the test allowing for sharing by a subset
+of affected subjects over the rare variants in the genomic region is
+then computed as the sum of the probabilities of the possible
+combinations of sharing patterns among all families with a probability
+less than or equal to the observed joint probability and a total number
+of carriers greater than or equal to the sum of the number of carriers
+in all families, using the values in pattern.prob.list, nequiv.list and
+N.list. The families where all affected subjects share a rare variant
+are determined by verifying if the length of the carrier vector equals
+the maximum value of N.list for that family. The p-value of the test
+requiring sharing by all affected subjects is computed by calling
+multipleFamilyPValue.
 }
 \examples{
- data(samplePedigrees)
- data(ex.ped.mat)
- fam15157 <- samplePedigrees$secondCousinTriple
- fam15157.pattern.prob = c(RVsharing(fam15157,carriers=c(15,16,17)),
-                           RVsharing(fam15157,carriers=c(15,16)),
-                           RVsharing(fam15157,carriers=c(15)))
- fam15157.nequiv = c(1,3,3)
- # check that distribution sums to 1
- sum(fam15157.pattern.prob*fam15157.nequiv)
- fam15157.N = 3:1
- # Creating lists
- ex.pattern.prob.list = list("15157"=fam15157.pattern.prob)
- ex.nequiv.list = list("15157"=fam15157.nequiv)
- ex.N.list = list("15157"=fam15157.N)
- ex.ped.obj = list(fam15157)
- names(ex.ped.obj) = c("15157")
- sites = c(92,119)
- minor.allele.vec=c(1,4)
- RVgene(ex.ped.mat[1:17,],ex.ped.obj,sites,pattern.prob.list=ex.pattern.prob.list,
- nequiv.list=ex.nequiv.list,N.list=ex.N.list,minor.allele.vec=minor.allele.vec)
- # calling with a SnpMatrix
- data(snpMat)
- RVgene(list(snpMat),ex.ped.obj,sites,pattern.prob.list=ex.pattern.prob.list,
- nequiv.list=ex.nequiv.list,N.list=ex.N.list,minor.allele.vec=minor.allele.vec)
+data(samplePedigrees)
+data(ex.ped.mat)
+fam15157 <- samplePedigrees$secondCousinTriple
+fam15157.pattern.prob = c(RVsharing(fam15157,carriers=c(15,16,17)),
+    RVsharing(fam15157,carriers=c(15,16)),
+    RVsharing(fam15157,carriers=c(15)))
+fam15157.nequiv = c(1,3,3)
+# check that distribution sums to 1
+sum(fam15157.pattern.prob*fam15157.nequiv)
+fam15157.N = 3:1
+# Creating lists
+ex.pattern.prob.list = list("15157"=fam15157.pattern.prob)
+ex.nequiv.list = list("15157"=fam15157.nequiv)
+ex.N.list = list("15157"=fam15157.N)
+ex.ped.obj = list(fam15157)
+names(ex.ped.obj) = c("15157")
+sites = c(92,119)
+minor.allele.vec=c(1,4)
+RVgene(ex.ped.mat[1:17,],ex.ped.obj,sites,
+    pattern.prob.list=ex.pattern.prob.list,
+nequiv.list=ex.nequiv.list,N.list=ex.N.list,
+    minor.allele.vec=minor.allele.vec)
+# calling with a SnpMatrix
+data(snpMat)
+RVgene(list(snpMat),ex.ped.obj,sites,
+    pattern.prob.list=ex.pattern.prob.list, nequiv.list=ex.nequiv.list,
+    N.list=ex.N.list,minor.allele.vec=minor.allele.vec)
 }
 \references{
-http://pngu.mgh.harvard.edu/~purcell/plink/data.shtml#ped
+http://www.cog-genomics.org/plink2/formats
 
 Bureau, A., Younkin, S., Parker, M.M., Bailey-Wilson, J.E.,
- Marazita, M.L., Murray, J.C., Mangold, E., Albacha-Hejazi, H., Beaty, T.H.
- and Ruczinski, I. (2014) Inferring rare disease risk variants based on
- exact probabilities of sharing by multiple affected relatives.
- Bioinformatics, 30(15): 2189-96, doi:10.1093/bioinformatics/btu198.
+Marazita, M.L., Murray, J.C., Mangold, E., Albacha-Hejazi, H., Beaty, T.H.
+and Ruczinski, I. (2014) Inferring rare disease risk variants based on
+exact probabilities of sharing by multiple affected relatives.
+Bioinformatics, 30(15): 2189-96, doi:10.1093/bioinformatics/btu198.
 }
 

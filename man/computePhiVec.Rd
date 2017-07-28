@@ -13,7 +13,7 @@ computePhiVec(nf, amin = 2 * nf - 2)
 }
 \value{
 vector of expected phi_a for nf founders for
- numbers of distinct alleles from amin to 2*nf-1
+numbers of distinct alleles from amin to 2*nf-1
 }
 \description{
 expected kinship coefficient for different number of alleles

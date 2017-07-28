@@ -16,8 +16,8 @@ bayesian network from gRain package
 }
 \description{
 Creates a bayesian network using the gRain package.
- The network is built based on the information in a pedigree object
- that has been processed using \code{processPedigree}.
+The network is built based on the information in a pedigree object
+that has been processed using \code{processPedigree}.
 }
 \keyword{internal}
 

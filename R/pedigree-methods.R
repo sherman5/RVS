@@ -4,32 +4,32 @@ setOldClass('pedigree')
 #################### GENERICS ####################
 
 #' ratio of excess kinship among descendants over mean kinship among
-#'  founders
+#' founders
 #' @export
 #' @docType methods
 #' @rdname ComputeKinshipPropCoef-methods
 #' 
 #' @description Computes, for each pair of final descendants in the
-#'  pedigree structure contained in the pedigree object, the ratio of
-#'  the difference between the inferred and expected kinship coefficient
-#'  for the pair over the mean kinship among founders.
+#' pedigree structure contained in the pedigree object, the ratio of
+#' the difference between the inferred and expected kinship coefficient
+#' for the pair over the mean kinship among founders.
 #' @details The ratio for each pair of final descendants is computed
-#'  using equation (A1) of Bureau et al. Dividing the difference between
-#'  the inferred and expected kinship coefficient for each pair by this ratio
-#'  gives a pair-specific estimate of the mean kinship among founders, which
-#'  can then be averaged over all pairs of final descendants from the same
-#'  population to obtain a global estimate of the mean kinship among founders.
+#' using equation (A1) of Bureau et al. Dividing the difference between
+#' the inferred and expected kinship coefficient for each pair by this ratio
+#' gives a pair-specific estimate of the mean kinship among founders, which
+#' can then be averaged over all pairs of final descendants from the same
+#' population to obtain a global estimate of the mean kinship among founders.
 #' @param ped pedigree object (S3)
 #' @return a symmetric matrix of ratios for all pair of final descendants
-#'  in the pedigree structure contained in the pedigree
+#' in the pedigree structure contained in the pedigree
 #' @examples
-#'  data(samplePedigrees)
-#'  ComputeKinshipPropCoef(samplePedigrees$firstCousinTriple)
+#' data(samplePedigrees)
+#' ComputeKinshipPropCoef(samplePedigrees$firstCousinTriple)
 #' @references Bureau, A., Younkin, S., Parker, M.M., Bailey-Wilson, J.E.,
-#'  Marazita, M.L., Murray, J.C., Mangold, E., Albacha-Hejazi, H., Beaty, T.H.
-#'  and Ruczinski, I. (2014) Inferring rare disease risk variants based on
-#'  exact probabilities of sharing by multiple affected relatives.
-#'  Bioinformatics, 30(15): 2189-96, doi:10.1093/bioinformatics/btu198.
+#' Marazita, M.L., Murray, J.C., Mangold, E., Albacha-Hejazi, H., Beaty, T.H.
+#' and Ruczinski, I. (2014) Inferring rare disease risk variants based on
+#' exact probabilities of sharing by multiple affected relatives.
+#' Bioinformatics, 30(15): 2189-96, doi:10.1093/bioinformatics/btu198.
 setGeneric('ComputeKinshipPropCoef', function(ped)
     {standardGeneric('ComputeKinshipPropCoef')})
 
@@ -39,13 +39,13 @@ setGeneric('ComputeKinshipPropCoef', function(ped)
 #' @rdname processPedigree-methods
 #' 
 #' @description Extract key information from a pedigree object, which makes
-#'  subsequent computations much easier.
+#' subsequent computations much easier.
 #' @param ped pedigree object (S3)
 #' @param carriers subjects in which the rare variant is seen
 #' @return list containing relevant pedigree info
 #' @examples 
-#'  data(samplePedigrees)
-#'  processPedigree(samplePedigrees$firstCousinPair)
+#' data(samplePedigrees)
+#' processPedigree(samplePedigrees$firstCousinPair)
 setGeneric('processPedigree', function(ped, carriers=NULL)
     {standardGeneric('processPedigree')})
 
@@ -70,7 +70,7 @@ function(ped, carriers)
     # get carriers, default to affected if not provided
     if (is.null(carriers))   carriers <- affected
     else                      carriers <- which(ped$id %in% carriers)
- 
+
     # check pedigree is valid
     if (sum(affected %in% founders) > 0)
         stop('some founders are affected')
@@ -173,7 +173,7 @@ areMating <- function(procPed, f1, f2)
 #' deprecated function
 #' @export
 #' @description This function is deprecated with version >= 2.0
-#'  and should not be used.
+#' and should not be used.
 #' @param ... arguments to the old function
 #' @return none
 #' @examples tryCatch(ped2trio(), error = function(e) message(e))

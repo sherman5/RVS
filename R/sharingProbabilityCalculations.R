@@ -2,7 +2,7 @@
 #' @keywords internal
 #'
 #' @description calculates the numerator of the sharing probability
-#'  outline in section 2.1 of Bureau et al.
+#' outline in section 2.1 of Bureau et al.
 #' @param gRain bayesian network
 #' @param procPed pedigree object that has been process with processPedigree
 #' @return numerator value
@@ -19,7 +19,7 @@ numerProb <- function(net, procPed)
 #' @keywords internal
 #'
 #' @description calculates the denominator of the sharing probability
-#'  outline in section 2.1 of Bureau et al.
+#' outline in section 2.1 of Bureau et al.
 #' @param gRain bayesian network
 #' @param procPed pedigree object that has been process with processPedigree
 #' @return denominator value
@@ -34,8 +34,8 @@ denomProb <- function(net, procPed)
 #' @keywords internal
 #'
 #' @description Assume that only one founder can introduce the variant to 
-#'  the pedigree. Condition on each founder and sum over all resulting
-#'  probabilities. 
+#' the pedigree. Condition on each founder and sum over all resulting
+#' probabilities. 
 #' @param procPed pedigree that has been through processPedigree()
 #' @return sharing probability
 oneFounderSharingProb <- function(procPed)
@@ -60,17 +60,17 @@ oneFounderSharingProb <- function(procPed)
     return(numer/denom)
 }
 
-#' calculate the sharing probability when two founders can introduce variant
+#' sharing probability when founder pair introduces variant
 #' @keywords internal
 #'
 #' @description In the case of relatedness among founders, assume that up
-#'  to two founders could introduce the variant and condition on all possible
-#'  pairs.
+#' to two founders could introduce the variant and condition on all possible
+#' pairs.
 #' @param procPed pedigree that has been through processPedigree()
 #' @param kinshipCoeff mean kinship coefficient among the founders
 #' @param kinshipOrder order of the polynomial approximation to the distribtion
-#'  of the number of distinct alleles in the founders (d in Bureau et al.).
-#'  Must be <= 5
+#' of the number of distinct alleles in the founders (d in Bureau et al.).
+#' Must be <= 5
 #' @return sharing probability
 twoFounderSharingProb <- function(procPed, kinshipCoeff, kinshipOrder)
 {
@@ -89,7 +89,7 @@ twoFounderSharingProb <- function(procPed, kinshipCoeff, kinshipOrder)
         # condition on founder
         net1 <- gRain::retractEvidence(net, as.character(f1))
         net1 <- gRain::setEvidence(net1, as.character(f1), '1')
-       
+
         for (f2 in remainingFounders)
         {
             # condition on founder
@@ -98,16 +98,9 @@ twoFounderSharingProb <- function(procPed, kinshipCoeff, kinshipOrder)
 
             # calculate (weighted) conditional probability
             # Correction to formula 2 of Bioinformatics paper
-            w <- ifelse(f1==f2, cor, 2*(1-cor)/(length(procPed$founders)-1))
-            nP <- numerProb(net2, procPed)
-            dP <- denomProb(net2, procPed)
-            numer <- numer + w * nP
-            denom <- denom + w * dP
-            print(paste('f1=', f1, ', f2=', f2, ', w=', round(w, 4),
-                            ', numer=', sprintf("%.5f", round(nP, 5)),
-                            ', denom=', sprintf("%.5f", round(dP, 5)), sep=''))
-#            numer <- numer + w * numerProb(net2, procPed)
-#            denom <- denom + w * denomProb(net2, procPed)
+            w <- ifelse(f1==f2, cor, 2*(1-cor) / (length(procPed$founders)-1))
+            numer <- numer + w * numerProb(net2, procPed)
+            denom <- denom + w * denomProb(net2, procPed)
         }
         remainingFounders <- setdiff(remainingFounders, f1)
     }
@@ -118,14 +111,14 @@ twoFounderSharingProb <- function(procPed, kinshipCoeff, kinshipOrder)
 #' @keywords internal
 #'
 #' @description Calculate the exact sharing probability given the minor allele
-#'  frequency among the founders (population).
+#' frequency among the founders (population).
 #' @param procPed pedigree that has been through processPedigree()
 #' @param alleleFreq allele frequency among the founders
 #' @return sharing probability
 exactSharingProb <- function(procPed, alleleFreq)
 {
     # create network with founders having a prior based on the allele freq
-    prior <- with(data.frame(f=alleleFreq), c((1-f)^2, 2*f*(1-f), f^2))
+    prior <- c((1-alleleFreq)^2, 2*alleleFreq*(1-alleleFreq), alleleFreq^2)
     net <- createNetwork(procPed, prior)
 
     # compute probability

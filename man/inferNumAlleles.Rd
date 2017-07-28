@@ -16,7 +16,7 @@ number of distinct alleles
 }
 \description{
 Calculates the most likely number of distinct alleles
- among nf founders based on the mean estimated kinship coefficient
+among nf founders based on the mean estimated kinship coefficient
 }
 \keyword{internal}
 

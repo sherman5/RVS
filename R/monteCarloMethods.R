@@ -5,8 +5,8 @@ NULL
 #' @keywords internal
 #'
 #' @description Calculates the same exact probability as RVsharing,
-#'  except uses monte carlo simulation instead of exact computation.
-#'  This method allows for more flexibility in the scenarios considered.
+#' except uses monte carlo simulation instead of exact computation.
+#' This method allows for more flexibility in the scenarios considered.
 #' @param procPed pedigree that has been through \code{processPedigree}
 #' @inheritParams RVsharing
 #' @return sharing probability between all carriers in pedigree
@@ -15,7 +15,7 @@ nSim, founderDist=NULL, kinshipOrder=5)
 {
     if (!is.na(alleleFreq)) # known allele frequency in population
     {
-        p <- with(data.frame(f=alleleFreq), c((1-f)^2, 2*f*(1-f), f^2))
+        p <- c((1-alleleFreq)^2, 2*alleleFreq*(1-alleleFreq), alleleFreq^2)
         founderDist <- function(n) sample.int(3,n,TRUE,p) - 1
     }
     else if (!is.na(kinshipCoeff)) # related founders
@@ -36,11 +36,11 @@ nSim, founderDist=NULL, kinshipOrder=5)
 #' @keywords internal
 #'
 #' @description Given a number of simulations and a distribution
-#'  of variants in the founders, this function simulates possbile
-#'  outcomes of the pedigree and returns a sharing probability.
+#' of variants in the founders, this function simulates possbile
+#' outcomes of the pedigree and returns a sharing probability.
 #' @details If the number of simulations is greater than 20,000
-#'  then the computation is done in parallel (as long as the package
-#'  parallel is available)
+#' then the computation is done in parallel (as long as the package
+#' parallel is available)
 #' @inheritParams monteCarloSharingProb
 #' @return sharing probability between all carriers in pedigree
 runMonteCarlo <- function(procPed, founderDist, nSim)
@@ -70,8 +70,8 @@ runMonteCarlo <- function(procPed, founderDist, nSim)
 #' @keywords internal
 #'
 #' @description Given the states (number of allele copies) of the founders,
-#'  this function simulates mendelian inheritance and returns the states
-#'  of all subjects in the pedigree
+#' this function simulates mendelian inheritance and returns the states
+#' of all subjects in the pedigree
 #' @param procPed pedigree that has been through processPedigree()
 #' @param states state of each founder (0,1,2 copies of variant)
 #' @return states for all subjects in pedigree
@@ -101,7 +101,7 @@ simulatePedigree <- function(procPed, states)
 #' @rdname GeneDrop
 #'
 #' @description This function is deprecated with version >= 2.0
-#'  and should not be used, instead use RVsharing with nSim option
+#' and should not be used, instead use RVsharing with nSim option
 #' @param ... arguments to the old function
 #' @return none
 #' @examples tryCatch(GeneDrop(), error = function(e) message(e))

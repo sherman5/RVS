@@ -23,7 +23,7 @@ none
 }
 \description{
 This function is deprecated with version >= 2.0
- and should not be used, instead use RVsharing with nSim option
+and should not be used, instead use RVsharing with nSim option
 }
 \examples{
 tryCatch(GeneDrop(), error = function(e) message(e))

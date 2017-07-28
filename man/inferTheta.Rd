@@ -3,7 +3,7 @@
 \name{inferTheta}
 \alias{inferTheta}
 \title{solve the parameter theta for polynomial approximation of the
- distribution of the number of distinct alleles.}
+distribution of the number of distinct alleles.}
 \usage{
 inferTheta(phi, phiVec)
 }
@@ -18,7 +18,7 @@ real roots of the polynomial approximation
 }
 \description{
 solve the parameter theta for polynomial approximation of the
- distribution of the number of distinct alleles.
+distribution of the number of distinct alleles.
 }
 \keyword{internal}
 

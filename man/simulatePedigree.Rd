@@ -16,8 +16,8 @@ states for all subjects in pedigree
 }
 \description{
 Given the states (number of allele copies) of the founders,
- this function simulates mendelian inheritance and returns the states
- of all subjects in the pedigree
+this function simulates mendelian inheritance and returns the states
+of all subjects in the pedigree
 }
 \keyword{internal}
 

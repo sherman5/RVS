@@ -12,7 +12,7 @@ test_that('computePhiVec',
 
 test_that('inferTheta',
 {
-    expect_equal(inferTheta(0.05, c(0.1, 0.1)), c(-1+sqrt(3), -1-sqrt(3)))
+    expect_equal(inferTheta(0.05, c(0.1, 0.1)), -1+sqrt(3))
 })
 
 test_that('computePFU',

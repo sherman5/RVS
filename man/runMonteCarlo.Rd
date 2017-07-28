@@ -19,13 +19,13 @@ sharing probability between all carriers in pedigree
 }
 \description{
 Given a number of simulations and a distribution
- of variants in the founders, this function simulates possbile
- outcomes of the pedigree and returns a sharing probability.
+of variants in the founders, this function simulates possbile
+outcomes of the pedigree and returns a sharing probability.
 }
 \details{
 If the number of simulations is greater than 20,000
- then the computation is done in parallel (as long as the package
- parallel is available)
+then the computation is done in parallel (as long as the package
+parallel is available)
 }
 \keyword{internal}
 

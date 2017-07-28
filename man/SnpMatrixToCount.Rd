@@ -3,7 +3,7 @@
 \name{SnpMatrixToCount}
 \alias{SnpMatrixToCount}
 \title{convert a list of SnpMatrices to a single matrix in a similiar format
- as LINKAGE except with minor allele counts}
+as LINKAGE except with minor allele counts}
 \usage{
 SnpMatrixToCount(matList, pedList)
 }
@@ -17,13 +17,13 @@ matrix in LINKAGE format
 }
 \description{
 creates a matrix in LINKAGE format using pedigree information
- from a list of pedigree objects and genotype information from a list of
- SnpMatrices
+from a list of pedigree objects and genotype information from a list of
+SnpMatrices
 }
 \examples{
- data(samplePedigrees)
- data(snpMat)
- ped <- samplePedigrees$secondCousinTriple
- ex.ped.mat <- SnpMatrixToCount(list(snpMat), list(ped))
+data(samplePedigrees)
+data(snpMat)
+ped <- samplePedigrees$secondCousinTriple
+ex.ped.mat <- SnpMatrixToCount(list(snpMat), list(ped))
 }
 

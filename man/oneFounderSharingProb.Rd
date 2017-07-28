@@ -14,8 +14,8 @@ sharing probability
 }
 \description{
 Assume that only one founder can introduce the variant to 
- the pedigree. Condition on each founder and sum over all resulting
- probabilities.
+the pedigree. Condition on each founder and sum over all resulting
+probabilities.
 }
 \keyword{internal}
 

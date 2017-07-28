@@ -15,23 +15,24 @@ share the rare variant}
 \item{pshare.data}{a data frame with at least two of the following columns:
 pshare: vector of RV sharing probabilities
 ped.tocompute.vec: vector of names of the families whose sharing 
-    probability is contained in pshare. The names in the arguments
-    vec and not must be found in ped.tocompute.vec}
+probability is contained in pshare. The names in the arguments
+vec and not must be found in ped.tocompute.vec}
 }
 \value{
 P-value of the exact rare variant sharing test requiring
- sharing by all affected subjects.
+sharing by all affected subjects.
 }
 \description{
 This function is deprecated with version >= 2.0
- and should not be used, instead use multipleFamilyPValue
+and should not be used, instead use multipleFamilyPValue
 }
 \examples{
- data(samplePedigrees)
- notSharedFams <- c(15159, 15053, 15157)
- famids <- sapply(samplePedigrees, function(p) p$famid[1])
- notShared <- famids \%in\% notSharedFams
- probs <- sapply(samplePedigrees, RVsharing)
- get.psubset(famids, notShared, data.frame(pshare=probs, ped.tocompute.vec=famids))
+data(samplePedigrees)
+notSharedFams <- c(15159, 15053, 15157)
+famids <- sapply(samplePedigrees, function(p) p$famid[1])
+notShared <- famids \%in\% notSharedFams
+probs <- sapply(samplePedigrees, RVsharing)
+get.psubset(famids, notShared, data.frame(pshare=probs,
+ped.tocompute.vec=famids))
 }
 
