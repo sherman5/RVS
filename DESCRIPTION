@@ -18,6 +18,8 @@ Depends:
     R (>= 3.4.0)
 Imports:
     gRain,
+    snpStats,
+    kinship2,
     methods,
     stats,
     utils
@@ -25,9 +27,7 @@ Suggests:
     knitr,
     testthat,
     rmarkdown,
-    BiocStyle,
-    kinship2,
-    snpStats
+    BiocStyle
 VignetteBuilder: knitr
 RoxygenNote: 5.0.1
 biocViews: Genetics, GenomeWideAssociation, VariantDetection, ExomeSeq,

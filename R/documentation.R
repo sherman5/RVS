@@ -4,6 +4,9 @@
 #' @name RVS
 #' @importFrom stats runif weighted.mean
 #' @importFrom utils combn data installed.packages
+#' @import kinship2
+#' @importClassesFrom snpStats SnpMatrix
+#' @import gRain
 #' @import methods
 NULL
 
