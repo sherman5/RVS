@@ -115,7 +115,9 @@ function(ped)
     mat <- matrix(0, N, N)
     genFunc <- function(i,j) ifelse(i==j, NA,
         sumTerm(procPed$finalDescendants[i], procPed$finalDescendants[j]))
-    return(matrix(mapply(genFunc, row(mat), col(mat)), nrow = nrow(mat)))
+    mat <- matrix(mapply(genFunc, row(mat), col(mat)), nrow = nrow(mat))
+    rownames(mat) <- colnames(mat) <- procPed$finalDescendants
+    return(mat)
 })
 
 #################### HELPER FUNCTIONS ####################
