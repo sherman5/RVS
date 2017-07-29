@@ -96,7 +96,8 @@ function(ped)
     term <- function(i1, i2, f1, f2)
     {
         d <- ancestorDistance(procPed,f1,i1) + ancestorDistance(procPed,f2,i2)
-        ifelse(areMating(procPed, f1, f2), 0.5^(d-1), 0.5^d)
+        0.5^d
+#        ifelse(areMating(procPed, f1, f2), 0.5^(d-1), 0.5^d)
     }
 
     # sum inner term over all pairs of common ancestors among the founders
@@ -105,7 +106,7 @@ function(ped)
         f1 <- which(sapply(procPed$id, isDescendant, procPed=procPed, d=i1))
         f2 <- which(sapply(procPed$id, isDescendant, procPed=procPed, d=i2))
 
-        sum(outer(f1, f2, function(f1,f2) ifelse (f2 > f1,term(i1, i2, f1, f2),0)))
+        sum(outer(f1, f2, function(f1,f2) term(i1, i2, f1, f2)))
     }
 
     # create matrix of coefficients
