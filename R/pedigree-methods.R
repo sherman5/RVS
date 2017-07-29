@@ -104,10 +104,8 @@ function(ped)
     {
         f1 <- which(sapply(procPed$id, isDescendant, procPed=procPed, d=i1))
         f2 <- which(sapply(procPed$id, isDescendant, procPed=procPed, d=i2))
-        f <- intersect(f1, f2)
 
-        pairs <- combn(f, 2)
-        sum(apply(pairs, 2, function(p) term(i1, i2, p[1], p[2])))
+        sum(outer(f1, f2, function(f1,f2) ifelse (f2 > f1,term(i1, i2, f1, f2),0)))
     }
 
     # create matrix of coefficients
