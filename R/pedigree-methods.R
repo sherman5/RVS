@@ -69,7 +69,7 @@ function(ped, carriers)
 
     # get carriers, default to affected if not provided
     if (is.null(carriers))   carriers <- affected
-    else                      carriers <- which(ped$id %in% carriers)
+    else                      carriers <- which(origID %in% carriers)
 
     # check pedigree is valid
     if (sum(affected %in% founders) > 0)
