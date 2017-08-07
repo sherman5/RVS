@@ -1,0 +1,29 @@
+Package: RVS
+Type: Package
+Title: Computes estimates of the probability of related individuals
+        sharing a rare variant
+Version: 0.99.3
+Date: 2017-07-11
+Author: Alexandre Bureau, Ingo Ruczinski, Samuel Younkin, Thomas
+        Sherman
+Maintainer: Thomas Sherman <tsherma4@jhu.edu>
+Description: Rare Variant Sharing (RVS) implements tests of association
+        and linkage between rare genetic variant genotypes and a
+        dichotomous phenotype, e.g. a disease status, in family
+        samples. The tests are based on probabilities of rare variant
+        sharing by relatives under the null hypothesis of absence of
+        linkage and association between the rare variants and the
+        phenotype and apply to single variants or multiple variants in
+        a region (e.g. gene-based test).
+License: GPL-2
+Depends: R (>= 3.4.0)
+Imports: gRain, snpStats, kinship2, methods, stats, utils
+Suggests: knitr, testthat, rmarkdown, BiocStyle
+VignetteBuilder: knitr
+RoxygenNote: 5.0.1
+biocViews: Genetics, GenomeWideAssociation, VariantDetection, ExomeSeq,
+        WholeGenome
+Collate: 'RVgene.R' 'pedigree-methods.R' 'RVsharing.R'
+        'documentation.R' 'grainNetworkHelper.R' 'monteCarloMethods.R'
+        'multipleFamilyCalculations.R' 'relatedFoundersCorrection.R'
+        'sharingProbabilityCalculations.R'
