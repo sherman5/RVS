@@ -63,9 +63,8 @@ test_that('kinship coefficient estimation',
     data(samplePedigrees)
     
     coefMatrix <- ComputeKinshipPropCoef(samplePedigrees$firstCousinPair)
-    expect_equal(coefMatrix[1,], c(   NA, 0.125))
-    expect_equal(coefMatrix[2,], c(0.125,    NA))
-
+    expect_equal(unname(coefMatrix[1,]), c(   NA, 0.125))
+    expect_equal(unname(coefMatrix[2,]), c(0.125,    NA))
 })
 
 
