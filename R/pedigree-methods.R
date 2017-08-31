@@ -109,7 +109,7 @@ function(ped)
         f <- intersect(f1, f2)
         pairs <- combn(f, 2) # pairs in columns
 
-        #pairs <- expand.grid(f1, f2) # pairs in rows
+        ##pairs <- expand.grid(f1, f2) # pairs in rows
         #pairs <- pairs[pairs[,1] < pairs[,2],]
 
         terms <- apply(pairs, 2, function(p) term(i1, i2, p[1], p[2]))
