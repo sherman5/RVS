@@ -53,7 +53,7 @@ marginalProb <- function(net, states)
         if (prob > 0) # prevents conditioning on zero prob events
         {
             # calculate probability for this node
-            p <- unname(gRain::querygrain(net, n)[[1]])
+            p <- unname(gRain::querygrain(net, n, exclude=FALSE)[[1]])
             prob <- prob * sum(p[states[[n]]+1])
 
             # condition on this node being in the correct states
