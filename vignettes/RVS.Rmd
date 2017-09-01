@@ -195,7 +195,7 @@ $\kappa_{i,j}$.
 
 ```{r}
 plot(samplePedigrees$twoGenerationsInbreeding)
-#ComputeKinshipPropCoef(samplePedigrees$twoGenerationsInbreeding)
+ComputeKinshipPropCoef(samplePedigrees$twoGenerationsInbreeding)
 ```
 
 # Using Monte Carlo Simulation
