@@ -205,15 +205,15 @@ plot(kCoeff, sharingProb, type='l')</code></pre>
 <pre class="r"><code>p &lt;- RVsharing(samplePedigrees$firstCousinPair)</code></pre>
 <pre><code>## Probability subjects 7 8 among 7 8 share a rare variant: 0.06667</code></pre>
 <pre class="r"><code>p &lt;- RVsharing(samplePedigrees$firstCousinPair, nSim=1e4)</code></pre>
-<pre><code>## Probability subjects 7 8 among 7 8 share a rare variant: 0.06213</code></pre>
+<pre><code>## Probability subjects 7 8 among 7 8 share a rare variant: 0.06868</code></pre>
 <pre class="r"><code>p &lt;- RVsharing(samplePedigrees$firstCousinPair, alleleFreq=0.01)</code></pre>
 <pre><code>## Probability subjects 7 8 among 7 8 share a rare variant: 0.07631</code></pre>
 <pre class="r"><code>p &lt;- RVsharing(samplePedigrees$firstCousinPair, alleleFreq=0.01, nSim=1e4)</code></pre>
-<pre><code>## Probability subjects 7 8 among 7 8 share a rare variant: 0.0794</code></pre>
+<pre><code>## Probability subjects 7 8 among 7 8 share a rare variant: 0.05373</code></pre>
 <pre class="r"><code>p &lt;- RVsharing(samplePedigrees$firstCousinPair, kinshipCoeff=0.05)</code></pre>
 <pre><code>## Probability subjects 7 8 among 7 8 share a rare variant: 0.1262</code></pre>
 <pre class="r"><code>p &lt;- RVsharing(samplePedigrees$firstCousinPair, kinshipCoeff=0.05, nSim=1e4)</code></pre>
-<pre><code>## Probability subjects 7 8 among 7 8 share a rare variant: 0.1199</code></pre>
+<pre><code>## Probability subjects 7 8 among 7 8 share a rare variant: 0.1274</code></pre>
 </div>
 <div id="custom-founder-distributions" class="section level2">
 <h2><span class="header-section-number">5.2</span> Custom Founder Distributions</h2>
@@ -221,8 +221,8 @@ plot(kCoeff, sharingProb, type='l')</code></pre>
 <pre class="r"><code># assumption that 1 founder introduces
 fDist &lt;- function(N) sample(c(rep(0,N-1), 1))
 RVsharing(samplePedigrees$firstCousinPair, nSim=1e4, founderDist=fDist)</code></pre>
-<pre><code>## Probability subjects 7 8 among 7 8 share a rare variant: 0.06528</code></pre>
-<pre><code>## [1] 0.06528318</code></pre>
+<pre><code>## Probability subjects 7 8 among 7 8 share a rare variant: 0.06541</code></pre>
+<pre><code>## [1] 0.06541044</code></pre>
 <pre class="r"><code>RVsharing(samplePedigrees$firstCousinPair)</code></pre>
 <pre><code>## Probability subjects 7 8 among 7 8 share a rare variant: 0.06667</code></pre>
 <pre><code>## [1] 0.06666667</code></pre>
@@ -337,7 +337,13 @@ fam15157.pattern.prob = sapply(carrier.sets,function (vec) RVsharing(fam15157,ca
 <p>Notice the use of the option <em>useAffected=TRUE</em> with affected subjects who are not final descendants. Again, one can check that the distribution sums to 1:</p>
 <pre class="r"><code>sum(fam15157.pattern.prob)</code></pre>
 <pre><code>## [1] 1</code></pre>
-<p>Once the vectors of sharing probabilities and number of carriers have been computed for all families in the sample, they need to be stored in lists. With a single family, we can do:</p>
+<p>Precomputed sharing probabilities and numbers of carriers can be used directly to obtain p-values of observed sharing events, by summing the probability of all events as or more extreme as the one observed (both in terms of sharing probability and number of carriers), i.e. this is a one-sided exact test. For instance, if subjects 3, 16 and 17 share a rare variant, the probability of that event is</p>
+<pre class="r"><code>pobs = RVsharing(fam15157,carriers=c(3,16,17),useAffected=TRUE)</code></pre>
+<pre><code>## Probability subjects 3 16 17 among 3 15 16 17 share a rare variant: 0.003363</code></pre>
+<p>The p-value of that sharing event is then:</p>
+<pre class="r"><code>sum(fam15157.pattern.prob[fam15157.pattern.prob&lt;=pobs &amp; fam15157.N &gt;= 3])</code></pre>
+<pre><code>## [1] 0.004484305</code></pre>
+<p>The <em>RVgene</em> function enables these computations with more than one family harboring the same or different variants.Once the vectors of sharing probabilities and number of carriers have been computed for all families in the sample, they need to be stored in lists. With a single family, we can do:</p>
 <pre class="r"><code>ex.pattern.prob.list = list(&quot;15157&quot;=fam15157.pattern.prob)
 ex.nequiv.list = list(&quot;15157&quot;=fam15157.nequiv)
 ex.N.list = list(&quot;15157&quot;=fam15157.N)</code></pre>
