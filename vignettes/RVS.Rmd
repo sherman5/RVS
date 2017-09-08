@@ -251,7 +251,6 @@ probs <- sapply(samplePedigrees, function(p) suppressMessages(RVsharing(p)))
 observed <- c(rep(FALSE, 3), rep(TRUE, 2), rep(FALSE, 3))
 multipleFamilyPValue(probs, observed)
 ```
-
 # Precomputing Sharing Probabilities and Number of Carriers for all Possible Carrier Subsets
 
 The *RVgene* function requires the lists *pattern.prob.list* of vectors of sharing probabilities and *N.list* of number of carriers for all possible affected carrier subsets in each family in the sample being analyzed. The elements of both of these lists must have the same names as the pedigree objects in the *ped.listfams* argument. When all affected subjecs in a family are final descendants, the sharing probabilities and number of carriers for all subsets can be generated automatically. Here is an exanple with three second cousins:
