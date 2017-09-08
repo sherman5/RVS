@@ -195,7 +195,7 @@ $\kappa_{i,j}$.
 
 ```{r}
 plot(samplePedigrees$twoGenerationsInbreeding)
-#ComputeKinshipPropCoef(samplePedigrees$twoGenerationsInbreeding)
+ComputeKinshipPropCoef(samplePedigrees$twoGenerationsInbreeding)
 ```
 
 # Using Monte Carlo Simulation
@@ -251,7 +251,6 @@ probs <- sapply(samplePedigrees, function(p) suppressMessages(RVsharing(p)))
 observed <- c(rep(FALSE, 3), rep(TRUE, 2), rep(FALSE, 3))
 multipleFamilyPValue(probs, observed)
 ```
-
 # Precomputing Sharing Probabilities and Number of Carriers for all Possible Carrier Subsets
 
 The *RVgene* function requires the lists *pattern.prob.list* of vectors of sharing probabilities and *N.list* of number of carriers for all possible affected carrier subsets in each family in the sample being analyzed. The elements of both of these lists must have the same names as the pedigree objects in the *ped.listfams* argument. When all affected subjecs in a family are final descendants, the sharing probabilities and number of carriers for all subsets can be generated automatically. Here is an exanple with three second cousins:
@@ -308,7 +307,18 @@ Notice the use of the option *useAffected=TRUE* with affected subjects who are n
 sum(fam15157.pattern.prob)
 ```
 
-Once the vectors of sharing probabilities and number of carriers have been computed for all families in the sample, they need to be stored in lists. With a single family, we can do:
+Precomputed sharing probabilities and numbers of carriers can be used directly to obtain p-values of observed sharing events, by summing the probability of all events as or more extreme as the one observed (both in terms of sharing probability and number of carriers), i.e. this is a one-sided exact test. For instance, if subjects 3, 16 and 17 share a rare variant, the probability of that event is
+
+```{r}
+pobs = RVsharing(fam15157,carriers=c(3,16,17),useAffected=TRUE)
+```
+
+The p-value of that sharing event is then:
+```{r}
+sum(fam15157.pattern.prob[fam15157.pattern.prob<=pobs & fam15157.N >= 3])
+```
+
+The *RVgene* function enables these computations with more than one family harboring the same or different variants.Once the vectors of sharing probabilities and number of carriers have been computed for all families in the sample, they need to be stored in lists. With a single family, we can do:
 
 ```{r}
 ex.pattern.prob.list = list("15157"=fam15157.pattern.prob)
