@@ -182,6 +182,10 @@ extract_carriers = function(ped,site,fam,type="alleles",minor.allele=2)
 #' @param maxdim upper bound on the dimension of the array containing the 
 #' joint distribution of the sharing patterns for all families in fams 
 #' (to avoid running out of memory)
+#' @param partial.sharing logical indicating whether the test allowing for sharing
+#' by a subset of affected subjects should be performed. If FALSE, only 
+#' the test requiring sharing
+#' by all affected subjects is computed. Default is TRUE. 
 #' @return A list with items:
 #' p P-value of the exact rare variant sharing test allowing for sharing
 #' by a subset of affected subjects.
@@ -225,7 +229,7 @@ extract_carriers = function(ped,site,fam,type="alleles",minor.allele=2)
 #' Bioinformatics, 30(15): 2189-96, doi:10.1093/bioinformatics/btu198.
 RVgene <- function(data, ped.listfams, sites, fams, pattern.prob.list,
 nequiv.list, N.list, type="alleles", minor.allele.vec,
-precomputed.prob=list(0), maxdim = 1e9)
+precomputed.prob=list(0), maxdim = 1e9, partial.sharing=TRUE)
 {
     if (class(data) == 'list')
     {
@@ -359,14 +363,18 @@ precomputed.prob=list(0), maxdim = 1e9)
     if (nfam.info>0) mdim = prod(sapply(N.list[fam.info],length))
     else mdim = 0
 
-    if (mdim > maxdim) 
+    if (partial.sharing)
     {
+    	if (mdim > maxdim) 
+    	{
         warning(paste("Number of possible combinations of sharing",
-            "patterns is too high."))
+            "patterns is too high. Partial sharing test cannot be performed."))
         compute.p = FALSE       
+    	}
+    	else compute.p = TRUE
     }
-    else compute.p = TRUE
-    
+    else  compute.p = FALSE
+        
     # No informative family    
     if (nfam.info == 0) p = pall = potentialp = 1
     # One informative family
