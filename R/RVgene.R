@@ -384,6 +384,7 @@ precomputed.prob=list(0), maxdim = 1e9, partial.sharing=TRUE)
             [round(pattern.prob.list[[fam.info]],5) <= 
             round(famRVprob[fam.info],5) & N.list[[fam.info]] >= 
             famNcarriers[fam.info]])
+        else p=NA
         potentialp = min(pattern.prob.list[[fam.info]])
         pall = ifelse(famNcarriers[fam.info]==max(N.list[[fam.info]]),
             potentialp,1)
