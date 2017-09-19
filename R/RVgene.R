@@ -380,7 +380,7 @@ precomputed.prob=list(0), maxdim = 1e9, partial.sharing=TRUE)
     # One informative family
     else if (nfam.info == 1)
     {
-        p = sum((nequiv.list[[fam.info]]*pattern.prob.list[[fam.info]])
+        if (compute.p) p = sum((nequiv.list[[fam.info]]*pattern.prob.list[[fam.info]])
             [round(pattern.prob.list[[fam.info]],5) <= 
             round(famRVprob[fam.info],5) & N.list[[fam.info]] >= 
             famNcarriers[fam.info]])
@@ -388,7 +388,9 @@ precomputed.prob=list(0), maxdim = 1e9, partial.sharing=TRUE)
         pall = ifelse(famNcarriers[fam.info]==max(N.list[[fam.info]]),
             potentialp,1)
     }
-    else if (compute.p)
+    else # > 1 informative family 
+    {
+    if (compute.p)
     {
         if (nfam.info == 2)
         {
@@ -634,8 +636,6 @@ precomputed.prob=list(0), maxdim = 1e9, partial.sharing=TRUE)
         }
     }
     
-    if (nfam.info>1)
-    {
         # Computing potential p-value
         potentialp = prod(sapply(pattern.prob.list[fam.info],min))
         # Computing p-value
