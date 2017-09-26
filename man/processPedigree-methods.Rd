@@ -4,6 +4,7 @@
 \name{processPedigree}
 \alias{processPedigree}
 \alias{processPedigree,pedigree-method}
+\alias{processPedigree}
 \title{extract useful information from a pedigree}
 \usage{
 processPedigree(ped, carriers = NULL)
@@ -26,4 +27,3 @@ subsequent computations much easier.
 data(samplePedigrees)
 processPedigree(samplePedigrees$firstCousinPair)
 }
-

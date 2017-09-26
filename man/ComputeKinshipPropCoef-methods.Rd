@@ -2,9 +2,9 @@
 % Please edit documentation in R/pedigree-methods.R
 \docType{methods}
 \name{ComputeKinshipPropCoef}
-\alias{ComputeKinshipPropCeof}
 \alias{ComputeKinshipPropCoef}
 \alias{ComputeKinshipPropCoef,pedigree-method}
+\alias{ComputeKinshipPropCeof}
 \title{ratio of excess kinship among descendants over mean kinship among
 founders}
 \usage{
@@ -44,4 +44,3 @@ and Ruczinski, I. (2014) Inferring rare disease risk variants based on
 exact probabilities of sharing by multiple affected relatives.
 Bioinformatics, 30(15): 2189-96, doi:10.1093/bioinformatics/btu198.
 }
-
