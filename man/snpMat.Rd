@@ -10,4 +10,3 @@ snpMat
 \description{
 SnpMatrix with genotype information from ex.ped.mat
 }
-

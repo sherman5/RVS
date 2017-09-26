@@ -10,4 +10,3 @@ ex.ped.mat
 \description{
 matrix of pedigree information stored in the LINKAGE format
 }
-
