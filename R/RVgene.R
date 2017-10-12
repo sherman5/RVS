@@ -112,7 +112,7 @@ extract_carriers = function(ped,site,fam,type="alleles",minor.allele=2)
 #' entry in sites in each family where it is present in ped.mat (or in the
 #' families specified in fams if that argument is specified). It then
 #' computes exact rare variant sharing probabilities in each family for
-#' each variant by calling RVsharing. If multiple rare variants are seen
+#' each variant by calling \code{RVsharing}. If multiple rare variants are seen
 #' in the same family, the smallest sharing probability among all rare
 #' variants is retained. The joint rare variant sharing probability over
 #' all families is obtained as the product of the family-specific
@@ -140,7 +140,7 @@ extract_carriers = function(ped,site,fam,type="alleles",minor.allele=2)
 #' not need to appear in this matrix. The genotype of each variant can be
 #' coded in two ways, each corresponding to a different value of the type
 #' option: a minor allele count on one column with missing values coded NA,
-#' obtained for example by converting a Snpmatrix object (type="count")
+#' obtained for example by converting a \code{SnpMatrix} object (type="count")
 #' or the identity of the two alleles on two consecutive columns, with missing
 #' values coded 0 corresponding to the standard
 #' LINKAGE ped format (type="alleles")
