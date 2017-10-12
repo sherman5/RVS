@@ -73,6 +73,7 @@ document.addEventListener("DOMContentLoaded", function() {
 </ul></li>
 <li><a href="#calculating-sharing-probabilties-across-multiple-families"><span class="toc-section-number">6</span> Calculating Sharing Probabilties Across Multiple Families</a></li>
 <li><a href="#precomputing-sharing-probabilities-and-number-of-carriers-for-all-possible-carrier-subsets"><span class="toc-section-number">7</span> Precomputing Sharing Probabilities and Number of Carriers for all Possible Carrier Subsets</a></li>
+<li><a href="#analyzing-variants-in-genomic-sequence"><span class="toc-section-number">8</span> Analyzing variants in genomic sequence</a></li>
 <li><a href="#references">References</a></li>
 </ul>
 </div>
@@ -83,7 +84,7 @@ document.addEventListener("DOMContentLoaded", function() {
 </div>
 <div id="pedigree-format" class="section level1">
 <h1><span class="header-section-number">2</span> Pedigree format</h1>
-<p>The main input used in this package is a <em>Pedigree</em> object from the <em>kinship2</em> package on CRAN (<span class="citation">Therneau et al. (2015)</span>). The package vignette (<a href="https://cran.r-project.org/web/packages/kinship2/vignettes/pedigree.pdf" class="uri">https://cran.r-project.org/web/packages/kinship2/vignettes/pedigree.pdf</a>) outlines the basic steps to creating a <em>Pedigree</em>. Only the <em>id</em>, <em>findex</em>, <em>mindex</em> fields are necessary for computing sharing probabilities. The <em>RVS</em> package comes with 8 sample pedigrees.</p>
+<p>The main input used in this package is a <em>pedigree</em> object from the <em>kinship2</em> package on CRAN (<span class="citation">Therneau et al. (2015)</span>). The package vignette (<a href="https://cran.r-project.org/web/packages/kinship2/vignettes/pedigree.pdf" class="uri">https://cran.r-project.org/web/packages/kinship2/vignettes/pedigree.pdf</a>) outlines the basic steps to creating a <em>pedigree</em>. Only the <em>id</em>, <em>findex</em>, <em>mindex</em> fields are necessary for computing sharing probabilities. The <em>RVS</em> package comes with 8 sample pedigrees.</p>
 <pre class="r"><code>data(samplePedigrees) # load sample pedigrees
 kinship2::plot.pedigree(samplePedigrees$firstCousinPair) # plot pedigree</code></pre>
 <p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAqAAAAHgCAYAAAB6jN80AAAEDWlDQ1BJQ0MgUHJvZmlsZQAAOI2NVV1oHFUUPrtzZyMkzlNsNIV0qD8NJQ2TVjShtLp/3d02bpZJNtoi6GT27s6Yyc44M7v9oU9FUHwx6psUxL+3gCAo9Q/bPrQvlQol2tQgKD60+INQ6Ium65k7M5lpurHeZe58853vnnvuuWfvBei5qliWkRQBFpquLRcy4nOHj4g9K5CEh6AXBqFXUR0rXalMAjZPC3e1W99Dwntf2dXd/p+tt0YdFSBxH2Kz5qgLiI8B8KdVy3YBevqRHz/qWh72Yui3MUDEL3q44WPXw3M+fo1pZuQs4tOIBVVTaoiXEI/MxfhGDPsxsNZfoE1q66ro5aJim3XdoLFw72H+n23BaIXzbcOnz5mfPoTvYVz7KzUl5+FRxEuqkp9G/Ajia219thzg25abkRE/BpDc3pqvphHvRFys2weqvp+krbWKIX7nhDbzLOItiM8358pTwdirqpPFnMF2xLc1WvLyOwTAibpbmvHHcvttU57y5+XqNZrLe3lE/Pq8eUj2fXKfOe3pfOjzhJYtB/yll5SDFcSDiH+hRkH25+L+sdxKEAMZahrlSX8ukqMOWy/jXW2m6M9LDBc31B9LFuv6gVKg/0Szi3KAr1kGq1GMjU/aLbnq6/lRxc4XfJ98hTargX++DbMJBSiYMIe9Ck1YAxFkKEAG3xbYaKmDDgYyFK0UGYpfoWYXG+fAPPI6tJnNwb7ClP7IyF+D+bjOtCpkhz6CFrIa/I6sFtNl8auFXGMTP34sNwI/JhkgEtmDz14ySfaRcTIBInmKPE32kxyyE2Tv+thKbEVePDfW/byMM1Kmm0XdObS7oGD/MypMXFPXrCwOtoYjyyn7BV29/MZfsVzpLDdRtuIZnbpXzvlf+ev8MvYr/Gqk4H/kV/G3csdazLuyTMPsbFhzd1UabQbjFvDRmcWJxR3zcfHkVw9GfpbJmeev9F08WW8uDkaslwX6avlWGU6NRKz0g/SHtCy9J30o/ca9zX3Kfc19zn3BXQKRO8ud477hLnAfc1/G9mrzGlrfexZ5GLdn6ZZrrEohI2wVHhZywjbhUWEy8icMCGNCUdiBlq3r+xafL549HQ5jH+an+1y+LlYBifuxAvRN/lVVVOlwlCkdVm9NOL5BE4wkQ2SMlDZU97hX86EilU/lUmkQUztTE6mx1EEPh7OmdqBtAvv8HdWpbrJS6tJj3n0CWdM6busNzRV3S9KTYhqvNiqWmuroiKgYhshMjmhTh9ptWhsF7970j/SbMrsPE1suR5z7DMC+P/Hs+y7ijrQAlhyAgccjbhjPygfeBTjzhNqy28EdkUh8C+DU9+z2v/oyeH791OncxHOs5y2AtTc7nb/f73TWPkD/qwBnjX8BoJ98VVBg/m8AADq4SURBVHgB7d0HuFTlnQfgP1JFBGvEhhg71sREEVs0kkQNUddEWHU1tiQbxbZr4q4bI8bs2kuMscQYN/YS3Vixt9gAFbFANMYCxA5iQxFx/c4uOlfFy9yZM/fMmfc8z304M3POV97vcOd3T+3ywYdTmAgQIECAAAECBAg0SGCBBtWjGgIECBAgQIAAAQKZgABqQyBAgAABAgQIEGiogADaUG6VESBAgAABAgQICKC2AQIECBAgQIAAgYYKCKAN5VYZAQIECBAgQICAAGobIECAAAECBAgQaKiAANpQbpURIECAAAECBAgIoLYBAgQIECBAgACBhgoIoA3lVhkBAgQIECBAgIAAahsgQIAAAQIECBBoqIAA2lBulREgQIAAAQIECAigtgECBAgQIECAAIGGCgigDeVWGQECBAgQIECAgABqGyBAgAABAgQIEGiogADaUG6VESBAgAABAgQICKC2AQIECBAgQIAAgYYKCKAN5VYZAQIECBAgQICAAGobIECAAAECBAgQaKiAANpQbpURIECAAAECBAgIoLYBAgQIECBAgACBhgoIoA3lVhkBAgQIECBAgIAAahsgQIAAAQIECBBoqIAA2lBulREgQIAAAQIECAigtgECBAgQIECAAIGGCgigDeVWGQECBAgQIECAgABqGyBAgAABAgQIEGiogADaUG6VESBAgAABAgQICKC2AQIECBAgQIAAgYYKCKAN5VYZAQIECBAgQICAAGobIECAAAECBAgQaKiAANpQbpURIECAAAECBAgIoLYBAgQIECBAgACBhgoIoA3lVhkBAgQIECBAgIAAahsgQIAAAQIECBBoqIAA2lBulREgQIAAAQIECAigtgECBAgQIECAAIGGCgigDeVWGQECBAgQIECAgABqGyBAgAABAgQIEGiogADaUG6VESBAgAABAgQICKC2AQIECBAgQIAAgYYKCKAN5VYZAQIECBAgQICAAGobIECAAAECBAgQaKiAANpQbpURIECAAAECBAgIoLYBAgQIECBAgACBhgoIoA3lVhkBAgQIECBAgIAAahsgQIAAAQIECBBoqIAA2lBulREgQIAAAQIECAigtgECBAgQIECAAIGGCgigDeVWGQECBAgQIECAgABqGyBAgAABAgQIEGiogADaUG6VESBAgAABAgQICKC2AQIECBAgQIAAgYYKCKAN5VYZAQIECBAgQICAAGobIECAAAECBAgQaKiAANpQbpURIECAAAECBAgIoLYBAgQIECBAgACBhgoIoA3lVhkBAgQIECBAgIAAahsgQIAAAQIECBBoqIAA2lBulREgQIAAAQIECAigtgECBAgQIECAAIGGCgigDeVWGQECBAgQIECAgABqGyBAgAABAgQIEGiogADaUG6VESBAgAABAgQICKC2AQIECBAgQIAAgYYKCKAN5VYZAQIECBAgQICAAGobIECAAAECBAgQaKiAANpQbpURIECAAAECBAgIoLYBAgQIECBAgACBhgoIoA3lVhkBAgQIECBAgIAAahsgQIAAAQIECBBoqIAA2lBulREgQIAAAQIECAigtgECBAgQIECAAIGGCgigDeVWGQECBAgQIECAgABqGyBAgAABAgQIEGiogADaUG6VESBAgAABAgQICKC2AQIECBAgQIAAgYYKCKAN5VYZAQIECBAgQIBANwTlFZg2bVoMHTo0unfv3pBO9unTJ6666qro3bt3Q+pTCYFGCkyfPj1uvvnmGDt2bEyaNCneeOONmDVrVvTv3z8GDhwYgwcPjq222ioWXXTRRjZLXQQIEGhKgS4ffDg1Zcs1ul2B9GW52267xRVXXNHusvVYYMiQIdkX86qrrlqP4pRBoBACd911V/zqV7+Km266KTbffPMsaK611lqR/uDq1atXTJ06NZ5++um455574tZbb42vfe1rcdhhh8UGG2xQiPZrBAECBIooYA9oEUeljm0aNGhQ9oVZxyLnWdTKK688z898QKDZBF544YUYOXJkPPTQQ3HQQQfF+eefHz179vzcbrz++utx2WWXxY477hgbbrhhnHLKKbHssst+7jo+JECAQCsKOAe0FUddnwkQ+FyBxx9/PNZff/1IezonTpwY++67b7vhMxXYt2/f2GuvveKpp56K1VdfPb76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Iy0kQIAAAQIECJRKQAAt1XDqDAECBAgQIECg+AICaPHHSAsJECBAgAABAqUSEEBLNZw6Q4AAAQIECBAovkC3ejbx3XffjTlz5lRV5OzZs2PWrFkxc+bMqtbr1q1bdO/evap1LEygmQXee+8923wzD6C2VyWQvhfef//9qtZJ/0fST7XfJ127do0ePXpUVZeFCTSzQPr/1dnbfJcPPpzqgThp0qRYY401olevXlUVl35ZdOnSJVKgrGZ655134rXXXot+/fpVs5plCRReIP1iuOaaa+LGG2+McePGRfq/9dZbb0XPnj2jd+/e8cUvfjEGDx4c22yzTWy11Vad/kuk8KAa2HQCL774YvTv37/q75O0QyN9pVW7cyJ9nzz99NMxcODAprPSYAKfJ5B2CqbvktGjR8eYMWPi8ccfjxkzZmT/t1IAHTBgQGy88cbx9a9/PbbddtvsO+bzyqvnZ3U7BP/Xv/41a3z6y7Oan/QLY+5frNWst/zyy2eI9cRQFoHOFEgh8/DDD4+0bZ955pkxaNCgOO200yJ9Gacv1fQl+eSTT8ZvfvObWHnlleOoo47KfnmccMIJ8fbbb3dm09VNoK4CL730Uqy11lpVfZek74/0XZK+U6r5LknLbrrppvHcc8/VtQ8KI9CZAumI9EknnRQrrrhi/PKXv4wvfOELcfzxx8ezzz6bHalO232aP//882PttdeOs846K/vu+dnPfhavvvpqQ5petwDakNaqhEBJBW644YbsCMKUKVPizjvvjPR6//33jw033DAWWmihj3q9+OKLxwYbbBAHHnhg3HPPPXHXXXfFvffem/0Cufnmmz9azgwBAgQItKbAAw88EOuuu27cfvvtccUVV2TfE//+7/8eQ4YMyY4ap6POaVpkkUWy5fbdd9+46aabYsKECfH8889nf/xdcsklueNVd9w79+aogEDrCfz2t7+N9Ffn5ZdfHptssklVAKusskq23vXXXx/f//734+STT47vfve7VZVhYQIECBAoh8Att9ySfQece+65sd1221XVqWWXXTbOPvvsSAF2xIgRkY5sH3bYYVWVUc3CAmg1WpYlUGeBI444IkaNGpUd/kuH3js6bb311nHbbbfFqquuGqeeemrst99+HS3KegQIECDQhALnnHNO7LXXXvHwww/HOuus0+EerL/++jF27NhYdNFFs1Mdjz322A6X9XkrOgT/eTo+I5CjwHnnnRcXXXRRTJ8+PTv3ptaq0t7QiRMnxnHHHRdXXnllrcVZnwABAgSaRCDtgEh7K9Ney1rC59zupsPzL7/8cnZo/pRTTpn7dl3/FUDryqkwAvMnkK64Pfjgg+Pqq6/OzsOZv7XaX2r11VePSy+9NP75n/85XnnllfZXsAQBAgQINLVAuiPQP/3TP0U6b3OllVaqW1+WWGKJ7BzSX/ziF/HEE0/Urdy5BQmgcyX8S6CBAumczx/96EfZIfN6V5suXErng/7Hf/xHvYtWHgECBAgUTCAd9dpyyy1js802q3vL0lX0KYCmC1/rPQmg9RZVHoF2BNLtXtJV7nme3P2Tn/wkLrvssnjhhRfaaY2PCRAgQKBZBdLt+84444w4+uijc+vCPvvsE48++mg89NBDda1DAK0rp8IItC+Q7re25557Vn2T7fZL/niJxRZbLIYNG5Ydjv/4XXMECBAgUCaBCy+8MHsgyTLLLJNbt9KDgtJ3VrpuoZ6TAFpPTWURmA+B9FSK9BSjvKedd945O38n73qUT4AAAQKdI5C+T9ITjPKe8vg+EUDzHjXlE6gQSE8zSocy0pNX8p6+8pWvxIMPPpg9RSnvupRPgAABAo0XSA8kSed/5j2lu6xMmzYt+6lXXQJovSSVQ2A+BCZPnhzpZr8LLJD/f710GL5Pnz7Zozzno2kWIUCAAIEmEpg1a1b22Mz0nZL3lJ6etOaaa2aPg65XXU17I/p078T0qMLKxxTWC6XVy0m3COrZs2fkeU5JqxqnZ+w28rnt6UbC6RYd/fv3b1Vy/SbQrkC6MDBd6Zuel22qr8Df//73SM8lT1dTm+orkI6opWA499Ga9S3906XN/T759Ccde6dpA2ivXr2y3c7pPlWm+gqkE42Ta3q6jqm+Ak899VT21KP6ljrv0mbOnBk9evSY9wI+IUAgFl544Rg8eHCsscYaNOoskB4TnO5J3IjzFOvc9MIXN2PGjLj11lsb1s4UeLt37163+po2gC644IKx/fbbx4ABA+qGoaD/E0iP4FphhRUinXRsqq/AlClT4vTTT69voZ9TWvoF1a9fv89ZwkcECKQ9O0OHDs3lPoqtrvvSSy/Fs88+6/skhw1hzpw52f050x7mdNQy7yl9n6QnJNVryv9EtHq1VDkESiCw9NJLx+uvvx5vvvlm7r3529/+Fr17947FF18897pUQIAAAQKNFUjXEgwcODDS7/q8pxRyH3/88ew80HrVJYDWS1I5BOZDoGvXrtlelnQj+rynu+++O9JTkUwECBAgUE6Br3/963Hdddfl3rn77rsv1lprrbruaRVAcx82FRBoK5BOHbn44ovbvpnDq4suuih22mmnHEpWJAECBAgUQSB9n6RnwOc9pe+sen+fCKB5j5ryCXxCYPjw4XHbbbdFOh80r2n8+PGRfrbbbru8qlAuAQIECHSyQNoDmu6ucv/99+fWkvRI5xRAd99997rWIYDWlVNhBNoXSBcF/cu//Et2G7H2l+7YEuk584ccckhdD5d0rCXWIkCAAIG8BNJpXekWYvvuu29uDx058sgjY7fddqv7bcoE0Ly2CuUS+ByBAw44ICZOnBjpMHm9pxNPPDFefvnlGDlyZL2LVh4BAgQIFExgxIgR2T3RjznmmLq37IorrojRo0dnIbfehTftbZjqDaE8Ao0USFenn3/++dkz4ZdffvnYZJNN6lJ9Ohco7V198skno1s3/73rgqoQAgQIFFggXQ3/hz/8IYYMGRKrr756dovKejQ3Xci64447RroAqW/fvvUosk0Z9oC24fCCQOME1l9//ezk8XQOz4UXXlhzxZdffnnsueee2Y3uV1555ZrLUwABAgQINIdAunf3jTfeGHvssUcce+yxNTc6hc9vfvObMW7cuNzupmIXSc3DpAACHRf42te+Fk888UR2L7d77703TjjhhKqfXJTuKXrooYfG1Vdfnf2lmvaomggQIECgtQTSs9qfeeaZ7Gbx6aKkc845p+oHkaTnyx933HFx6qmnxjXXXBNpR0lekz2geckql8B8CqS/XF988cWYPn16rLrqqnHSSSfN143q03meJ598cqy00kqRHrn5wAMPxNprrz2ftVqMAAECBMomkC5yTTslllpqqVhttdVi1KhR2VXy7fUzPSAlBdZVVlkl25ExZsyYSDtI8pzqugc0PcLxlltuybO9H5X99ttvfzRvhkCzC3zhC1/IzglN59qkvzyPOOKI7NnU6Uby6ea/6ZzRXr16xdSpU7OnXtxzzz2RfkEMGzYsu6XToEGDmp1A+wm0EXj00Ucb9n3SiCeTtemcFwRyFFhooYXiN7/5Tey3337Z90k6JSt9R6RAmf5N53Om75Tnn38+Jk+eHH/+85/jrrvuii233DI7LWzw4ME5tu7jort88OH08cuOz02bNi122GGHhl34sMQSS2Qn3Tbi+acdV2nONQ866KDsWfAHHnhgc3agBK1+44034vbbb8/Ov5k0aVK89dZb8d5772V/1a644opZON18882zXyIl6K4uEGgjkHYwpCt703bfiCldsHfppZdWfbiyEW1r9jrSUZr0LPh0ZMfUOQLvvPNOFjDTTot095X0TPf0aM0ll1wylltuudh4442zJ/TV8znv89PTuu0BXWyxxeKOO+6YnzotQ4BAOwILL7xwtncz7eE0EWg1gbR35qqrrmq1busvgVwE0tGzoUOHZj+5VNDBQp0D2kE4qxEgQIAAAQIECHRMQADtmJu1CBAgQIAAAQIEOigggHYQzmoECBAgQIAAAQIdExBAO+ZmLQIECBAgQIAAgQ4KCKAdhLMaAQIECBAgQIBAxwQ6PYDW6S5QHeu9tQgQIECAAAECLSZQhOzVaQH0hhtuiO9973uRbjeTHh/lHmEttvXrbtUCI0eOzO4DWvWKViBQcoF99tknVl999U/9NOo+oiXn1b2SCLzwwgux4447xuKLL549/vmQQw7JHm7SWd2r231Aq+nAc889F9ttt118//vfz550ke7C/5Of/CRSIj/44IOrKcqyBFpC4LbbbovTTjstu3FwS3RYJwlUITB69OjsCS/pyWGVU/fu3StfmifQsgLpxvPp/0f//v2zhy689NJL8fOf/zx7GtL555/fKS6dEkB/8YtfZHffT4+KWmCBBTKU9GjBP/zhDwJop2wGKi2yQHoq0p577pl9wabnv5sIEPhYID2Fb8qUKXHmmWfGNtts8/EH5ggQ+Egg5av0XZJ2+C2//PLZ++m58T/60Y/ixRdf7JSja51yCD496zo9dzSFz7lT2jXsr9W5Gv4l8LHAv/7rv2bPg99pp50+ftMcAQKZwCOPPJL9+6UvfSn7d86cOWQIEPiEQAqgw4cP/yh8po/TH2zpiPRSSy31iaUb8/LjBNiY+rJa0mOhll566Wz+r3/9axx55JFx3333RTrHzdT5Aum5senH1PkCN954Y3a45Iwzzuj8xmgBgQIKPPzww7HQQgvF6aefHiuvvHKk51mnP9YcLSjGYPk+KcY4pKC59tprxyWXXBJbb711bLDBBpGORs+ePbvTGtgph+Dn9vbpp5+OVVZZJXv5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veOpp57KQuacOXM+t/zu3btH+kl/kZ5yyimx5pprfu7yPiRAgACB8gg8+eST8eUvfznefPPNhnQqBd3LLrsshg4d2pD6VNJ4AeeANt68U2t8//33Y+TIkbHFFlvEI488Em+//Xa0Fz5Tg9NfsWnZ2267LfuL9Oc//3mn9kPlBAgQIECAQPMKOAe0eceu6pan8Dlo0KB47rnnsr2eVRfw4QoprKYgevTRR8fDDz8cV155ZXTp0qUjRVmHAAECBAgQaFEBe0BbZODTRUXp8PkTTzzR4fBZSTVr1qy4/vrrY6eddqp82zwBAgQIECBAoF0BAbRdonIscMABB8Sjjz5a186kEDp69OgYNWpUXctVGAECBAgQIFBuAQG03OOb9e6WW26JCy64ILu1Ur27m05IT4fjJ02aVO+ilUeAAAECBAiUVEAALenAzu1Wuv3FD3/4w+y8zbnv1fvftCf04IMPrnexyiNAgAABAgRKKiCAlnRg53brzjvvjBdffHHuy1z+TRcm3XHHHfGXv/wll/IVSoAAAQIECJRLQAAt13h+qjennnpqvPXWW596v95vzJ49Oy666KJ6F6s8AgQIECBAoIQCAmgJB7WyS+n8z0Y87Codhk83DTYRIECAAAECBNoTEEDbE2riz1955ZW63HJpfgnSkzIaEXbntz2WI0CAAAECBIopIIAWc1zq0qq//e1v0atXr7qUNT+FpOfHT5s2bX4WtQwBAgQIECDQwgICaIkH/913323oHsmePXvG9OnTSyyqawQIECBAgEA9BATQeigWtIz0iMxGPiYznQfat2/fgmpoFgECBAgQIFAUAQG0KCORQztWXHHFSHtBGzWlK+EXXXTRRlWnHgIECBAgQKBJBQTQJh24+Wn2MsssMz+L1W2ZFVZYIbp371638hREgAABAgQIlFNAAC3nuGa9SoffN95444b0sGvXrvHNb36zIXWphAABAgQIEGhuAQG0ucev3danx3AuvPDC7S5X6wK9e/eOXXbZpdZirE+AAAECBAi0gIAAWvJBHjZsWEMOiw8cODCGDBlSck3dI0CAAAECBOohIIDWQ7HAZaRbI5144onRp0+f3Fq50EILxcknn5xb+QomQIAAAQIEyiUggJZrPD+zN7vttlusu+660aNHj8/8vJY3U8BNe1m33HLLWoqxLgECBAgQINBCAgJoCwx2uhgpPac93SIpXSxUr6lbt27ZfUbPPffcehWpHAIECBAgQKAFBATQFhjk1MWll146xowZE2mPZQqOtU7psPsqq6wSM2bMyMqstTzrEyBAgAABAq0jIIC2zljHgAED4rXXXosvf/nLNZ0TmsLnJptsEmPHjs3lsH4LDYmuEiBAgACBlhQQQFts2NON4u+555445phjstszpTA5v1O6ndMSSywRv/vd7+L666+Patad3zosR4AAAQIECJRfQAAt/xh/qofpPNAf//jHMXXq1Dj++ONj0KBB2WH0fv36RbqfZzpEn35SwEzvpYuXNtxww/jVr34Vzz//fAwfPryhz5j/VAe8QYAAAQINFUjXErz55pvZ7/40n/dPOr1rgQVElIYOcoMr6/LBh1OD61RdAQWmT58e48ePj0mTJsXbb78d7733XvTv3z/S8+TXX3/9mg7ZF7C7mkSAAAECVQr86U9/ikceeaTKtTq2eDplLN3BxVReAQG0vGOrZwQIECBAgACBQgrYv13IYdEoAgQIECBAgEB5BQTQ8o6tnhEgQIAAAQIECikggBZyWDSKAAECBAgQIFBeAQG0vGOrZwQIECBAgACBQgoIoIUcFo0iQIAAAQIECJRXQAAt79jqGQECBAgQ6FSBOXPmdGr9Ki+ugABa3LFpaMuGDBkSq6666mf+pBvQmwgQIECAwPwK3HTTTbHeeutlDzlZcskl44ADDsjuMT2/61uu/ALdyt9FPZwfge233z57ykXlsumRnbfeemusvPLKlW+bJ0CAAAEC8xSYOHFiDBs2LL71rW/Fr3/965gwYUIceuihWQD97W9/O8/1fNBaAm5E31rjPd+9feONN2LNNdeMESNGxLHHHjvf61mQAAECBFpb4Oijj44jjjgipkyZEksssUSGMXLkyPj9738fr7/+ukdstvbm8VHvHYL/iMJMpcBPf/rTSM+MP/LIIyvfNk+AAAECBD5XYLHFFsse5zxz5syPlps9e3b2SOf0DHkTgSQggNoOPiVw7733xhlnnBHpr9hevXp96nNvECBAgACBeQl85zvfiYEDB8aee+4ZN9xwQ5xwwglxwQUXxP777x8C6LzUWu99h+Bbb8zb7fGuu+4aN998c0yePDm6d+/e7vIWIECAAAEClQL33XdfbLrpppH2fKZp2223jauuusrh90qkFp+3B7TFN4BPdj+d+3nl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" /></p>
@@ -205,15 +206,15 @@ plot(kCoeff, sharingProb, type='l')</code></pre>
 <pre class="r"><code>p &lt;- RVsharing(samplePedigrees$firstCousinPair)</code></pre>
 <pre><code>## Probability subjects 7 8 among 7 8 share a rare variant: 0.06667</code></pre>
 <pre class="r"><code>p &lt;- RVsharing(samplePedigrees$firstCousinPair, nSim=1e4)</code></pre>
-<pre><code>## Probability subjects 7 8 among 7 8 share a rare variant: 0.06868</code></pre>
+<pre><code>## Probability subjects 7 8 among 7 8 share a rare variant: 0.06566</code></pre>
 <pre class="r"><code>p &lt;- RVsharing(samplePedigrees$firstCousinPair, alleleFreq=0.01)</code></pre>
 <pre><code>## Probability subjects 7 8 among 7 8 share a rare variant: 0.07631</code></pre>
 <pre class="r"><code>p &lt;- RVsharing(samplePedigrees$firstCousinPair, alleleFreq=0.01, nSim=1e4)</code></pre>
-<pre><code>## Probability subjects 7 8 among 7 8 share a rare variant: 0.05373</code></pre>
+<pre><code>## Probability subjects 7 8 among 7 8 share a rare variant: 0.06037</code></pre>
 <pre class="r"><code>p &lt;- RVsharing(samplePedigrees$firstCousinPair, kinshipCoeff=0.05)</code></pre>
 <pre><code>## Probability subjects 7 8 among 7 8 share a rare variant: 0.1262</code></pre>
 <pre class="r"><code>p &lt;- RVsharing(samplePedigrees$firstCousinPair, kinshipCoeff=0.05, nSim=1e4)</code></pre>
-<pre><code>## Probability subjects 7 8 among 7 8 share a rare variant: 0.1274</code></pre>
+<pre><code>## Probability subjects 7 8 among 7 8 share a rare variant: 0.1247</code></pre>
 </div>
 <div id="custom-founder-distributions" class="section level2">
 <h2><span class="header-section-number">5.2</span> Custom Founder Distributions</h2>
@@ -221,8 +222,8 @@ plot(kCoeff, sharingProb, type='l')</code></pre>
 <pre class="r"><code># assumption that 1 founder introduces
 fDist &lt;- function(N) sample(c(rep(0,N-1), 1))
 RVsharing(samplePedigrees$firstCousinPair, nSim=1e4, founderDist=fDist)</code></pre>
-<pre><code>## Probability subjects 7 8 among 7 8 share a rare variant: 0.06541</code></pre>
-<pre><code>## [1] 0.06541044</code></pre>
+<pre><code>## Probability subjects 7 8 among 7 8 share a rare variant: 0.06799</code></pre>
+<pre><code>## [1] 0.06798806</code></pre>
 <pre class="r"><code>RVsharing(samplePedigrees$firstCousinPair)</code></pre>
 <pre><code>## Probability subjects 7 8 among 7 8 share a rare variant: 0.06667</code></pre>
 <pre><code>## [1] 0.06666667</code></pre>
@@ -234,7 +235,7 @@ RVsharing(samplePedigrees$firstCousinPair, nSim=1e4, founderDist=fDist)</code></
 <pre class="r"><code>probs &lt;- sapply(samplePedigrees, function(p) suppressMessages(RVsharing(p)))
 observed &lt;- c(rep(FALSE, 3), rep(TRUE, 2), rep(FALSE, 3))
 multipleFamilyPValue(probs, observed)</code></pre>
-<pre><code>## [1] 0.0001604696</code></pre>
+<pre><code>## [1] 0.0002114833</code></pre>
 </div>
 <div id="precomputing-sharing-probabilities-and-number-of-carriers-for-all-possible-carrier-subsets" class="section level1">
 <h1><span class="header-section-number">7</span> Precomputing Sharing Probabilities and Number of Carriers for all Possible Carrier Subsets</h1>
@@ -343,10 +344,171 @@ fam15157.pattern.prob = sapply(carrier.sets,function (vec) RVsharing(fam15157,ca
 <p>The p-value of that sharing event is then:</p>
 <pre class="r"><code>sum(fam15157.pattern.prob[fam15157.pattern.prob&lt;=pobs &amp; fam15157.N &gt;= 3])</code></pre>
 <pre><code>## [1] 0.004484305</code></pre>
-<p>The <em>RVgene</em> function enables these computations with more than one family harboring the same or different variants.Once the vectors of sharing probabilities and number of carriers have been computed for all families in the sample, they need to be stored in lists. With a single family, we can do:</p>
-<pre class="r"><code>ex.pattern.prob.list = list(&quot;15157&quot;=fam15157.pattern.prob)
-ex.nequiv.list = list(&quot;15157&quot;=fam15157.nequiv)
-ex.N.list = list(&quot;15157&quot;=fam15157.N)</code></pre>
+<p>The <em>RVgene</em> function enables these computations with more than one family harboring the same or different variants. Once the vectors of sharing probabilities and number of carriers have been computed for all families in the sample, they need to be stored in lists. We return to the original second cousin triple family and add a first and second cousin triple family. Then we create the lists of pattern probabilities, number of equivalent subsets and number of carriers in the subsets.</p>
+<pre class="r"><code>fam15157.pattern.prob = c(RVsharing(samplePedigrees$secondCousinTriple,carriers=c(15,16,17)),
+    RVsharing(samplePedigrees$secondCousinTriple,carriers=c(15,16)),
+    RVsharing(samplePedigrees$secondCousinTriple,carriers=c(15)))</code></pre>
+<pre><code>## Probability subjects 15 16 17 among 15 16 17 share a rare variant: 0.001342</code></pre>
+<pre><code>## Probability subjects 15 16 among 15 16 17 share a rare variant: 0.009396</code></pre>
+<pre><code>## Probability subjects 15 among 15 16 17 share a rare variant: 0.3235</code></pre>
+<pre class="r"><code>fam15157.N = 3:1
+fam15157.nequiv = c(1,3,3)
+
+fam28003.pattern.prob = c(RVsharing(samplePedigrees$firstAndSecondCousinsTriple,carriers=c(36,104,110)),
+RVsharing(samplePedigrees$firstAndSecondCousinsTriple,carriers=c(36,104)),
+RVsharing(samplePedigrees$firstAndSecondCousinsTriple,carriers=c(104,110)),
+RVsharing(samplePedigrees$firstAndSecondCousinsTriple,carriers=c(36)),
+RVsharing(samplePedigrees$firstAndSecondCousinsTriple,carriers=c(104)))</code></pre>
+<pre><code>## Probability subjects 36 104 110 among 36 104 110 share a rare variant: 0.00277</code></pre>
+<pre><code>## Probability subjects 36 104 among 36 104 110 share a rare variant: 0.00831</code></pre>
+<pre><code>## Probability subjects 104 110 among 36 104 110 share a rare variant: 0.04155</code></pre>
+<pre><code>## Probability subjects 36 among 36 104 110 share a rare variant: 0.3352</code></pre>
+<pre><code>## Probability subjects 104 among 36 104 110 share a rare variant: 0.3019</code></pre>
+<pre class="r"><code>fam28003.N = c(3,2,2,1,1)
+fam28003.nequiv = c(1,2,1,1,2)
+
+ex.pattern.prob.list = list(&quot;15157&quot;=fam15157.pattern.prob,&quot;28003&quot;=fam28003.pattern.prob)
+ex.nequiv.list = list(&quot;15157&quot;=fam15157.nequiv,&quot;28003&quot;=fam28003.nequiv)
+ex.N.list = list(&quot;15157&quot;=fam15157.N,&quot;28003&quot;=fam28003.N)</code></pre>
+</div>
+<div id="analyzing-variants-in-genomic-sequence" class="section level1">
+<h1><span class="header-section-number">8</span> Analyzing variants in genomic sequence</h1>
+<p>We now turn to the analysis of variants observed in the simulated genomic sequence of the gene <em>PEAR1</em> in a sample of related affected subjects. The processing of the sequence data results in Variant Call Format (VCF) files, which can be read into R with the function <em>readVcf</em> from the <em>variantAnnotatin</em> package. Two <em>VCF</em> objects obtained with <em>readVcf</em> from VCF files of sequence data for the second cousin triple and first and second cousin triple families are contained in the <em>famVCF</em> data. These VCF files are converted to <em>snpMatrix</em> objects using the <em>genotypeToSnpMatrix</em> function.</p>
+<pre class="r"><code>data(famVCF)
+library(VariantAnnotation)</code></pre>
+<pre><code>## Loading required package: BiocGenerics</code></pre>
+<pre><code>## Loading required package: parallel</code></pre>
+<pre><code>## 
+## Attaching package: 'BiocGenerics'</code></pre>
+<pre><code>## The following objects are masked from 'package:parallel':
+## 
+##     clusterApply, clusterApplyLB, clusterCall, clusterEvalQ,
+##     clusterExport, clusterMap, parApply, parCapply, parLapply,
+##     parLapplyLB, parRapply, parSapply, parSapplyLB</code></pre>
+<pre><code>## The following objects are masked from 'package:Matrix':
+## 
+##     colMeans, colSums, rowMeans, rowSums, which</code></pre>
+<pre><code>## The following objects are masked from 'package:stats':
+## 
+##     IQR, mad, sd, var, xtabs</code></pre>
+<pre><code>## The following objects are masked from 'package:base':
+## 
+##     anyDuplicated, append, as.data.frame, cbind, colMeans,
+##     colnames, colSums, do.call, duplicated, eval, evalq, Filter,
+##     Find, get, grep, grepl, intersect, is.unsorted, lapply,
+##     lengths, Map, mapply, match, mget, order, paste, pmax,
+##     pmax.int, pmin, pmin.int, Position, rank, rbind, Reduce,
+##     rowMeans, rownames, rowSums, sapply, setdiff, sort, table,
+##     tapply, union, unique, unsplit, which, which.max, which.min</code></pre>
+<pre><code>## Loading required package: GenomeInfoDb</code></pre>
+<pre><code>## Loading required package: S4Vectors</code></pre>
+<pre><code>## Loading required package: stats4</code></pre>
+<pre><code>## 
+## Attaching package: 'S4Vectors'</code></pre>
+<pre><code>## The following object is masked from 'package:Matrix':
+## 
+##     expand</code></pre>
+<pre><code>## The following object is masked from 'package:base':
+## 
+##     expand.grid</code></pre>
+<pre><code>## Loading required package: IRanges</code></pre>
+<pre><code>## Loading required package: GenomicRanges</code></pre>
+<pre><code>## Loading required package: SummarizedExperiment</code></pre>
+<pre><code>## Loading required package: Biobase</code></pre>
+<pre><code>## Welcome to Bioconductor
+## 
+##     Vignettes contain introductory material; view with
+##     'browseVignettes()'. To cite Bioconductor, see
+##     'citation(&quot;Biobase&quot;)', and for packages 'citation(&quot;pkgname&quot;)'.</code></pre>
+<pre><code>## Loading required package: DelayedArray</code></pre>
+<pre><code>## Loading required package: matrixStats</code></pre>
+<pre><code>## 
+## Attaching package: 'matrixStats'</code></pre>
+<pre><code>## The following objects are masked from 'package:Biobase':
+## 
+##     anyMissing, rowMedians</code></pre>
+<pre><code>## 
+## Attaching package: 'DelayedArray'</code></pre>
+<pre><code>## The following objects are masked from 'package:matrixStats':
+## 
+##     colMaxs, colMins, colRanges, rowMaxs, rowMins, rowRanges</code></pre>
+<pre><code>## The following object is masked from 'package:base':
+## 
+##     apply</code></pre>
+<pre><code>## Loading required package: Rsamtools</code></pre>
+<pre><code>## Loading required package: Biostrings</code></pre>
+<pre><code>## Loading required package: XVector</code></pre>
+<pre><code>## 
+## Attaching package: 'Biostrings'</code></pre>
+<pre><code>## The following object is masked from 'package:DelayedArray':
+## 
+##     type</code></pre>
+<pre><code>## The following object is masked from 'package:base':
+## 
+##     strsplit</code></pre>
+<pre><code>## 
+## Attaching package: 'VariantAnnotation'</code></pre>
+<pre><code>## The following object is masked from 'package:base':
+## 
+##     tabulate</code></pre>
+<pre class="r"><code>fam15157.snp = genotypeToSnpMatrix(fam15157.vcf)</code></pre>
+<pre><code>## non-single nucleotide variations are set to NA</code></pre>
+<pre><code>## Warning in .local(x, ...): non-diploid variants are set to NA</code></pre>
+<pre class="r"><code>fam28003.snp = genotypeToSnpMatrix(fam28003.vcf)</code></pre>
+<pre><code>## non-single nucleotide variations are set to NA</code></pre>
+<pre><code>## Warning in .local(x, ...): non-diploid variants are set to NA</code></pre>
+<p><em>RVgene</em> requires lists of the <em>snpMatrix</em> and <em>pedigree</em> objects for these two families. The names given to the elements of these lists are not used by <em>RVgene</em> and are thus arbitrary. Family IDs are extracted from the <em>famid</em> element of the <em>pedigree</em> objects. Please note that currently <em>RVgene</em> does not accept a <em>pedigreeList</em>, but only a plain list of <em>pedigree</em> objects.</p>
+<pre class="r"><code>ex.SnpMatrix.list = list(fam15157=fam15157.snp$genotypes,fam28003=fam28003.snp$genotypes)
+ex.ped.obj = list(fam15157=samplePedigrees$secondCousinTriple,fam28003=samplePedigrees$firstAndSecondCousinsTriple)</code></pre>
+<p>In the sequence segment, one can specify which variants are rare and possibly satisfy other filtering criteria (e.g. coding variants) using the <em>sites</em> argument. Here, we will focus on two sites: 92 where the three second cousins of family 15157 share the rare allele and 119 where the two first cousins of family 28003 share the rare allele but not their second cousin.</p>
+<pre class="r"><code>sites = c(92,119)
+ex.SnpMatrix.list[[&quot;fam15157&quot;]][,sites[1]]@.Data</code></pre>
+<pre><code>##    rs187756653
+## 1           00
+## 2           00
+## 3           00
+## 4           00
+## 5           00
+## 6           00
+## 7           00
+## 8           00
+## 9           00
+## 10          00
+## 11          00
+## 12          00
+## 13          00
+## 14          00
+## 15          02
+## 16          02
+## 17          02</code></pre>
+<pre class="r"><code>ex.SnpMatrix.list[[&quot;fam28003&quot;]][,sites[2]]@.Data</code></pre>
+<pre><code>##     rs199628333
+## 3            00
+## 4            00
+## 6            00
+## 7            00
+## 11           00
+## 12           00
+## 13           00
+## 15           00
+## 27           00
+## 28           00
+## 36           01
+## 103          00
+## 104          02
+## 109          00
+## 110          02</code></pre>
+<p>Finally, the call to <em>RVgene</em> returns the P-value of the exact rare variant sharing test allowing for sharing by a subset of affected subjects (p), the P-value of the exact rare variant sharing test requiring sharing by all affected subjects (pall) and the minimum achievable p-value if all affected subjects were carriers of a rare variant (potentialp).</p>
+<pre class="r"><code>RVgene(ex.SnpMatrix.list,ex.ped.obj,sites,pattern.prob.list=ex.pattern.prob.list,
+nequiv.list=ex.nequiv.list,N.list=ex.N.list,type=&quot;count&quot;)</code></pre>
+<pre><code>## $p
+## [1] 0.000159884
+## 
+## $pall
+## [1] 0.001342282
+## 
+## $potentialp
+## [1] 3.718232e-06</code></pre>
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1>References</h1>

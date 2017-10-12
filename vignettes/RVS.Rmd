@@ -342,20 +342,30 @@ ex.N.list = list("15157"=fam15157.N,"28003"=fam28003.N)
 
 # Analyzing variants in genomic sequence
 
-We now turn to the analysis of variants observed in the genomic sequence of a sample of related affected subjects. The processing of the sequence data results in Variant Call Format (VCF) files, which can be read into R with the function *readVcf* from the *variantAnnotatin* package. Two *VCF* objects obtained with *readVcf* from VCF files of sequence data for the second cousin triple and first and second cousin triple families are contained in the *famVCF* data. These VCF files are converted to *snpMatrix* objects using the *genotypeToSnpMatrix* function. 
+We now turn to the analysis of variants observed in the simulated genomic sequence of the gene *PEAR1* in a sample of related affected subjects. The processing of the sequence data results in Variant Call Format (VCF) files, which can be read into R with the function *readVcf* from the *variantAnnotatin* package. Two *VCF* objects obtained with *readVcf* from VCF files of sequence data for the second cousin triple and first and second cousin triple families are contained in the *famVCF* data. These VCF files are converted to *snpMatrix* objects using the *genotypeToSnpMatrix* function. 
 
 ```{r}
 data(famVCF)
 library(VariantAnnotation)
 fam15157.snp = genotypeToSnpMatrix(fam15157.vcf)
 fam28003.snp = genotypeToSnpMatrix(fam28003.vcf)
-ex.SnpMatrix.list = list(fam15157=fam15157.snp$genotypes,fam28003=fam28003.snp$genotypes)
 ```
 
-In this sequence, one can specify which variants are rare and possibly satisfy other filtering criteria (e.g. coding variants) using the *sites* argument.  The last step before applying *RVgene*is to create a list of the *pedigree* objects for these two families.
+*RVgene* requires lists of the *snpMatrix* and *pedigree* objects for these two families. The names given to the elements of these lists are not used by *RVgene* and are thus arbitrary. Family IDs are extracted from the *famid* element of the *pedigree* objects. Please note that currently *RVgene* does not accept a *pedigreeList*, but only a plain list of *pedigree* objects.
+```{r}
+ex.SnpMatrix.list = list(fam15157=fam15157.snp$genotypes,fam28003=fam28003.snp$genotypes)
+ex.ped.obj = list(fam15157=samplePedigrees$secondCousinTriple,fam28003=samplePedigrees$firstAndSecondCousinsTriple)
+```
+
+In the sequence segment, one can specify which variants are rare and possibly satisfy other filtering criteria (e.g. coding variants) using the *sites* argument. Here, we will focus on two sites: 92 where the three second cousins of family 15157 share the rare allele and 119 where the two first cousins of family 28003 share the rare allele but not their second cousin.
 ```{r}
 sites = c(92,119)
-ex.ped.obj = list(fam15157=samplePedigrees$secondCousinTriple,fam28003=samplePedigrees$firstAndSecondCousinsTriple)
+ex.SnpMatrix.list[["fam15157"]][,sites[1]]@.Data
+ex.SnpMatrix.list[["fam28003"]][,sites[2]]@.Data
+```
+
+Finally, the call to *RVgene* returns the P-value of the exact rare variant sharing test allowing for sharing by a subset of affected subjects (p), the P-value of the exact rare variant sharing test requiring sharing by all affected subjects (pall) and the minimum achievable p-value if all affected subjects were carriers of a rare variant (potentialp).
+```{r}
 RVgene(ex.SnpMatrix.list,ex.ped.obj,sites,pattern.prob.list=ex.pattern.prob.list,
 nequiv.list=ex.nequiv.list,N.list=ex.N.list,type="count")
 ```
