@@ -3,10 +3,10 @@
 \docType{data}
 \name{snpMat}
 \alias{snpMat}
-\title{SnpMatrix with genotype information from ex.ped.mat}
+\title{SnpMatrix with genotype information from famVCF for fam15157}
 \usage{
 snpMat
 }
 \description{
-SnpMatrix with genotype information from ex.ped.mat
+SnpMatrix with genotype information from famVCF for fam15157
 }

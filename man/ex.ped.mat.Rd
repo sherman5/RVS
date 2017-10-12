@@ -3,10 +3,10 @@
 \docType{data}
 \name{ex.ped.mat}
 \alias{ex.ped.mat}
-\title{matrix of pedigree information stored in the LINKAGE format}
+\title{matrix of pedigree information and genotype data from famVCF stored in the LINKAGE format}
 \usage{
 ex.ped.mat
 }
 \description{
-matrix of pedigree information stored in the LINKAGE format
+matrix of pedigree information and genotype data from famVCF stored in the LINKAGE format
 }

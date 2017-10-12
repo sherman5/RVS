@@ -112,7 +112,7 @@ extract_carriers = function(ped,site,fam,type="alleles",minor.allele=2)
 #' entry in sites in each family where it is present in ped.mat (or in the
 #' families specified in fams if that argument is specified). It then
 #' computes exact rare variant sharing probabilities in each family for
-#' each variant by calling RVsharing. If multiple rare variants are seen
+#' each variant by calling \code{RVsharing}. If multiple rare variants are seen
 #' in the same family, the smallest sharing probability among all rare
 #' variants is retained. The joint rare variant sharing probability over
 #' all families is obtained as the product of the family-specific
@@ -122,14 +122,14 @@ extract_carriers = function(ped,site,fam,type="alleles",minor.allele=2)
 #' combinations of sharing patterns among all families with a probability
 #' less than or equal to the observed joint probability and a total number
 #' of carriers greater than or equal to the sum of the number of carriers
-#' in all families, using the values in pattern.prob.list, nequiv.list and
-#' N.list. The families where all affected subjects share a rare variant
+#' in all families, using the values in \code{pattern.prob.list}, \code{nequiv.list} and
+#' \code{N.list}. The families where all affected subjects share a rare variant
 #' are determined by verifying if the length of the carrier vector equals
-#' the maximum value of N.list for that family. The p-value of the test
+#' the maximum value of \code{N.list} for that family. The p-value of the test
 #' requiring sharing by all affected subjects is computed by calling
-#' multipleFamilyPValue.
+#' \code{multipleFamilyPValue}.
 #'
-#' @param data A list of SnpMatrix objects corresponding to each pedigree
+#' @param data A list of \code{SnpMatrix} objects corresponding to each pedigree
 #' object in ped.listfams, alternatively a data.frame or matrix encoding
 #' the pedigree information and genotype data in the standard LINKAGE ped
 #' format or the PLINK raw format with additive component only 
@@ -140,45 +140,45 @@ extract_carriers = function(ped,site,fam,type="alleles",minor.allele=2)
 #' not need to appear in this matrix. The genotype of each variant can be
 #' coded in two ways, each corresponding to a different value of the type
 #' option: a minor allele count on one column with missing values coded NA,
-#' obtained for example by converting a Snpmatrix object (type="count")
+#' obtained for example by converting a \code{SnpMatrix} object (type="count")
 #' or the identity of the two alleles on two consecutive columns, with missing
 #' values coded 0 corresponding to the standard
 #' LINKAGE ped format (type="alleles")
-#' @param ped.listfams a list of pedigree objects, one object for each
+#' @param ped.listfams a list of \code{pedigree} objects, one object for each
 #' pedigree in ped.mat.
 #' @param sites a vector of the column indices of the variant sites to
-#' test in ped.mat. If the argument fams is provided, the variant sites
+#' test in \code{ped.mat}. If the argument fams is provided, the variant sites
 #' are tested in each corresponding family in the fams vector (a variant
 #' present in multiple families must then be repeated for every families
 #' where it appears).
 #' @param fams an optional character vector of the names of families
-#' in ped.mat and ped.listfams carrying the variants listed in the 
-#' corresponding position in sites. If missing, the names of the families 
-#' carrying the minor allele at each position in sites are extracted from 
-#' ped.mat
+#' in \code{ped.mat} and \code{ped.listfams} carrying the variants listed in the 
+#' corresponding position in \code{sites}. If missing, the names of the families 
+#' carrying the minor allele at each position in \code{sites} are extracted from 
+#' \code{ped.mat}
 #' @param pattern.prob.list a list of precomputed rare variant sharing 
 #' probabilities for all possible sharing patterns in the families in 
-#' ped.mat and ped.listfams 
+#' \code{ped.mat} and \code{ped.listfams} 
 #' @param nequiv.list an optional vector of the number of configurations 
 #' of rare variant sharing by the affected subjects corresponding to the 
-#' same pattern and probability in pattern.prob.list. Default is a vector 
+#' same pattern and probability in \code{pattern.prob.list}. Default is a vector 
 #' of 1s
 #' @param N.list a vector of the number of affected subjects sharing a 
-#' rare variant in the corresponding pattern in pattern.prob.list
+#' rare variant in the corresponding pattern in \code{pattern.prob.list}
 #' @param type an optional character string taking value "alleles" or 
 #' "count". Default is "alleles"
 #' @param minor.allele.vec an optional vector of the minor alleles at each 
-#' site in the sites vector. It is not needed if type="count". If it is 
+#' site in the \code{sites} vector. It is not needed if type="count". If it is 
 #' missing and type="alleles", the minor allele is assumed to take the 
 #' value 2
 #' @param precomputed.prob an optional list of vectors precomputed rare 
 #' variant sharing probabilities for families in ped.mat and ped.listfams. 
 #' If the vectors are named, the names must be strings formed by the 
-#' concatenation of the sorted carrier names separated by semi-columns, 
-#' as in the output of GeneDropSim.allsubsets.fn. If the vectors are not 
+#' concatenation of the sorted carrier names separated by semi-columns. 
+#' If the vectors are not 
 #' named, the vectors must represent probabilities for all the possible 
-#' values of N.list for the corresponding family (one probability per 
-#' value of N.list)
+#' values of \code{N.list} for the corresponding family (one probability per 
+#' value of \code{N.list})
 #' @param maxdim upper bound on the dimension of the array containing the 
 #' joint distribution of the sharing patterns for all families in fams 
 #' (to avoid running out of memory)
@@ -189,11 +189,11 @@ extract_carriers = function(ped,site,fam,type="alleles",minor.allele=2)
 #' @param useAffected allows the user to condition on seeing the variant
 #' among the affected subjects instead of the final descendants. Default is TRUE
 #' @return A list with items:
-#' p P-value of the exact rare variant sharing test allowing for sharing
+#' \code{p} P-value of the exact rare variant sharing test allowing for sharing
 #' by a subset of affected subjects.
-#' pall P-value of the exact rare variant sharing test requiring sharing
+#' \code{pall} P-value of the exact rare variant sharing test requiring sharing
 #' by all affected subjects.
-#' potentialp Minimum achievable p-value if all affected subjects were
+#' \code{potentialp} Minimum achievable p-value if all affected subjects were
 #' carriers of a rare variant.
 #' @examples
 #' data(samplePedigrees)
@@ -300,7 +300,10 @@ precomputed.prob=list(0), maxdim = 1e9, partial.sharing=TRUE, useAffected=TRUE)
     }
             
     fams.vec = as.character(fams.vec)
-    missing.fams = fams.vec[!(fams.vec%in%names(ped.listfams))] 
+    # Using the famid as name of the pedigree objects in ped.listfams
+    fams.names = sapply(ped.listfams,function(fam)fam$famid[1])
+    names(ped.listfams) = fams.names
+    missing.fams = fams.vec[!(fams.vec%in%fams.names)] 
     if (length(missing.fams>0))
         stop ("Families ",missing.fams," not in ped.listfams.")
     missing.fams = fams.vec[!(fams.vec%in%names(pattern.prob.list))] 
@@ -337,16 +340,16 @@ precomputed.prob=list(0), maxdim = 1e9, partial.sharing=TRUE, useAffected=TRUE)
                 # If the precomputed probabilities for the current family
                 # have no name, then assume the probabilities are listed
                 # for each possible number of carriers in the family
-                if (is.null(names(precomputed.prob[[as.character(
-                fams.vec[f])]])))
-                    tmp = precomputed.prob[[as.character(
-                        fams.vec[f])]][length(carriers)]
+                if (is.null(names(precomputed.prob[[
+                fams.vec[f]]])))
+                    tmp = precomputed.prob[[
+                        fams.vec[f]]][length(carriers)]
                 # Otherwise, the names are assumed to be carrier subsets 
                 # separated by ; and the probability for the current carriers
                 # is extracted
                 else
-                    tmp = precomputed.prob[[as.character(
-                        fams.vec[f])]][paste(sort(carriers),collapse=";")]
+                    tmp = precomputed.prob[[
+                        fams.vec[f]]][paste(sort(carriers),collapse=";")]
             }
             else
                 tmp = suppressMessages(RVsharing(ped.listfams[[fams.vec[f]]],
