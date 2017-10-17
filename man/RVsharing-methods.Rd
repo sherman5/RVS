@@ -3,10 +3,8 @@
 \docType{methods}
 \name{RVsharing}
 \alias{RVsharing}
-\alias{RVsharing,pedigree-method}
-\alias{RVsharing}
 \alias{RVsharing,list-method}
-\alias{RVsharing}
+\alias{RVsharing,pedigree-method}
 \title{probability of sharing a rare variant among relatives}
 \usage{
 RVsharing(ped, carriers = NULL, alleleFreq = NA, kinshipCoeff = NA,
@@ -81,3 +79,4 @@ and Ruczinski, I. (2014) Inferring rare disease risk variants based on
 exact probabilities of sharing by multiple affected relatives.
 Bioinformatics, 30(15): 2189-96, doi:10.1093/bioinformatics/btu198.
 }
+
