@@ -31,6 +31,10 @@
 #' Bioinformatics, 30(15): 2189-96, doi:10.1093/bioinformatics/btu198.
 multipleFamilyPValue <- function(sharingProbs, observedSharing)
 {
+    # check vector lengths
+    if (length(sharingProbs) != length(observedSharing))
+        stop('sharing pattern different length than sharing probs')
+
     # remove name from sharing prob
     sharingProbs <- unname(sharingProbs)
 
