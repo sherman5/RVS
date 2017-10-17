@@ -20,9 +20,6 @@ test_that('pre-process pedigree',
     expect_equal(procPed$id, 1:8)
     expect_equal(procPed$finalDescendants, c(7,8))
     
-    ped$affected[1] <- 1
-    expect_error(processPedigree(ped), 'some founders are affected')
-
     ped$affected <- rep(0, procPed$size)
     expect_error(processPedigree(ped), 'need at least 2 affected subjects')
 })
@@ -63,8 +60,8 @@ test_that('kinship coefficient estimation',
     data(samplePedigrees)
     
     coefMatrix <- ComputeKinshipPropCoef(samplePedigrees$firstCousinPair)
-    expect_equal(unname(coefMatrix[1,]), c(   NA, 0.125))
-    expect_equal(unname(coefMatrix[2,]), c(0.125,    NA))
+    expect_equal(unname(coefMatrix[1,]), c(   NA, 0.875))
+    expect_equal(unname(coefMatrix[2,]), c(0.875,    NA))
 })
 
 

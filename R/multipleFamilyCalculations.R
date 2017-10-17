@@ -31,6 +31,10 @@
 #' Bioinformatics, 30(15): 2189-96, doi:10.1093/bioinformatics/btu198.
 multipleFamilyPValue <- function(sharingProbs, observedSharing)
 {
+    # check vector lengths
+    if (length(sharingProbs) != length(observedSharing))
+        stop('sharing pattern different length than sharing probs')
+
     # remove name from sharing prob
     sharingProbs <- unname(sharingProbs)
 
@@ -87,7 +91,7 @@ multipleFamilyPValue <- function(sharingProbs, observedSharing)
 #' ped.tocompute.vec=famids))
 get.psubset <- function(vec, not, pshare.data)
 {
-    warning(paste('this function is deprecated with version >= 2.0',
+    warning(paste('this function is deprecated',
         'and should not be used, instead use multipleFamilyPValue'))
     names <- pshare.data$ped.tocompute.vec
     probs <- pshare.data$pshare[names %in% vec]

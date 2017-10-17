@@ -19,3 +19,4 @@ Calculate the exact sharing probability given the minor allele
 frequency among the founders (population).
 }
 \keyword{internal}
+

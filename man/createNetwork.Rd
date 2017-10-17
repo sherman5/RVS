@@ -20,3 +20,4 @@ The network is built based on the information in a pedigree object
 that has been processed using \code{processPedigree}.
 }
 \keyword{internal}
+

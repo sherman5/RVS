@@ -23,6 +23,22 @@ test_that('list of pedigrees',
     expect_equal(unname(result), unname(probs))
 })
 
+test_that('RVsharing runs on all sample pedigrees',
+{
+    data(samplePedigrees)
+    
+    expect_equal(length(samplePedigrees), 9)
+    expect_equal(RVsharing(samplePedigrees[[1]]), 0.0667, tolerance=1e-3)
+    expect_equal(RVsharing(samplePedigrees[[2]]), 0.0159, tolerance=1e-3)
+    expect_equal(RVsharing(samplePedigrees[[3]]), 0.0039, tolerance=1e-3)
+    expect_equal(RVsharing(samplePedigrees[[4]]), 0.0118, tolerance=1e-3)
+    expect_equal(RVsharing(samplePedigrees[[5]]), 0.0013, tolerance=1e-3)
+    expect_equal(RVsharing(samplePedigrees[[6]]), 0.0492, tolerance=1e-3)
+    expect_equal(RVsharing(samplePedigrees[[7]]), 0.1130, tolerance=1e-3)
+    expect_equal(RVsharing(samplePedigrees[[8]]), 0.0187, tolerance=1e-3)
+    expect_equal(RVsharing(samplePedigrees[[9]]), 0.0028, tolerance=1e-3)
+})
+
 test_that('monte carlo close to exact',
 {
     set.seed(0)
@@ -47,7 +63,6 @@ test_that('monte carlo close to exact',
         0, tolerance=tol)
     expect_equal(monteCarloComp(samplePedigrees$twoGenerationsInbreeding),
         0, tolerance=tol)
-
     expect_equal(monteCarloComp(samplePedigrees$firstCousinPair,
         freq=MAF), 0, tolerance=tol)
     expect_equal(monteCarloComp(samplePedigrees$secondCousinTriple,
@@ -58,7 +73,6 @@ test_that('monte carlo close to exact',
         freq=MAF), 0, tolerance=tol)
     expect_equal(monteCarloComp(samplePedigrees$twoGenerationsInbreeding,
         freq=MAF), 0, tolerance=tol)
-
     expect_equal(monteCarloComp(samplePedigrees$firstCousinPair,
         kin=kCoeff), 0, tolerance=tol)
     expect_equal(monteCarloComp(samplePedigrees$secondCousinTriple,
