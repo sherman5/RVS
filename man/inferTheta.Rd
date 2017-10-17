@@ -21,3 +21,4 @@ solve the parameter theta for polynomial approximation of the
 distribution of the number of distinct alleles.
 }
 \keyword{internal}
+

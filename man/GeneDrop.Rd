@@ -28,3 +28,4 @@ and should not be used, instead use RVsharing with nSim option
 \examples{
 tryCatch(GeneDrop(), error = function(e) message(e))
 }
+
