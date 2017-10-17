@@ -248,7 +248,7 @@ or not the variant was shared among the carriers.
 
 ```{r}
 probs <- sapply(samplePedigrees, function(p) suppressMessages(RVsharing(p)))
-observed <- c(rep(FALSE, 3), rep(TRUE, 2), rep(FALSE, 3))
+observed <- c(rep(FALSE, 3), rep(TRUE, 2), rep(FALSE, 4))
 multipleFamilyPValue(probs, observed)
 ```
 # Precomputing Sharing Probabilities and Number of Carriers for all Possible Carrier Subsets

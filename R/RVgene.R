@@ -370,13 +370,13 @@ precomputed.prob=list(0), maxdim = 1e9, partial.sharing=TRUE, useAffected=TRUE)
 
     if (partial.sharing)
     {
-    	if (mdim > maxdim) 
-    	{
-        warning(paste("Number of possible combinations of sharing",
-            "patterns is too high. Partial sharing test cannot be performed."))
-        compute.p = FALSE       
-    	}
-    	else compute.p = TRUE
+        if (mdim > maxdim) 
+        {
+            warning(paste("Number of possible combinations of sharing",
+                "patterns is too high. Partial sharing test cannot be performed."))
+            compute.p = FALSE       
+        }
+        else compute.p = TRUE
     }
     else  compute.p = FALSE
         
