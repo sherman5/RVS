@@ -87,7 +87,7 @@ multipleFamilyPValue <- function(sharingProbs, observedSharing)
 #' ped.tocompute.vec=famids))
 get.psubset <- function(vec, not, pshare.data)
 {
-    warning(paste('this function is deprecated with version >= 2.0',
+    warning(paste('this function is deprecated',
         'and should not be used, instead use multipleFamilyPValue'))
     names <- pshare.data$ped.tocompute.vec
     probs <- pshare.data$pshare[names %in% vec]

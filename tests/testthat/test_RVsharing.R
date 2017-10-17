@@ -23,6 +23,20 @@ test_that('list of pedigrees',
     expect_equal(unname(result), unname(probs))
 })
 
+test_that('RVsharing runs on all sample pedigrees',
+{
+    data(samplePedigrees)
+
+    suppressMessages(RVsharing(samplePedigrees[[1]]))
+    suppressMessages(RVsharing(samplePedigrees[[2]]))
+    suppressMessages(RVsharing(samplePedigrees[[3]]))
+    suppressMessages(RVsharing(samplePedigrees[[4]]))
+    suppressMessages(RVsharing(samplePedigrees[[5]]))
+    suppressMessages(RVsharing(samplePedigrees[[6]]))
+    suppressMessages(RVsharing(samplePedigrees[[7]]))
+    suppressMessages(RVsharing(samplePedigrees[[8]]))
+})
+
 test_that('monte carlo close to exact',
 {
     set.seed(0)

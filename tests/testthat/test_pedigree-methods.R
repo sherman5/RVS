@@ -20,9 +20,6 @@ test_that('pre-process pedigree',
     expect_equal(procPed$id, 1:8)
     expect_equal(procPed$finalDescendants, c(7,8))
     
-    ped$affected[1] <- 1
-    expect_error(processPedigree(ped), 'some founders are affected')
-
     ped$affected <- rep(0, procPed$size)
     expect_error(processPedigree(ped), 'need at least 2 affected subjects')
 })
