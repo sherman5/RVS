@@ -43,8 +43,11 @@ multipleFamilyPValue <- function(sharingProbs, observedSharing)
         prod(1 - sharingProbs[!observedSharing])
 
     # sum probabilities of both branches of the tree
+    depth <<- 0
     sumBranches <- function(ndx, prod)
     {
+        depth <<- depth + 1
+        message(paste('recursion depth:', depth))
         # get sum of probs starting at leaf of this node
         leafSum <- function(p)
         {
@@ -143,6 +146,83 @@ multipleVariantPValue <- function(share_matrix, famid, subjects, peds)
 
     # return vector of p-values
     return(pvals)
+}
+
+#' enrichment p-value acroos multiple families and variants
+#' @export
+#'
+#' @description Computes a p-value for all variants seen across all families
+#' @details For each variant, the families which have all sequenced subjects
+#'  sharing the variant and the families which have some sequenced subjects
+#'  sharing the variant are recorded. All unique (family, variant) pairs
+#'  are accumulated into a single vector and passed to multipleFamilyPValue
+#' @param share_matrix matrix entry [i,j] is 1 if subject i has
+#'  variant j, otherwise it is zero
+#' @param famid vector of family id's - same length as rows in share_matrix
+#' @param subjects vector of subject id's - same length as rows in share_matrix
+#' @param peds list of pedigrees referenced in famid
+#' @return vector : p-value for each variant sharing pattern
+enrichmentPValue <- function(share_matrix, famid, subjects, peds)
+{
+    # get family info
+    unique_famid <- unique(famid)
+    num_subjects <- sapply(unique_famid,  function(id)
+        length(unique(subjects[famid==id])))
+
+    # locate rows at which a new family starts
+    family_start_rows <- c()
+    r <- 1
+    while (r <= length(famid))
+    {
+        family_start_rows <- c(family_start_rows, r)
+        r <- r + num_subjects[which(unique_famid == famid[r])]
+    }
+
+    # vectors for all (family, variant) pairs seen
+    all_share_probs <- c()
+    all_full_share <- c()
+
+    # calculate p-value for each variant
+    for (var in 1:ncol(share_matrix))
+    {
+        share_probs <- c()
+        full_share <- c()
+        for (fam in family_start_rows)    
+        {
+            # get info about the carriers and variants
+            sz <- num_subjects[which(unique_famid == famid[fam])]
+            variants <- share_matrix[fam:(fam+sz-1), var]
+            fam_num <- which(sapply(peds, function(p) p$famid[1]==famid[fam]))
+            carriers <- subjects[fam:(fam+sz-1)]
+            carrier_ids <- which(peds[[fam_num]]$id %in% carriers)
+
+            # set the affected attribute for this pedigree
+            peds[[fam_num]]$affected <- rep(0, length(peds[[fam_num]]$affected))
+            peds[[fam_num]]$affected[carrier_ids] <- 1
+
+            # check if all subjects share the variant or not
+            if (sum(variants) == sz)
+            {
+                share_probs <- c(share_probs, suppressMessages(RVsharing(
+                    peds[[fam_num]], useAffected=TRUE)))
+                full_share <- c(full_share, TRUE)
+            }
+            else if (sum(variants) != 0)
+            {
+                share_probs <- c(share_probs, suppressMessages(RVsharing(
+                    peds[[fam_num]], useAffected=TRUE)))
+                full_share <- c(full_share, FALSE)
+            }
+        }
+
+        all_share_probs <- c(all_share_probs, share_probs)
+        all_full_share <- c(all_full_share, full_share)
+    }
+
+    # return vector of p-values
+    print(all_share_probs)
+    print(all_full_share)
+    return(multipleFamilyPValue(all_share_probs, all_full_share))
 }
 
 #' deprecated function

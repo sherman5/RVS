@@ -132,4 +132,9 @@ lines(1:num_variants,-log10(bcut),col="red",type="b",pch=20)
 lines(1:num_variants,-log10(sort(pval)),col="blue",type="b",pch=20)
 ```
 
+Enrichment p-value
+```{r}
+# enrichmentPValue(x, famid, carriers, fams)
+```
+
 # References
