@@ -17,124 +17,238 @@ library(RVS)
 library(kinship2)
 ```
 
-Four different family types, three families from each type.
+# Setting up Pedigree Data
+
+## Loading a Pedigree
+
+For this example experiment we will consider four family types. A pair of first cousins, a pair of second cousins, a triple of first cousins, and a triple of second cousins. *RVS* comes with several example pedigrees and these four types can be found in the *samplePedigrees* list.
+
 ```{r}
 data(samplePedigrees)
-fam_type_1 <- samplePedigrees$secondCousinTriple
-fam_type_2 <- samplePedigrees$firstCousinTriple
-fam_type_3 <- samplePedigrees$secondCousinPair
-fam_type_4 <- samplePedigrees$firstCousinPair
-num_families <- 3
+fam_type_1 <- samplePedigrees$firstCousinPair
+fam_type_2 <- samplePedigrees$secondCousinPair
+fam_type_3 <- samplePedigrees$firstCousinTriple
+fam_type_4 <- samplePedigrees$secondCousinTriple
+fam_type_1$famid <- rep(1, length(fam_type_1$id))
+fam_type_2$famid <- rep(2, length(fam_type_2$id))
+fam_type_3$famid <- rep(3, length(fam_type_3$id))
+fam_type_4$famid <- rep(4, length(fam_type_4$id))
 ```
 
-20 total variants.
+## Plotting a Pedigree
+
+In order to see the pedigree strucutre we can use the plot function provided by the *kinship2* package. In this family we have three second cousins that have been sequenced.
+
 ```{r}
-num_variants <- 20
-potential_pvalue <- rep(NA, num_variants)
+plot(fam_type_4)
 ```
 
-Variants in family type 1 (three second cousins)
+# Calculating Sharing Probabilities
+
+## Sharing Probability for One Family, One Variant
+
+The simplest use of the *RVS* package is to compute the probability that all sequenced subjects in a pedigree share a variant, given that it is seen it at least one of the subjects. For more information about this calculation see the documentation for the function *RVsharing*.
+
+In this case we compute the probability for the family of three second cousins. Note that in the case of a single family and variant, the sharing probability can be interpreted as a p-value.
 
 ```{r}
-p1 <- suppressMessages(RVsharing(fam_type_1))
-x1 <- matrix(0, ncol=num_variants, nrow=num_families * sum(fam_type_1$affected))
-carriers_1 <- rep(which(fam_type_1$affected==1), num_families)
-famid_1 <- rep(fam_type_1$famid[1], nrow(x1))
-
-x1[1:6, 1] <- 1
-x1[1:3, 2] <- 1
-x1[1:2, 3] <- 1
-x1[c(1:2,5:6), 4] <- 1
-potential_pvalue[1:4] <- c(p1^2, p1, p1, p1^2)
+prob <- RVsharing(fam_type_4)
 ```
 
-Variants in family type 2 (three first cousins)
-```{r}
-p2 <- suppressMessages(RVsharing(fam_type_2))
-x2 <- matrix(0, ncol=num_variants, nrow=num_families * sum(fam_type_2$affected))
-carriers_2 <- rep(which(fam_type_2$affected==1), num_families)
-famid_2 <- rep(fam_type_2$famid[1], nrow(x2))
+## P-Value for Multiple Families, One Variant
 
-x2[1:6, 5] <- 1
-x2[1:3, 6] <- 1
-x2[1:2, 7] <- 1
-x2[c(1:2,5:6), 8] <- 1
-potential_pvalue[5:8] <- c(p2^2, p2, p2, p2^2)
-```
+In the case of a single variant seen across multiple families, we can compute the individual sharing probabilties with *RVsharing*, but the sharing probabilities can no longer be interpreted as a p-value in this case. The function *multipleFamilyPValue can be used to compute the p-value.
 
-Variants in family type 3 (two second cousins)
-```{r}
-p3 <- suppressMessages(RVsharing(fam_type_3))
-x3 <- matrix(0, ncol=num_variants, nrow=num_families * sum(fam_type_3$affected))
-carriers_3 <- rep(which(fam_type_3$affected==1), num_families)
-famid_3 <- rep(fam_type_3$famid[1], nrow(x3))
-
-x3[1:4,     9] <- 1
-x3[1:2,    10] <- 1
-x3[1,      11] <- 1
-x3[c(1,3), 12] <- 1
-potential_pvalue[9:12] <- c(p3^2, p3, p3, p3^2)
-```
-
-Variants in family type 4 (two first cousins)
-```{r}
-p4 <- suppressMessages(RVsharing(fam_type_4))
-x4 <- matrix(0, ncol=num_variants, nrow=num_families * sum(fam_type_4$affected))
-carriers_4 <- rep(which(fam_type_4$affected==1), num_families)
-famid_4 <- rep(fam_type_4$famid[1], nrow(x4))
-
-x4[1:4,    13] <- 1
-x4[1:2,    14] <- 1
-x4[1,      15] <- 1
-x4[c(1,3), 16] <- 1
-potential_pvalue[13:16] <- c(p4^2,p4,p4,p4^2)
-```
-
-Variants in multiple family types
-```{r}
-x1[7:9, 17] <- 1
-x2[8:9, 17] <- 1
-x3[5:6, 17] <- 1
-x4[5,   17] <- 1
-potential_pvalue[17] <- p1*p2*p3*p4
-
-x2[7, 18] <- 1
-x4[6, 18] <- 1
-potential_pvalue[18] <- p2*p4
-
-x1[7:9, 19] <- 1
-x3[3:4, 19] <- 1
-potential_pvalue[19] <- p1*p3
-
-x3[5, 20] <- 1
-potential_pvalue[20] <- p3
-```
-
-Matrix of all variant sharing patterns.
-```{r}
-x <- rbind(x1, x2, x3, x4)
-famid <- c(famid_1, famid_2, famid_3, famid_4)
-carriers <- c(carriers_1, carriers_2, carriers_3, carriers_4)
-cbind(famid, carriers, x)
-```
-
-Calculating p-values across all variants.
 ```{r}
 fams <- list(fam_type_1, fam_type_2, fam_type_3, fam_type_4)
-pval <- multipleVariantPValue(x, famid, carriers, fams)
+sharing_pattern <- c(T, T, F, F)
+multipleFamilyPValue(pedList = fams, observedSharing = sharing_pattern)
 ```
 
-Potential p-value plot
+Since we passed a list of pedigrees, the default sharing probabilities from *RVsharing* are used. The *sharing_pattern* vector indicates whether or not the variant is observed in all sequenced subjects.
+
+## P-Value for Multiple Families, Multiple Variants
+
+If multiple variants need to be considered, then the function *multipleVariantPValue* should be used. This function takes a matrix of sharing patterns across subjects and variants. It outputs a p-value for each variant by running the *multipleFamilyPValue* function on the columns of the matrix.
+
+First we need to create the matrix of sharing. In the matrix, subjects in which the variants are seen are marked with a 1.
+
 ```{r}
+n_subjects <- sum(sapply(fams, function(f) sum(f$affected)))
+n_variants <- 4
+share_mat <- matrix(0, nrow = n_subjects, ncol = n_variants)
+colnames(share_mat) <- c('v1', 'v2', 'v3', 'v4')
+share_mat[c(1:2, 8:10), 1] <- 1
+share_mat[c(3:4, 5:6),  2] <- 1
+share_mat[c(1:2, 9:10), 3] <- 1
+share_mat[c(1:4, 9),    4] <- 1
+
+famids <- unlist(sapply(fams, function(f) rep(f$famid[1], sum(f$affected))))
+subjects <- unlist(sapply(fams, function(f) which(f$affected==1)))
+cbind(famids, subjects, share_mat)
+```
+
+Once this matrix is created we can call *multipleVariantPValue*.
+
+```{r}
+multipleVariantPValue(share_mat, famids, subjects, fams)
+```
+
+# Analyzing Multiple Families, Multiple Variants for Large Data Sets
+
+The above examples showcase a basic workflow, but in real world examples it may be neccesary to subset the analysis in order to preserve computation time. In this example, we will use a larger data set of 30 subjects and 20 variants.
+
+```{r echo=FALSE}
+
+# set up data
+
+share_mat <- matrix(0, nrow = 30, ncol = 20)
+colnames(share_mat) <- paste('', 1:20, sep='')
+famids <- c(rep(11, 2), rep(12, 2), rep(13, 2),
+            rep(21, 2), rep(22, 2), rep(23, 2),
+            rep(31, 3), rep(32, 3), rep(33, 3),
+            rep(41, 3), rep(42, 3), rep(43, 3))
+subjects <- unlist(sapply(fams, function(f) rep(which(f$affected==1), 3)))
+
+f11 <- f12 <- f13 <- fam_type_1
+f21 <- f22 <- f23 <- fam_type_2
+f31 <- f32 <- f33 <- fam_type_3
+f41 <- f42 <- f43 <- fam_type_4
+
+f11$famid <- rep(11, length(f11$id))
+f12$famid <- rep(12, length(f12$id))
+f13$famid <- rep(13, length(f13$id))
+f21$famid <- rep(21, length(f21$id))
+f22$famid <- rep(22, length(f22$id))
+f23$famid <- rep(23, length(f23$id))
+f31$famid <- rep(31, length(f31$id))
+f32$famid <- rep(32, length(f32$id))
+f33$famid <- rep(33, length(f33$id))
+f41$famid <- rep(41, length(f41$id))
+f42$famid <- rep(42, length(f42$id))
+f43$famid <- rep(43, length(f43$id))
+
+fams <- list(f11, f12, f13, f21, f22, f23, f31, f32, f33, f41, f42, f43)
+
+# family type 1 (1 - 6)
+
+share_mat[1:4,    1] <- 1
+share_mat[1:2,    2] <- 1
+share_mat[1,      3] <- 1
+share_mat[c(1,3), 4] <- 1
+
+# family type 2 (7 - 12)
+
+share_mat[7:10,   5] <- 1
+share_mat[7:8,    6] <- 1
+share_mat[7,      7] <- 1
+share_mat[c(7,9), 8] <- 1
+
+# family type 3 (13 - 21)
+
+share_mat[13:18,           9] <- 1
+share_mat[13:15,          10] <- 1
+share_mat[13:14,          11] <- 1
+share_mat[c(13:14,17:18), 12] <- 1
+
+# family type 4 (22 - 30)
+
+share_mat[22:27,           13] <- 1
+share_mat[22:24,           14] <- 1
+share_mat[22:23,           15] <- 1
+share_mat[c(22:23, 26:27), 16] <- 1
+
+# other variants
+
+share_mat[28:30, 17] <- 1
+share_mat[20:21, 17] <- 1
+share_mat[11:12, 17] <- 1
+share_mat[5,     17] <- 1
+
+share_mat[19, 18] <- 1
+share_mat[6, 18] <- 1
+
+share_mat[28:30, 19] <- 1
+share_mat[9:10,  19] <- 1
+#share_mat[22:23, 19] <- 1
+
+share_mat[11, 20] <- 1
+
+# display share matrix
+
+temp <- cbind(famids, share_mat)
+rownames(temp) <- 1:30
+temp
+```
+
+## Calculating Potential P-Values
+
+The potential p-value is the p-value seen if every family considered had all sequenced subjects share the variant. This is a lower bound on the actual p-value calculated in *multipleVariantPValue*.
+
+```{r}
+# compute sharing probability for each family
+
+sharing_probs <- suppressMessages(RVsharing(fams))
+names(sharing_probs) <- unique(famids)
+
+# compute potential p-values
+
+potential_pvalue <- rep(1, 20)
+for (c in 1:20)
+{
+    for (fid in names(sharing_probs))
+    {
+        rows <- which(famids==fid)
+        if (sum(share_mat[rows,c]) > 0)
+             potential_pvalue[c] <- potential_pvalue[c] * unname(sharing_probs[fid])
+    }   
+}
+
+# plot potential p-values against the Bonferroni cutoff
+
 plot(-log10(sort(potential_pvalue)),pch=20,cex=1.3,ylab="-log10 potential p-value")
-bcut <- 0.05/(1:num_variants)
-lines(1:num_variants,-log10(bcut),col="red",type="b",pch=20)
-lines(1:num_variants,-log10(sort(pval)),col="blue",type="b",pch=20)
+bcut <- 0.05/(1:20)
+lines(1:20,-log10(bcut),col="red",type="b",pch=20)
 ```
 
-Enrichment p-value
+In this case, we only need to consider the lowest 11 p-values, since the rest have a lower bound greater than the Bonferroni cutoff.
+
+## Calculating Actual P-Values
+
+Now we can calculate the actual p-values for the filtered data.
+
 ```{r}
-# enrichmentPValue(x, famid, carriers, fams)
+# subset variants and calculate p-values
+
+pval_cutoff <- sort(potential_pvalue)[11]
+filtered_variants <- which(potential_pvalue <= pval_cutoff)
+pvals <- multipleVariantPValue(share_mat[,filtered_variants], famids, subjects, fams)
+
+# discard p-values of 1 (occurs when no complete sharing is observed)
+
+filtered_pp <- potential_pvalue[filtered_variants]
+filtered_pp <- filtered_pp[pvals<1]
+pvals <- pvals[pvals<1]
+
+# plot p-values against there lower bound
+
+plot(-log10(filtered_pp[order(filtered_pp)]), ylab="-log10 p-value", col="red", type="l", xaxt="n", xlab="variants")
+axis(1, at=1:length(pvals), labels=names(pvals)[order(filtered_pp)])
+points(-log10(pvals[order(filtered_pp)]), pch=20, cex=1.3)
+```
+
+The potential p-values are plotted in red and the actual p-values are plotted in black.
+
+## Allele Frequency Sensitivity Analysis
+
+## Cryptic Relatedness Analysis
+
+## Enrichment Test
+
+When calculating the enrichment p-value, note that a very small p-value may result in a very long computation time. Because of this, we can pass a minimum p-value threshold, where the greather of this threshold and the actual p-value will be returned.
+
+```{r}
+enrichmentPValue(share_mat, famids, subjects, fams, 0.001)
 ```
 
 # References
