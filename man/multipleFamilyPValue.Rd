@@ -2,23 +2,49 @@
 % Please edit documentation in R/multipleFamilyCalculations.R
 \name{multipleFamilyPValue}
 \alias{multipleFamilyPValue}
-\title{Computes a p-value for a single variant across multiple families}
+\title{probability of sharing of rare variants in a subset of families}
 \usage{
-multipleFamilyPValue(sharingProbs = NULL, observedSharing, pedList = NULL)
+multipleFamilyPValue(sharingProbs, observedSharing, minPValue = 0)
 }
 \arguments{
-\item{sharingProbs}{vector of sharing probabilties}
+\item{sharingProbs}{named vector of sharing probabilties, where names
+correspond to famid value of pedigree}
 
-\item{observedSharing}{vector of T/F indicating which pedigrees have the
-variant seen in all carriers}
-
-\item{pedList}{list of pedigree objects}
+\item{observedSharing}{boolean vector describing if all affected subjects
+in the family share the variant (TRUE if all share)}
 }
 \value{
-vector : p-value for each variant sharing pattern
+P-value of the exact rare variant sharing test requiring
+sharing by all affected subjects
 }
 \description{
-Computes a p-value for a single variant sharing pattern
- across families
+Computing probability of sharing of rare variants in
+a subset of families where rare variants are seen based on precomputed
+family-specific rare variant sharing probabilities.
+}
+\details{
+All the subsets of families of size equal or inferior to the
+length of not are created, and the joint probability of each such
+subset not sharing a rare variant and the remaining families sharing
+a rare variant is obtained as the product of the family-specific rare
+variant sharing probabilities or its complement. The function then sums
+the pattern probabilities inferior or equal to the probability
+of the observed pattern of the not families not sharing a rare variant
+and the remaining families sharing a rare variant.
+}
+\examples{
+data(samplePedigrees)
+notSharedFams <- c(15159, 15053, 15157)
+famids <- sapply(samplePedigrees, function(p) p$famid[1])
+shared <- !famids \%in\% notSharedFams
+probs <- sapply(samplePedigrees, RVsharing)
+multipleFamilyPValue(probs, shared)
+}
+\references{
+Bureau, A., Younkin, S., Parker, M.M., Bailey-Wilson, J.E.,
+Marazita, M.L., Murray, J.C., Mangold, E., Albacha-Hejazi, H., Beaty, T.H.
+and Ruczinski, I. (2014) Inferring rare disease risk variants based on
+exact probabilities of sharing by multiple affected relatives.
+Bioinformatics, 30(15): 2189-96, doi:10.1093/bioinformatics/btu198.
 }
 

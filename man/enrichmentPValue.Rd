@@ -4,7 +4,7 @@
 \alias{enrichmentPValue}
 \title{enrichment p-value acroos multiple families and variants}
 \usage{
-enrichmentPValue(share_matrix, famid, subjects, peds, threshold)
+enrichmentPValue(snpMat, famInfo, sharingProbs, threshold = 0)
 }
 \arguments{
 \item{share_matrix}{matrix entry [i,j] is 1 if subject i has

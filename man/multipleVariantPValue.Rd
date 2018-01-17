@@ -4,7 +4,8 @@
 \alias{multipleVariantPValue}
 \title{generalization of multipleFamilyPValue to multiple variants}
 \usage{
-multipleVariantPValue(share_matrix, famid, subjects, peds)
+multipleVariantPValue(snpMat, famInfo, sharingProbs, filter_type = NULL,
+  alpha = 0)
 }
 \arguments{
 \item{share_matrix}{matrix entry [i,j] is 1 if subject i has
