@@ -10,39 +10,40 @@ RVgene(data, ped.listfams, sites, fams, pattern.prob.list, nequiv.list, N.list,
 }
 \arguments{
 \item{data}{A list of \code{SnpMatrix} objects corresponding to each pedigree
-object in ped.listfams, alternatively a data.frame or matrix encoding
+object in ped.listfams, or a data.frame or matrix encoding
 the pedigree information and genotype data in the standard LINKAGE ped
 format or the PLINK raw format with additive component only 
-(see PLINK web site [1]). In fact, only the family ID in the first
-column, the subject ID in the second column, the affection status in the
-sixth column and the genotype data starting in the seventh column are used
+(see PLINK web site [1]). From the pedigree information, only the family ID 
+in the first column, the subject ID in the second column and the affection 
+status in the sixth column are used
 (columns 3 to 5 are ignored). Also, family members without genotype data do
-not need to appear in this matrix. The genotype of each variant can be
+not need to appear in this object. The genotype of each variant can be
 coded in two ways, each corresponding to a different value of the type
 option: a minor allele count on one column with missing values coded NA,
-obtained for example by converting a \code{SnpMatrix} object (type="count")
-or the identity of the two alleles on two consecutive columns, with missing
-values coded 0 corresponding to the standard
-LINKAGE ped format (type="alleles")}
+(type="count") or the identity of the two alleles on two consecutive columns,
+with missing values coded 0 corresponding to the standard
+LINKAGE ped format (type="alleles"). If you provide a \code{SnpMatrix} object
+then the genotype should be coded as the minor allele count + 1, i.e. 01 is the
+homozygous genotype for the common allele.}
 
 \item{ped.listfams}{a list of \code{pedigree} objects, one object for each
-pedigree in ped.mat.}
+pedigree for which genotype data are included in \code{data}.}
 
 \item{sites}{a vector of the column indices of the variant sites to
-test in \code{ped.mat}. If the argument fams is provided, the variant sites
+test in \code{data}. If the argument fams is provided, the variant sites
 are tested in each corresponding family in the fams vector (a variant
 present in multiple families must then be repeated for every families
 where it appears).}
 
 \item{fams}{an optional character vector of the names of families
-in \code{ped.mat} and \code{ped.listfams} carrying the variants listed in the 
+in \code{data} and \code{ped.listfams} carrying the variants listed in the 
 corresponding position in \code{sites}. If missing, the names of the families 
 carrying the minor allele at each position in \code{sites} are extracted from 
-\code{ped.mat}}
+\code{data}}
 
 \item{pattern.prob.list}{a list of precomputed rare variant sharing 
 probabilities for all possible sharing patterns in the families in 
-\code{ped.mat} and \code{ped.listfams}}
+\code{data} and \code{ped.listfams}}
 
 \item{nequiv.list}{an optional vector of the number of configurations 
 of rare variant sharing by the affected subjects corresponding to the 
@@ -61,7 +62,7 @@ missing and type="alleles", the minor allele is assumed to take the
 value 2}
 
 \item{precomputed.prob}{an optional list of vectors precomputed rare 
-variant sharing probabilities for families in ped.mat and ped.listfams. 
+variant sharing probabilities for families in \code{data} and \code{ped.listfams}. 
 If the vectors are named, the names must be strings formed by the 
 concatenation of the sorted carrier names separated by semi-columns. 
 If the vectors are not 
@@ -154,4 +155,3 @@ and Ruczinski, I. (2014) Inferring rare disease risk variants based on
 exact probabilities of sharing by multiple affected relatives.
 Bioinformatics, 30(15): 2189-96, doi:10.1093/bioinformatics/btu198.
 }
-

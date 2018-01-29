@@ -28,4 +28,3 @@ For each variant, the families which have all sequenced subjects
  sharing the variant are recorded. All unique (family, variant) pairs
  are accumulated into a single vector and passed to multipleFamilyPValue
 }
-
