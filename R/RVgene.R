@@ -187,8 +187,7 @@ extract_carriers = function(ped,site,fam,type="alleles",minor.allele=2)
 #' by a subset of affected subjects should be performed. If FALSE, only 
 #' the test requiring sharing
 #' by all affected subjects is computed. Default is TRUE
-#' @param useAffected allows the user to condition on seeing the variant
-#' among the affected subjects instead of the final descendants. Default is TRUE
+#' @param ... other arguments to be passed to RVsharing
 #' @return A list with items:
 #' \code{p} P-value of the exact rare variant sharing test allowing for sharing
 #' by a subset of affected subjects.
@@ -232,7 +231,7 @@ extract_carriers = function(ped,site,fam,type="alleles",minor.allele=2)
 #' Bioinformatics, 30(15): 2189-96, doi:10.1093/bioinformatics/btu198.
 RVgene <- function(data, ped.listfams, sites, fams, pattern.prob.list,
 nequiv.list, N.list, type="alleles", minor.allele.vec,
-precomputed.prob=list(0), maxdim = 1e9, partial.sharing=TRUE, useAffected=TRUE)
+precomputed.prob=list(0), maxdim = 1e9, partial.sharing=TRUE, ...)
 {
     if (class(data) == 'list')
     {
@@ -354,7 +353,7 @@ precomputed.prob=list(0), maxdim = 1e9, partial.sharing=TRUE, useAffected=TRUE)
             }
             else
                 tmp = suppressMessages(RVsharing(ped.listfams[[fams.vec[f]]],
-                    carriers=carriers,useAffected=useAffected))
+                    carriers=carriers,...))
             # If the RV has lower sharing probability, we keep it for this fam
             if (is.na(famRVprob[fams.vec[f]]) || tmp < famRVprob[fams.vec[f]])
             {
