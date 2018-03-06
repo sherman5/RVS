@@ -222,6 +222,6 @@ get.psubset <- function(vec, not, pshare.data)
     probs <- pshare.data$pshare[names %in% vec]
     probNames <- names[names %in% vec]
     shared <- !(probNames %in% not)
-    return(binaryTreePValue(probs, shared))
+    return(multipleFamilyPValue(probs, shared))
 }
 
