@@ -220,7 +220,7 @@ get.psubset <- function(vec, not, pshare.data)
         'and should not be used, instead use multipleFamilyPValue'))
     names.vec <- pshare.data$ped.tocompute.vec
     probs <- pshare.data$pshare[names.vec %in% vec]
-    probNames <- names[names.vec %in% vec]
+    probNames <- names.vec[names.vec %in% vec]
     shared <- !(probNames %in% not)
     names(probs) = names(shared) = probNames
     return(multipleFamilyPValue(probs, shared))
