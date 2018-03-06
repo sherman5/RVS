@@ -218,10 +218,11 @@ get.psubset <- function(vec, not, pshare.data)
 {
     warning(paste('this function is deprecated',
         'and should not be used, instead use multipleFamilyPValue'))
-    names <- pshare.data$ped.tocompute.vec
-    probs <- pshare.data$pshare[names %in% vec]
-    probNames <- names[names %in% vec]
+    names.vec <- pshare.data$ped.tocompute.vec
+    probs <- pshare.data$pshare[names.vec %in% vec]
+    probNames <- names[names.vec %in% vec]
     shared <- !(probNames %in% not)
+    names(probs) = names(shared) = probNames
     return(multipleFamilyPValue(probs, shared))
 }
 
