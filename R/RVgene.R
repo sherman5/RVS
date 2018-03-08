@@ -245,7 +245,7 @@ precomputed.prob=list(0), maxdim = 1e9, partial.sharing=TRUE, ...)
 
     if (missing(nequiv.list))
     {
-        nequiv.list = rep(1,length(pattern.prob.list))
+        nequiv.list = lapply(pattern.prob.list,function(vec) rep(1,length(vec)))
         names(nequiv.list) = names(pattern.prob.list)
     }
     
