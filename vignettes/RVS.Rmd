@@ -13,16 +13,19 @@ output:
 ---
 
 ```{r include=FALSE, cache=FALSE}
-library(RVS)
-library(kinship2)
-library(snpStats)
+suppressMessages(library(RVS))
+suppressMessages(library(kinship2))
+suppressMessages(library(snpStats))
 ```
 
 # Setting up Pedigree Data
 
 ## Loading a Pedigree
 
-For this example experiment we will consider four family types. A pair of first cousins, a pair of second cousins, a triple of first cousins, and a triple of second cousins. *RVS* comes with several example pedigrees and these four types can be found in the *samplePedigrees* list.
+For this example experiment we will consider four family types. A pair of first
+cousins, a pair of second cousins, a triple of first cousins, and a triple of
+second cousins. *RVS* comes with several example pedigrees and these four types
+can be found in the *samplePedigrees* list.
 
 ```{r}
 data(samplePedigrees)
@@ -33,7 +36,7 @@ fam_type_B <- samplePedigrees$secondCousinPair
 fam_type_C <- samplePedigrees$firstCousinTriple
 fam_type_D <- samplePedigrees$secondCousinTriple
 
-# relabel the family ids for this example
+# re-label the family ids for this example
 fam_type_A$famid <- rep('SF_A', length(fam_type_A$id))
 fam_type_B$famid <- rep('SF_B', length(fam_type_B$id))
 fam_type_C$famid <- rep('SF_C', length(fam_type_C$id))
@@ -42,7 +45,9 @@ fam_type_D$famid <- rep('SF_D', length(fam_type_D$id))
 
 ## Plotting a Pedigree
 
-In order to see the pedigree structure we can use the plot function provided by the *kinship2* package. In this family we have three second cousins that have been sequenced.
+In order to see the pedigree structure we can use the plot function provided by
+the *kinship2* package. In this family we have three second cousins that have
+been sequenced.
 
 ```{r}
 plot(fam_type_D)
@@ -52,23 +57,31 @@ plot(fam_type_D)
 
 ## Sharing Probability for One Family, One Variant
 
-The simplest use of the *RVS* package is to compute the probability that all sequenced subjects in a pedigree share a variant, given that it is seen it at least one of the subjects. For more information about this calculation see the documentation for the function *RVsharing*.
+The simplest use of the *RVS* package is to compute the probability that all
+sequenced subjects in a pedigree share a rare variant, given that it is seen it
+at least one of the subjects. For more information about this calculation see
+the documentation for the function *RVsharing* and the [Appendix](#appendix).
 
-In this case we compute the probability for the family of three second cousins. Note that in the case of a single family and variant, the sharing probability can be interpreted as a p-value.
+In this case we compute the probability for the family of three second cousins.
+Note that in the case of a single family and variant, the sharing probability
+can be interpreted as a p-value.
 
 ```{r}
-prob <- RVsharing(fam_type_D)
+p <- RVsharing(fam_type_D)
 ```
 
 ## P-Value for Multiple Families, One Variant
 
-In the case of a single variant seen across multiple families, we can compute the individual sharing probabilties with *RVsharing*, but the sharing probabilities can no longer be interpreted as a p-value in this case. The function *multipleFamilyPValue* can be used to compute the p-value.
+In the case of a single variant seen across multiple families, we can compute
+the individual sharing probabilties with *RVsharing*, but the sharing
+probabilities can no longer be interpreted as a p-value. The function
+*multipleFamilyPValue* can be used to compute the p-value.
 
 ```{r}
 # compute the sharing probabilties for all families
 fams <- list(fam_type_A, fam_type_B, fam_type_C, fam_type_D)
 sharing_probs <- suppressMessages(RVsharing(fams))
-sharing_probs
+signif(sharing_probs, 3)
 
 # compute p-value for this sharing pattern
 sharing_pattern <- c(T, T, F, F)
@@ -86,14 +99,14 @@ specific sharing pattern. The behavior of this function could be acheived
 by converting every column of a *SnpMatrix* into a sharing pattern across
 families and applying *multipleFamilyPValue* across the columns.
 
-The first step is reading in the data. See the *Data Input* vignette
-for examples using different file types. Here we use a pedigree file
-in the LINKAGE format.
+The first step is reading in the data. See the *Data Input*
+[vignette](https://www.bioconductor.org/packages/release/bioc/vignettes/snpStats/inst/doc/data-input-vignette.pdf)
+in the *snpStats* package for examples using different file types. Here we use a
+pedigree file in the LINKAGE format.
 
 ```{r}
 pedfile <- system.file("extdata/sample.ped.gz", package="RVS")
 sample <- snpStats::read.pedfile(pedfile, snps=paste('variant', LETTERS[1:20], sep='_'))
-sample
 ```
 
 ```{r echo=FALSE}
@@ -114,13 +127,14 @@ In this data set we have 3 copies of each family type. The sharing
 probabilties for this set of families are:
 
 ```{r}
-sharingProbs
+signif(sharingProbs, 3)
 ```
 
 We call the function as follows:
 
 ```{r}
-multipleVariantPValue(sample$genotypes, sample$fam, sharingProbs)
+result <- multipleVariantPValue(sample$genotypes, sample$fam, sharingProbs)
+signif(result$pvalues, 3)
 ```
 
 Computation time may be slow with a large set of variants. 
@@ -130,18 +144,17 @@ p-value for each variant. In this example we omit any variants
 whose potential p-values exceed the bonferroni cutoff.
 
 ```{r}
-res <- multipleVariantPValue(sample$genotypes, sample$fam, sharingProbs, filter_type='bonferroni', alpha=0.05)
-res
+result <- multipleVariantPValue(sample$genotypes, sample$fam, sharingProbs, filter_type='bonferroni', alpha=0.05)
 ```
 
 The effects of this filter can be seen here.
 
 ```{r}
-pvals <- res$pvalues
-ppvals <- res$potential_pvalues
-ppvals_sub <- ppvals[names(pvals)]
+pvals <- result$pvalues
+ppvals <- result$potential_pvalues
+ppvals_sub <- ppvals[names(pvals)] # subset potential p-values
 
-plot(-log10(ppvals[order(ppvals)]), ylab="-log10 p-value", col="blue", type="l", xaxt="n", xlab="variants")
+plot(-log10(ppvals[order(ppvals)]), ylab="-log10 p-value", col="blue", type="l", xaxt="n", xlab="variants", ylim=c(0,8))
 xlabel <- sapply(names(ppvals)[order(ppvals)], function(str) substr(str, nchar(str), nchar(str)))
 axis(1, at=1:length(ppvals), labels=xlabel)
 points(-log10(pvals[order(ppvals_sub)]), pch=20, cex=1.3)
@@ -149,18 +162,329 @@ bcut <- 0.05/(1:20)
 lines(1:20,-log10(bcut),col="red",type="b",pch=20)
 ```
 
-## Allele Frequency Sensitivity Analysis
+## Minor Allele Frequency Sensitivity Analysis
 
-## Cryptic Relatedness Analysis
+When the minor allele frequency (MAF) is known in the population, then an
+exact sharing probability can be calculated using the *alleleFreq* parameter.
+Here we analyze the sensitivity of our p-values to the population MAF, using
+the 4 most significant variants.
+
+```{r}
+freq <- seq(0.005,0.05,0.005)
+variants <- names(sort(result$pvalues))[1:4]
+pvals <- matrix(nrow=length(freq), ncol=length(variants))
+for (i in 1:length(freq))
+{
+    sharingProbs <- suppressMessages(RVsharing(fams, alleleFreq=freq[i]))
+    pvals[i,] <- multipleVariantPValue(sample$genotypes[,variants], sample$fam, sharingProbs)$pvalues
+}
+colnames(pvals) <- variants
+pvals
+
+plot(freq, pvals[,1], ylim=c(0,max(pvals)), type='l',
+    xlab="minor allele frequency", ylab="p-value",
+    main="sensitivity of p-value to allele frequency in four variants")
+lines(freq, pvals[,2])
+lines(freq, pvals[,3])
+lines(freq, pvals[,4])
+```
+
+## Related Founders Correction
+
+When founders of the pedigree are related, the computation is more tricky. *RVS*
+allows the user to apply a correction for this fact in two different ways. The
+first way, explained below, is a method from Bureau et al. (2014) that uses the
+mean kinship coefficient among founders to apply a correction. For more details
+on this calculation see [here](#exact-computation-with-kinship-coefficient).
+*RVS* supports more complicated corrections using a Monte Carlo simulation
+outlined [here](#using-monte-carlo-simulation).
+
+```{r}
+kin_coef <- seq(0.01, 0.1, length=5)
+variants <- names(sort(result$pvalues))[1:4]
+pvals <- matrix(nrow=length(kin_coef), ncol=length(variants))
+for (i in 1:length(kin_coef))
+{
+    sharingProbs <- suppressMessages(RVsharing(fams, kinshipCoeff=kin_coef[i]))
+    pvals[i,] <- multipleVariantPValue(sample$genotypes[,variants], sample$fam, sharingProbs)$pvalues
+}
+colnames(pvals) <- variants
+pvals
+
+plot(kin_coef, pvals[,1], ylim=c(0,max(pvals)), type='l',
+    xlab="kinship coefficient", ylab="p-value",
+    main="sensitivity of p-value to kinship in four variants")
+lines(kin_coef, pvals[,2])
+lines(kin_coef, pvals[,3])
+lines(kin_coef, pvals[,4])
+```
 
 ## Enrichment Test
 
-When calculating the enrichment p-value, note that a very small p-value may result in a very long computation time. Because of this, we can pass a minimum p-value threshold, where the greater of this threshold and the actual p-value will be returned.
+Even if no individual variant has a significant p-value, it is possible
+for all variants considered across all families to exhibit an unusual amount of
+sharing. The *enrichmentPValue* function can compute a single p-value for all
+variants seen in all families. When calculating this p-value, note that a very
+small p-value may result in a very long computation time. Because of this, we
+can pass a minimum p-value threshold, where the greater of this threshold and
+the actual p-value will be returned.
 
 Note that this calculation assumes the variants are independent.
 
 ```{r}
 enrichmentPValue(sample$genotypes, sample$fam, sharingProbs, 0.001)
+```
+
+# Precomputing Sharing Probabilities and Number of Carriers for all Possible Carrier Subsets
+
+The *RVgene* function requires the lists *pattern.prob.list* of vectors of sharing probabilities and *N.list* of number of carriers for all possible affected carrier subsets in each family in the sample being analyzed. The elements of both of these lists must have the same names as the pedigree objects in the *ped.listfams* argument. When all affected subjecs in a family are final descendants, the sharing probabilities and number of carriers for all subsets can be generated automatically. Here is an exanple with three second cousins:
+
+```{r eval=FALSE}
+carriers = c(15,16,17)
+carrier.sets = list()
+for (i in length(carriers):1)
+carrier.sets = c(carrier.sets, combn(carriers,i,simplify=FALSE))
+fam15157.pattern.prob = sapply(carrier.sets,function (vec) RVsharing(samplePedigrees$secondCousinTriple,carriers=vec))
+fam15157.N = sapply(carrier.sets,length)
+```
+
+While this code applies to any configuration of affected final descendants, symmetries in the relationships of these third cousins results in equal sharing probabilities for multiple subsets. Subsets with the same probabilities are equivalent, and the optional argument *nequiv.list* can be used to indicate the number of equivalent subset for each sharing probability. While shorter vectors in *pattern.prob.list* and *N.list* result in more efficient computation, identification of the equivalent subsets is not easily automated, and will usually require custom code for each pedigree in a sample. With three second cousins we can use:
+
+```{r eval=FALSE}
+fam15157.pattern.prob = c(RVsharing(samplePedigrees$secondCousinTriple,carriers=c(15,16,17)),
+    RVsharing(samplePedigrees$secondCousinTriple,carriers=c(15,16)),
+    RVsharing(samplePedigrees$secondCousinTriple,carriers=c(15)))
+fam15157.N = 3:1
+fam15157.nequiv = c(1,3,3)
+```
+
+It is then easy to check that the distribution sums to 1:
+
+```{r eval=FALSE}
+sum(fam15157.pattern.prob*fam15157.nequiv)
+```
+
+When some affected subjects are not final descendants, some subsets are incompatible with a variant being IBD among carriers. Assume individual 3, the grand-father of subject 15 in family 15157, is also affected and his genotype is available. 
+
+```{r eval=FALSE}
+fam15157 <- samplePedigrees$secondCousinTriple
+fam15157$affected[3] = 1
+plot(fam15157)
+```
+
+Then the carrier subsets (15,16,17), (15,16) and (15,17) involving subject 15 but not 3 are incompatible with sharing IBD and must be removed from the list of subsets. The code then becomes:
+
+```{r eval=FALSE}
+carriers = c(3,15,16,17)
+carrier.sets = list()
+for (i in length(carriers):1)
+carrier.sets = c(carrier.sets, combn(carriers,i,simplify=FALSE))
+carrier.sets
+carrier.sets = carrier.sets[-c(5,9,10)]
+fam15157.pattern.prob = sapply(carrier.sets,function (vec) RVsharing(fam15157,carriers=vec,useAffected=TRUE))
+fam15157.N = sapply(carrier.sets,length)
+```
+
+Notice the use of the option *useAffected=TRUE* with affected subjects who are not final descendants. Again, one can check that the distribution sums to 1:
+
+```{r eval=FALSE}
+sum(fam15157.pattern.prob)
+```
+
+Precomputed sharing probabilities and numbers of carriers can be used directly to obtain p-values of observed sharing events, by summing the probability of all events as or more extreme as the one observed (both in terms of sharing probability and number of carriers), i.e. this is a one-sided exact test. For instance, if subjects 3, 16 and 17 share a rare variant, the probability of that event is
+
+```{r eval=FALSE}
+pobs = RVsharing(fam15157,carriers=c(3,16,17),useAffected=TRUE)
+```
+
+The p-value of that sharing event is then:
+```{r eval=FALSE}
+sum(fam15157.pattern.prob[fam15157.pattern.prob<=pobs & fam15157.N >= 3])
+```
+
+The *RVgene* function enables these computations with more than one family harboring the same or different variants. Once the vectors of sharing probabilities and number of carriers have been computed for all families in the sample, they need to be stored in lists. We return to the original second cousin triple family and add a first and second cousin triple family. Then we create the lists of pattern probabilities, number of equivalent subsets and number of carriers in the subsets.
+
+```{r eval=FALSE}
+fam15157.pattern.prob = c(RVsharing(samplePedigrees$secondCousinTriple,carriers=c(15,16,17)),
+    RVsharing(samplePedigrees$secondCousinTriple,carriers=c(15,16)),
+    RVsharing(samplePedigrees$secondCousinTriple,carriers=c(15)))
+fam15157.N = 3:1
+fam15157.nequiv = c(1,3,3)
+
+fam28003.pattern.prob = c(RVsharing(samplePedigrees$firstAndSecondCousinsTriple,carriers=c(36,104,110)),
+RVsharing(samplePedigrees$firstAndSecondCousinsTriple,carriers=c(36,104)),
+RVsharing(samplePedigrees$firstAndSecondCousinsTriple,carriers=c(104,110)),
+RVsharing(samplePedigrees$firstAndSecondCousinsTriple,carriers=c(36)),
+RVsharing(samplePedigrees$firstAndSecondCousinsTriple,carriers=c(104)))
+fam28003.N = c(3,2,2,1,1)
+fam28003.nequiv = c(1,2,1,1,2)
+
+ex.pattern.prob.list = list("15157"=fam15157.pattern.prob,"28003"=fam28003.pattern.prob)
+ex.nequiv.list = list("15157"=fam15157.nequiv,"28003"=fam28003.nequiv)
+ex.N.list = list("15157"=fam15157.N,"28003"=fam28003.N)
+```
+
+# Analyzing variants in genomic sequence
+
+We now turn to the analysis of variants observed in the simulated genomic sequence of the gene *PEAR1* in a sample of related affected subjects. The processing of the sequence data results in Variant Call Format (VCF) files, which can be read into R with the function *readVcf* from the *variantAnnotatin* package. Two *VCF* objects obtained with *readVcf* from VCF files of sequence data for the second cousin triple and first and second cousin triple families are contained in the *famVCF* data. These VCF files are converted to *snpMatrix* objects using the *genotypeToSnpMatrix* function. 
+
+```{r eval=FALSE}
+data(famVCF)
+suppressMessages(library(VariantAnnotation))
+fam15157.snp = genotypeToSnpMatrix(fam15157.vcf)
+fam28003.snp = genotypeToSnpMatrix(fam28003.vcf)
+```
+
+*RVgene* requires lists of the *snpMatrix* and *pedigree* objects for these two families. The names given to the elements of these lists are not used by *RVgene* and are thus arbitrary. Family IDs are extracted from the *famid* element of the *pedigree* objects. Please note that currently *RVgene* does not accept a *pedigreeList*, but only a plain list of *pedigree* objects.
+```{r eval=FALSE}
+ex.SnpMatrix.list = list(fam15157=fam15157.snp$genotypes,fam28003=fam28003.snp$genotypes)
+ex.ped.obj = list(fam15157=samplePedigrees$secondCousinTriple,fam28003=samplePedigrees$firstAndSecondCousinsTriple)
+```
+
+In the sequence segment, one can specify which variants are rare and possibly satisfy other filtering criteria (e.g. coding variants) using the *sites* argument. Here, we will focus on two sites: 92 where the three second cousins of family 15157 share the rare allele and 119 where the two first cousins of family 28003 share the rare allele but not their second cousin.
+```{r eval=FALSE}
+sites = c(92,119)
+ex.SnpMatrix.list[["fam15157"]][,sites[1]]@.Data
+ex.SnpMatrix.list[["fam28003"]][,sites[2]]@.Data
+```
+
+Finally, the call to *RVgene* returns the P-value of the exact rare variant sharing test allowing for sharing by a subset of affected subjects (p), the P-value of the exact rare variant sharing test requiring sharing by all affected subjects (pall) and the minimum achievable p-value if all affected subjects were carriers of a rare variant (potentialp).
+```{r eval=FALSE}
+#RVgene(ex.SnpMatrix.list,ex.ped.obj,sites,pattern.prob.list=ex.pattern.prob.list,
+#nequiv.list=ex.nequiv.list,N.list=ex.N.list,type="count")
+```
+
+# Appendix
+
+## Assuming One Founder Introduces the Variant
+
+In this case, we assume the variant is rare enough so that the probability of
+more than one founder introducing it to the pedigree is negligible. This is 
+the default scenario for *RVsharing*.
+
+We define the following random variables:
+
+*$C_i$: Number of copies of the RV received by subject $i$,
+
+*$F_j$: Indicator variable that founder $j$ introduced one copy of the RV 
+into the pedigree,
+
+For a set of $n$ subjects descendants of $n_f$ founders we want to compute 
+the probability
+\begin{eqnarray*}
+P[\mbox{RV shared}] &=& P[C_1 = \dots = C_n = 1 | C_1 + \dots + C_n \geq 1] 
+\nonumber \\[0.5em] 
+&=& \frac{P[C_1 = \dots = C_n = 1 ]}{P[C_1 + \dots + C_n \geq 1]}  \nonumber 
+\\[0.5em] 
+ &=& \frac{\sum_{j=1}^{n_f} P[C_1 = \dots = C_n = 1 | F_j] P[F_j]}
+{\sum_{j=1}^{n_f} P[C_1 + \dots + C_n \geq 1 | F_j]P[F_j]}, 
+ \label{sharingp}
+\end{eqnarray*}
+where the expression on the third line results from our assumption of a 
+single copy of that RV among all alleles present in the $n_f$ founders. The
+probabilities $P[F_j] = {1 \over n_f}$ cancel from the numerator and
+denominator.
+
+## Sharing Probabilties in a Subset of a Pedigree
+
+By default, *RVsharing* will compute the probability that all of the final 
+descendants share the variant given that it is seen in at least one of them. 
+Final descendants are defined as subjects of the pedigree with no children. 
+This event can be customized with the *carriers* and *useAffected* arguments.
+
+If the argument *carriers* is provided, then the probability of all carriers 
+having the variant given it is seen in at least one final descendant will be 
+computed.
+
+If the argument *useAffected* is TRUE and the pedigree has a slot for 
+*affected*, then the probability of all carriers having the variant given 
+it is seen in at least one affected will be computed.
+
+These two arguments can be used individually or in combination, the only 
+restriction is that carriers must be a subset of affected.
+
+```{r}
+ped <- samplePedigrees$firstCousinTriple
+ped$affected[9] <- 0
+plot(ped)
+
+p <- RVsharing(ped)
+p <- RVsharing(ped, useAffected=TRUE)
+p <- RVsharing(ped, carriers=c(9,10))
+p <- RVsharing(ped, carriers=c(10,11), useAffected=TRUE)
+```
+
+## Using Monte Carlo Simulation
+
+*RVsharing* also allows for estimating sharing probabilities through monte 
+carlo simulation. The primary use of this feature is for calculating sharing 
+probabilities under non standard assumptions about the founders. However, 
+this feature is available for the standard assumptions as well. To run a 
+monte carlo simulation, specify all parameters as normal and additionally 
+provide the *nSim* parameter specifying how many simulations should be run.
+
+```{r}
+p <- RVsharing(samplePedigrees$firstCousinPair, alleleFreq=0.01)
+p <- RVsharing(samplePedigrees$firstCousinPair, alleleFreq=0.01, nSim=1e5)
+```
+
+This method allows for more complex relationships among the founders to be 
+given. *RVsharing* allows for a complete distribution among the founders to 
+be passed in as the parameter *founderDist*. This function should accept a 
+single argument, N, and should return a vector of length N with values in 
+{0,1,2} representing the number of copies of the variant each founder has.
+
+```{r}
+# assumption that 1 founder introduces variant
+fDist <- function(N) sample(c(rep(0,N-1), 1))
+p <- RVsharing(samplePedigrees$firstCousinPair, nSim=1e5, founderDist=fDist)
+p <- RVsharing(samplePedigrees$firstCousinPair)
+```
+
+## Exact Computation with Kinship Coefficient
+
+In this method, a mean kinship coefficient among the founders is passed in 
+with the *kinshipCoeff* parameter. Using the methods from @METHODS, 
+*RVsharing* then computes the sharing probability on the assumption one or 
+two founders introduce the variant, weighting each probability using a 
+calculation based on the mean kinship coefficient.
+
+More precisely, an estimation of $P^U$, the probability that a founder alone 
+introduces the rare variant, is obtained from equation (2) of @METHODS. 
+Then, $P_2$, the probability that a founder pair introduces the rare variant 
+is obtained from $n_f P_U + {1 \over 2} n_f (n_f-1) P_2 = 1$, where $n_f$ is 
+the number of founders. The corrected rare variant sharing probability is then 
+
+ \begin{eqnarray}
+P[\mbox{RV shared}] &=&  \label{RVsimplified} \\[0.5em]
+&& \frac{ \begin{array}{l} w {1 \over n_f} \sum_{j=1}^{n_f} P[C_1 = \dots = 
+C_n = 1 | F_j^U] \\ \quad + (1-w) {2 \over n_f (n_f - 1)} \sum_j \sum_{k>j}  
+P[C_1 = \dots = C_n = 1 | F_j, F_k] \end{array} }{\begin{array}{l}  
+w {1 \over n_f} \sum_{j=1}^{n_f} P[C_1 + \dots + C_n \geq 1 | F_j^U]\\ 
+\quad + (1-w) {2 \over n_f (n_f - 1)} \sum_j  \sum_{k>j} P[C_1 + \dots + 
+C_n \geq 1 | F_j, F_k] \end{array} } \nonumber
+\end{eqnarray} 
+where $w = n_f P_U$. Notice that the above equation corrects equation (3) of 
+@METHODS, where the divisions by the number of terms in the summations where 
+missing.
+
+## Estimating Mean Kinship Coefficient Among Founders
+
+Given the observed kinship between two subjects, $\hat{\phi}_{i,j}$, and the 
+expected kinship , $\phi^p_{i,j}$, it is possible to estimate the mean kinship 
+among the founders, $\hat{\phi^f}_{i,j}$. Averaging this estimate over all 
+sequenced subjects gives a global estimate for the mean kinship coefficient. 
+The relationship is given by:
+
+$\hat{\phi^f}_{i,j} \kappa_{i,j} = \hat{\phi}_{i,j} - \phi^p_{i,j}$
+
+Where $\kappa_{i,j}$ is computed with the function *ComputeKinshipPropCoeff*. 
+This function returns a matrix where the ith row and jth column correspond to 
+$\kappa_{i,j}$.
+
+```{r}
+plot(samplePedigrees$twoGenerationsInbreeding)
+ComputeKinshipPropCoef(samplePedigrees$twoGenerationsInbreeding)
 ```
 
 # References

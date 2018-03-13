@@ -87,6 +87,8 @@ convertMatrix <- function(mat, famInfo)
     sapply(colnames(mat), function(var)
     {
         ret <- c()
+        # minor allele includes 2
+        # add option for user to specify which allele is rare
         minorAllele <- ifelse(sum(mat[,var] == 1) < sum(mat[,var] == 3), 1, 3)
         for (fid in unique(famInfo$pedigree))
         {
@@ -111,11 +113,11 @@ convertMatrix <- function(mat, famInfo)
 #'  sharing the variant and the families which have some sequenced subjects
 #'  sharing the variant are recorded. These values are passed
 #'  to multipleFamilyPValue
-#' @param share_matrix matrix entry [i,j] is 1 if subject i has
-#'  variant j, otherwise it is zero
-#' @param famid vector of family id's - same length as rows in share_matrix
-#' @param subjects vector of subject id's - same length as rows in share_matrix
-#' @param peds list of pedigrees referenced in famid
+#' @param snpMat SnpMatrix
+#' @param famInfo vector of family id's - same length as rows in share_matrix
+#' @param sharingProbs vector of subject id's - same length as rows in share_matrix
+#' @param filter criteria for filtering pvalues
+#' @param alpga parameter for filter
 #' @return vector : p-value for each variant sharing pattern
 multipleVariantPValue <- function(snpMat, famInfo, sharingProbs,
 filter_type=NULL, alpha=0)
@@ -164,11 +166,11 @@ filter_type=NULL, alpha=0)
 #'  sharing the variant and the families which have some sequenced subjects
 #'  sharing the variant are recorded. All unique (family, variant) pairs
 #'  are accumulated into a single vector and passed to multipleFamilyPValue
-#' @param share_matrix matrix entry [i,j] is 1 if subject i has
-#'  variant j, otherwise it is zero
-#' @param famid vector of family id's - same length as rows in share_matrix
-#' @param subjects vector of subject id's - same length as rows in share_matrix
-#' @param peds list of pedigrees referenced in famid
+#' #@param share_matrix matrix entry [i,j] is 1 if subject i has
+#' # variant j, otherwise it is zero
+#' #@param famid vector of family id's - same length as rows in share_matrix
+#' #@param subjects vector of subject id's - same length as rows in share_matrix
+#' #@param peds list of pedigrees referenced in famid
 #' @return vector : p-value for each variant sharing pattern
 enrichmentPValue <- function(snpMat, famInfo, sharingProbs, threshold=0)
 {
@@ -222,6 +224,7 @@ get.psubset <- function(vec, not, pshare.data)
     probs <- pshare.data$pshare[names %in% vec]
     probNames <- names[names %in% vec]
     shared <- !(probNames %in% not)
-    return(binaryTreePValue(probs, shared))
+    names(probs) <- names
+    return(multipleFamilyPValue(probs, shared))
 }
 

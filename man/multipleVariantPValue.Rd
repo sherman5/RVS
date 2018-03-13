@@ -8,14 +8,15 @@ multipleVariantPValue(snpMat, famInfo, sharingProbs, filter_type = NULL,
   alpha = 0)
 }
 \arguments{
-\item{share_matrix}{matrix entry [i,j] is 1 if subject i has
-variant j, otherwise it is zero}
+\item{snpMat}{SnpMatrix}
 
-\item{famid}{vector of family id's - same length as rows in share_matrix}
+\item{famInfo}{vector of family id's - same length as rows in share_matrix}
 
-\item{subjects}{vector of subject id's - same length as rows in share_matrix}
+\item{sharingProbs}{vector of subject id's - same length as rows in share_matrix}
 
-\item{peds}{list of pedigrees referenced in famid}
+\item{filter}{criteria for filtering pvalues}
+
+\item{alpga}{parameter for filter}
 }
 \value{
 vector : p-value for each variant sharing pattern
