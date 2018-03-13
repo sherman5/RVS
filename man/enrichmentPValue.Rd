@@ -23,4 +23,3 @@ For each variant, the families which have all sequenced subjects
 #@param subjects vector of subject id's - same length as rows in share_matrix
 #@param peds list of pedigrees referenced in famid
 }
-

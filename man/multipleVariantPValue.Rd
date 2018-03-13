@@ -31,4 +31,3 @@ For each variant, the families which have all sequenced subjects
  sharing the variant are recorded. These values are passed
  to multipleFamilyPValue
 }
-

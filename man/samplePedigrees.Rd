@@ -10,4 +10,3 @@ samplePedigrees
 \description{
 list of 8 sample pedigree objects
 }
-

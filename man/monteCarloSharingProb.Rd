@@ -32,4 +32,3 @@ except uses monte carlo simulation instead of exact computation.
 This method allows for more flexibility in the scenarios considered.
 }
 \keyword{internal}
-
