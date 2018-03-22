@@ -109,7 +109,7 @@ pedfile <- system.file("extdata/sample.ped.gz", package="RVS")
 sample <- snpStats::read.pedfile(pedfile, snps=paste('variant', LETTERS[1:20], sep='_'))
 ```
 
-```{r echo=FALSE}
+```{r}
 A_fams <- lapply(1:3, function(i) samplePedigrees$firstCousinPair)
 B_fams <- lapply(1:3, function(i) samplePedigrees$secondCousinPair)
 C_fams <- lapply(1:3, function(i) samplePedigrees$firstCousinTriple)
