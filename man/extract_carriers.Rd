@@ -25,3 +25,4 @@ carriers in ped
 finds the carriers of the minor allele at a specified site
 }
 \keyword{internal}
+

@@ -10,3 +10,4 @@ fam15157.vcf
 \description{
 VCF objects containing genotype data for two families: fam15157 and fam28003 (corresponding to the secondCousinTriple and firstAndSecondCousinsTriple families in samplePedigrees)
 }
+

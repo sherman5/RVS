@@ -22,3 +22,4 @@ P[FjU] (scalar)
 computation of P[FjU] using equation 21 of Bureau et al.
 }
 \keyword{internal}
+

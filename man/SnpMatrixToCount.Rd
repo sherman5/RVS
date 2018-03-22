@@ -26,3 +26,4 @@ data(snpMat)
 ped <- samplePedigrees$secondCousinTriple
 ex.ped.mat <- SnpMatrixToCount(list(snpMat), list(ped))
 }
+
