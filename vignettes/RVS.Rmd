@@ -109,7 +109,10 @@ pedfile <- system.file("extdata/sample.ped.gz", package="RVS")
 sample <- snpStats::read.pedfile(pedfile, snps=paste('variant', LETTERS[1:20], sep='_'))
 ```
 
-```{r echo=FALSE}
+In this data set we have 3 copies of each family type. The sharing 
+probabilties for this set of families are:
+
+```{r}
 A_fams <- lapply(1:3, function(i) samplePedigrees$firstCousinPair)
 B_fams <- lapply(1:3, function(i) samplePedigrees$secondCousinPair)
 C_fams <- lapply(1:3, function(i) samplePedigrees$firstCousinTriple)
@@ -121,12 +124,6 @@ for (i in 1:12)
     fams[[i]]$famid <- rep(famids[i], length(fams[[i]]$id))
 }
 sharingProbs <- suppressMessages(RVsharing(fams))
-```
-
-In this data set we have 3 copies of each family type. The sharing 
-probabilties for this set of families are:
-
-```{r}
 signif(sharingProbs, 3)
 ```
 
@@ -239,7 +236,7 @@ enrichmentPValue(sample$genotypes, sample$fam, sharingProbs, 0.001)
 
 The *RVgene* function requires the lists *pattern.prob.list* of vectors of sharing probabilities and *N.list* of number of carriers for all possible affected carrier subsets in each family in the sample being analyzed. The elements of both of these lists must have the same names as the pedigree objects in the *ped.listfams* argument. When all affected subjecs in a family are final descendants, the sharing probabilities and number of carriers for all subsets can be generated automatically. Here is an exanple with three second cousins:
 
-```{r eval=FALSE}
+```{r}
 carriers = c(15,16,17)
 carrier.sets = list()
 for (i in length(carriers):1)
@@ -250,7 +247,7 @@ fam15157.N = sapply(carrier.sets,length)
 
 While this code applies to any configuration of affected final descendants, symmetries in the relationships of these third cousins results in equal sharing probabilities for multiple subsets. Subsets with the same probabilities are equivalent, and the optional argument *nequiv.list* can be used to indicate the number of equivalent subset for each sharing probability. While shorter vectors in *pattern.prob.list* and *N.list* result in more efficient computation, identification of the equivalent subsets is not easily automated, and will usually require custom code for each pedigree in a sample. With three second cousins we can use:
 
-```{r eval=FALSE}
+```{r}
 fam15157.pattern.prob = c(RVsharing(samplePedigrees$secondCousinTriple,carriers=c(15,16,17)),
     RVsharing(samplePedigrees$secondCousinTriple,carriers=c(15,16)),
     RVsharing(samplePedigrees$secondCousinTriple,carriers=c(15)))
@@ -260,13 +257,13 @@ fam15157.nequiv = c(1,3,3)
 
 It is then easy to check that the distribution sums to 1:
 
-```{r eval=FALSE}
+```{r }
 sum(fam15157.pattern.prob*fam15157.nequiv)
 ```
 
 When some affected subjects are not final descendants, some subsets are incompatible with a variant being IBD among carriers. Assume individual 3, the grand-father of subject 15 in family 15157, is also affected and his genotype is available. 
 
-```{r eval=FALSE}
+```{r}
 fam15157 <- samplePedigrees$secondCousinTriple
 fam15157$affected[3] = 1
 plot(fam15157)
@@ -274,7 +271,7 @@ plot(fam15157)
 
 Then the carrier subsets (15,16,17), (15,16) and (15,17) involving subject 15 but not 3 are incompatible with sharing IBD and must be removed from the list of subsets. The code then becomes:
 
-```{r eval=FALSE}
+```{r}
 carriers = c(3,15,16,17)
 carrier.sets = list()
 for (i in length(carriers):1)
@@ -287,24 +284,25 @@ fam15157.N = sapply(carrier.sets,length)
 
 Notice the use of the option *useAffected=TRUE* with affected subjects who are not final descendants. Again, one can check that the distribution sums to 1:
 
-```{r eval=FALSE}
+```{r}
 sum(fam15157.pattern.prob)
 ```
 
 Precomputed sharing probabilities and numbers of carriers can be used directly to obtain p-values of observed sharing events, by summing the probability of all events as or more extreme as the one observed (both in terms of sharing probability and number of carriers), i.e. this is a one-sided exact test. For instance, if subjects 3, 16 and 17 share a rare variant, the probability of that event is
 
-```{r eval=FALSE}
+```{r}
 pobs = RVsharing(fam15157,carriers=c(3,16,17),useAffected=TRUE)
 ```
 
 The p-value of that sharing event is then:
-```{r eval=FALSE}
+
+```{r}
 sum(fam15157.pattern.prob[fam15157.pattern.prob<=pobs & fam15157.N >= 3])
 ```
 
 The *RVgene* function enables these computations with more than one family harboring the same or different variants. Once the vectors of sharing probabilities and number of carriers have been computed for all families in the sample, they need to be stored in lists. We return to the original second cousin triple family and add a first and second cousin triple family. Then we create the lists of pattern probabilities, number of equivalent subsets and number of carriers in the subsets.
 
-```{r eval=FALSE}
+```{r}
 fam15157.pattern.prob = c(RVsharing(samplePedigrees$secondCousinTriple,carriers=c(15,16,17)),
     RVsharing(samplePedigrees$secondCousinTriple,carriers=c(15,16)),
     RVsharing(samplePedigrees$secondCousinTriple,carriers=c(15)))
@@ -328,7 +326,7 @@ ex.N.list = list("15157"=fam15157.N,"28003"=fam28003.N)
 
 We now turn to the analysis of variants observed in the simulated genomic sequence of the gene *PEAR1* in a sample of related affected subjects. The processing of the sequence data results in Variant Call Format (VCF) files, which can be read into R with the function *readVcf* from the *variantAnnotatin* package. Two *VCF* objects obtained with *readVcf* from VCF files of sequence data for the second cousin triple and first and second cousin triple families are contained in the *famVCF* data. These VCF files are converted to *snpMatrix* objects using the *genotypeToSnpMatrix* function. 
 
-```{r eval=FALSE}
+```{r}
 data(famVCF)
 suppressMessages(library(VariantAnnotation))
 fam15157.snp = genotypeToSnpMatrix(fam15157.vcf)
@@ -336,22 +334,25 @@ fam28003.snp = genotypeToSnpMatrix(fam28003.vcf)
 ```
 
 *RVgene* requires lists of the *snpMatrix* and *pedigree* objects for these two families. The names given to the elements of these lists are not used by *RVgene* and are thus arbitrary. Family IDs are extracted from the *famid* element of the *pedigree* objects. Please note that currently *RVgene* does not accept a *pedigreeList*, but only a plain list of *pedigree* objects.
-```{r eval=FALSE}
+
+```{r}
 ex.SnpMatrix.list = list(fam15157=fam15157.snp$genotypes,fam28003=fam28003.snp$genotypes)
 ex.ped.obj = list(fam15157=samplePedigrees$secondCousinTriple,fam28003=samplePedigrees$firstAndSecondCousinsTriple)
 ```
 
 In the sequence segment, one can specify which variants are rare and possibly satisfy other filtering criteria (e.g. coding variants) using the *sites* argument. Here, we will focus on two sites: 92 where the three second cousins of family 15157 share the rare allele and 119 where the two first cousins of family 28003 share the rare allele but not their second cousin.
-```{r eval=FALSE}
+
+```{r}
 sites = c(92,119)
 ex.SnpMatrix.list[["fam15157"]][,sites[1]]@.Data
 ex.SnpMatrix.list[["fam28003"]][,sites[2]]@.Data
 ```
 
 Finally, the call to *RVgene* returns the P-value of the exact rare variant sharing test allowing for sharing by a subset of affected subjects (p), the P-value of the exact rare variant sharing test requiring sharing by all affected subjects (pall) and the minimum achievable p-value if all affected subjects were carriers of a rare variant (potentialp).
-```{r eval=FALSE}
-#RVgene(ex.SnpMatrix.list,ex.ped.obj,sites,pattern.prob.list=ex.pattern.prob.list,
-#nequiv.list=ex.nequiv.list,N.list=ex.N.list,type="count")
+
+```{r}
+RVgene(ex.SnpMatrix.list,ex.ped.obj,sites,pattern.prob.list=ex.pattern.prob.list,
+nequiv.list=ex.nequiv.list,N.list=ex.N.list,type="count")
 ```
 
 # Appendix

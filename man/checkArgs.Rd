@@ -24,3 +24,4 @@ verifies that arguments are valid, throws an error
 if they are not
 }
 \keyword{internal}
+

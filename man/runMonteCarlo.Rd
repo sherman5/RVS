@@ -28,3 +28,4 @@ then the computation is done in parallel (as long as the package
 parallel is available)
 }
 \keyword{internal}
+

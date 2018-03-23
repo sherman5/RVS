@@ -18,3 +18,4 @@ the pedigree. Condition on each founder and sum over all resulting
 probabilities.
 }
 \keyword{internal}
+

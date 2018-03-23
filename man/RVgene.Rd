@@ -6,7 +6,7 @@
 \usage{
 RVgene(data, ped.listfams, sites, fams, pattern.prob.list, nequiv.list, N.list,
   type = "alleles", minor.allele.vec, precomputed.prob = list(0),
-  maxdim = 1e+09, partial.sharing = TRUE, useAffected = TRUE)
+  maxdim = 1e+09, partial.sharing = TRUE, ...)
 }
 \arguments{
 \item{data}{A list of \code{SnpMatrix} objects corresponding to each pedigree
@@ -79,8 +79,7 @@ by a subset of affected subjects should be performed. If FALSE, only
 the test requiring sharing
 by all affected subjects is computed. Default is TRUE}
 
-\item{useAffected}{allows the user to condition on seeing the variant
-among the affected subjects instead of the final descendants. Default is TRUE}
+\item{...}{other arguments to be passed to RVsharing}
 }
 \value{
 A list with items:
@@ -155,3 +154,4 @@ and Ruczinski, I. (2014) Inferring rare disease risk variants based on
 exact probabilities of sharing by multiple affected relatives.
 Bioinformatics, 30(15): 2189-96, doi:10.1093/bioinformatics/btu198.
 }
+

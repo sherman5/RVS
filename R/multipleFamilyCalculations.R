@@ -13,9 +13,13 @@
 #' of the observed pattern of the not families not sharing a rare variant
 #' and the remaining families sharing a rare variant.
 #' @param sharingProbs named vector of sharing probabilties, where names
-#'  correspond to famid value of pedigree
+#' correspond to famid value of pedigree
 #' @param observedSharing boolean vector describing if all affected subjects
 #' in the family share the variant (TRUE if all share)
+#' @param minPValue the minimum p-value threshold, once the true p-value is
+#' determined to be less than this, the computation stops and minPValue is
+#' returned - this prevents extremely long computations for extremely small
+#' p-values
 #' @return P-value of the exact rare variant sharing test requiring
 #' sharing by all affected subjects
 #' @examples
@@ -114,11 +118,13 @@ convertMatrix <- function(mat, famInfo)
 #'  sharing the variant are recorded. These values are passed
 #'  to multipleFamilyPValue
 #' @param snpMat SnpMatrix
-#' @param famInfo vector of family id's - same length as rows in share_matrix
-#' @param sharingProbs vector of subject id's - same length as rows in share_matrix
+#' @param famInfo data frame containing pedigree, member, father, mother,
+#' sex, affected fields for each sequenced subject
+#' @param sharingProbs vector of sharing probabilites, must be a named vector
+#' with famid's for each probability
 #' @param filter criteria for filtering pvalues
-#' @param alpga parameter for filter
-#' @return vector : p-value for each variant sharing pattern
+#' @param alpha parameter for filter
+#' @return list containing p-values and potential p-values for each variant
 multipleVariantPValue <- function(snpMat, famInfo, sharingProbs,
 filter_type=NULL, alpha=0)
 {
@@ -163,15 +169,12 @@ filter_type=NULL, alpha=0)
 #'
 #' @description Computes a p-value for all variants seen across all families
 #' @details For each variant, the families which have all sequenced subjects
-#'  sharing the variant and the families which have some sequenced subjects
-#'  sharing the variant are recorded. All unique (family, variant) pairs
-#'  are accumulated into a single vector and passed to multipleFamilyPValue
-#' #@param share_matrix matrix entry [i,j] is 1 if subject i has
-#' # variant j, otherwise it is zero
-#' #@param famid vector of family id's - same length as rows in share_matrix
-#' #@param subjects vector of subject id's - same length as rows in share_matrix
-#' #@param peds list of pedigrees referenced in famid
-#' @return vector : p-value for each variant sharing pattern
+#' sharing the variant and the families which have some sequenced subjects
+#' sharing the variant are recorded. All unique (family, variant) pairs
+#' are accumulated into a single vector and passed to multipleFamilyPValue
+#' @param threshold minimum p-value threshold passed to multipleFamilyPValue
+#' @inheritParams RVsharing
+#' @return p-value
 enrichmentPValue <- function(snpMat, famInfo, sharingProbs, threshold=0)
 {
     # convert matrix to list of families with each allele

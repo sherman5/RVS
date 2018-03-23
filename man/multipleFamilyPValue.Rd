@@ -12,6 +12,11 @@ correspond to famid value of pedigree}
 
 \item{observedSharing}{boolean vector describing if all affected subjects
 in the family share the variant (TRUE if all share)}
+
+\item{minPValue}{the minimum p-value threshold, once the true p-value is
+determined to be less than this, the computation stops and minPValue is
+returned - this prevents extremely long computations for extremely small
+p-values}
 }
 \value{
 P-value of the exact rare variant sharing test requiring
@@ -47,3 +52,4 @@ and Ruczinski, I. (2014) Inferring rare disease risk variants based on
 exact probabilities of sharing by multiple affected relatives.
 Bioinformatics, 30(15): 2189-96, doi:10.1093/bioinformatics/btu198.
 }
+
