@@ -10,16 +10,18 @@ multipleVariantPValue(snpMat, famInfo, sharingProbs, filter_type = NULL,
 \arguments{
 \item{snpMat}{SnpMatrix}
 
-\item{famInfo}{vector of family id's - same length as rows in share_matrix}
+\item{famInfo}{data frame containing pedigree, member, father, mother,
+sex, affected fields for each sequenced subject}
 
-\item{sharingProbs}{vector of subject id's - same length as rows in share_matrix}
+\item{sharingProbs}{vector of sharing probabilites, must be a named vector
+with famid's for each probability}
+
+\item{alpha}{parameter for filter}
 
 \item{filter}{criteria for filtering pvalues}
-
-\item{alpga}{parameter for filter}
 }
 \value{
-vector : p-value for each variant sharing pattern
+list containing p-values and potential p-values for each variant
 }
 \description{
 Computes a p-value for each variant sharing pattern

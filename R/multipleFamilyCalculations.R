@@ -57,7 +57,8 @@ multipleFamilyPValue <- function(sharingProbs, observedSharing, minPValue=0)
         # get sum of probs starting at leaf of this node
         leafSum <- function(p)
         {
-            if (p <= pObserved) return(p)
+            # TODO account for equal sequences exactly, then check less than
+            if (p < pObserved + 1e-3) return(p)
             else                return(sumBranches(ndx + 1, p))
         }
     

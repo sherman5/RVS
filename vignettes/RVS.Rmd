@@ -164,11 +164,14 @@ lines(1:20,-log10(bcut),col="red",type="b",pch=20)
 When the minor allele frequency (MAF) is known in the population, then an
 exact sharing probability can be calculated using the *alleleFreq* parameter.
 Here we analyze the sensitivity of our p-values to the population MAF, using
-the 4 most significant variants.
+the 3 most significant variants. Note that variants which don't reach their
+potential p-values, indicating some families only have partial sharing, are
+much more sensitive to the MAF.
 
 ```{r}
+# calculate p-values for each MAF
 freq <- seq(0.005,0.05,0.005)
-variants <- names(sort(result$pvalues))[1:4]
+variants <- names(sort(result$pvalues))[1:3]
 pvals <- matrix(nrow=length(freq), ncol=length(variants))
 for (i in 1:length(freq))
 {
@@ -176,14 +179,15 @@ for (i in 1:length(freq))
     pvals[i,] <- multipleVariantPValue(sample$genotypes[,variants], sample$fam, sharingProbs)$pvalues
 }
 colnames(pvals) <- variants
-pvals
 
-plot(freq, pvals[,1], ylim=c(0,max(pvals)), type='l',
+# plot p-values as a function of MAF
+plot(NULL, xlim=c(min(freq),max(freq)), ylim=c(0,max(pvals)), type='l',
     xlab="minor allele frequency", ylab="p-value",
-    main="sensitivity of p-value to allele frequency in four variants")
-lines(freq, pvals[,2])
-lines(freq, pvals[,3])
-lines(freq, pvals[,4])
+    main="sensitivity of p-value to allele frequency in three variants")
+lines(freq, pvals[,1], col="black")
+lines(freq, pvals[,2], col="red")
+lines(freq, pvals[,3], col="blue")
+legend(min(freq), max(pvals), legend=colnames(pvals), col=c("black", "red", "blue"), lty=1)
 ```
 
 ## Related Founders Correction
@@ -197,8 +201,9 @@ on this calculation see [here](#exact-computation-with-kinship-coefficient).
 outlined [here](#using-monte-carlo-simulation).
 
 ```{r}
+# calculate p-values for each kinship coefficient
 kin_coef <- seq(0.01, 0.1, length=5)
-variants <- names(sort(result$pvalues))[1:4]
+variants <- names(sort(result$pvalues))[1:3]
 pvals <- matrix(nrow=length(kin_coef), ncol=length(variants))
 for (i in 1:length(kin_coef))
 {
@@ -206,14 +211,15 @@ for (i in 1:length(kin_coef))
     pvals[i,] <- multipleVariantPValue(sample$genotypes[,variants], sample$fam, sharingProbs)$pvalues
 }
 colnames(pvals) <- variants
-pvals
 
-plot(kin_coef, pvals[,1], ylim=c(0,max(pvals)), type='l',
+# plot p-values as a function of kinship
+plot(NULL, xlim=c(min(kin_coef), max(kin_coef)), ylim=c(0,max(pvals)), type='l',
     xlab="kinship coefficient", ylab="p-value",
-    main="sensitivity of p-value to kinship in four variants")
-lines(kin_coef, pvals[,2])
-lines(kin_coef, pvals[,3])
-lines(kin_coef, pvals[,4])
+    main="sensitivity of p-value to kinship in three variants")
+lines(kin_coef, pvals[,1], col="black")
+lines(kin_coef, pvals[,2], col="red")
+lines(kin_coef, pvals[,3], col="blue")
+legend(min(kin_coef), max(pvals), legend=colnames(pvals), col=c("black", "red", "blue"), lty=1)
 ```
 
 ## Enrichment Test

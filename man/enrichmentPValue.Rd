@@ -6,21 +6,19 @@
 \usage{
 enrichmentPValue(snpMat, famInfo, sharingProbs, threshold = 0)
 }
+\arguments{
+\item{threshold}{minimum p-value threshold passed to multipleFamilyPValue}
+}
 \value{
-vector : p-value for each variant sharing pattern
+p-value
 }
 \description{
 Computes a p-value for all variants seen across all families
 }
 \details{
 For each variant, the families which have all sequenced subjects
- sharing the variant and the families which have some sequenced subjects
- sharing the variant are recorded. All unique (family, variant) pairs
- are accumulated into a single vector and passed to multipleFamilyPValue
-#@param share_matrix matrix entry [i,j] is 1 if subject i has
-# variant j, otherwise it is zero
-#@param famid vector of family id's - same length as rows in share_matrix
-#@param subjects vector of subject id's - same length as rows in share_matrix
-#@param peds list of pedigrees referenced in famid
+sharing the variant and the families which have some sequenced subjects
+sharing the variant are recorded. All unique (family, variant) pairs
+are accumulated into a single vector and passed to multipleFamilyPValue
 }
 
