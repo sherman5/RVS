@@ -4,6 +4,7 @@ test_that('multiple family p-value',
 {
     data(samplePedigrees)
     probs <- sapply(samplePedigrees, RVsharing)
-    expect_equal(multipleFamilyPValue(probs, c(T,T,F,F,F,F,F,F,F)), 0.00551,
-        tol=0.001)
+    obs <- c(T,T,F,F,F,F,F,F,F)
+    names(obs) <- names(probs)
+    expect_equal(multipleFamilyPValue(probs, obs), 0.0135, tol=0.001)
 })

@@ -84,7 +84,7 @@ sharing_probs <- suppressMessages(RVsharing(fams))
 signif(sharing_probs, 3)
 
 # compute p-value for this sharing pattern
-sharing_pattern <- c(T, T, F, F)
+sharing_pattern <- c(TRUE, TRUE, FALSE, FALSE)
 names(sharing_pattern) <- names(sharing_probs)
 multipleFamilyPValue(sharing_probs, sharing_pattern)
 ```
@@ -141,7 +141,7 @@ p-value for each variant. In this example we omit any variants
 whose potential p-values exceed the bonferroni cutoff.
 
 ```{r}
-result <- multipleVariantPValue(sample$genotypes, sample$fam, sharingProbs, filter_type='bonferroni', alpha=0.05)
+result <- multipleVariantPValue(sample$genotypes, sample$fam, sharingProbs, filter='bonferroni', alpha=0.05)
 ```
 
 The effects of this filter can be seen here.

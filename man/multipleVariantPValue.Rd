@@ -4,7 +4,7 @@
 \alias{multipleVariantPValue}
 \title{generalization of multipleFamilyPValue to multiple variants}
 \usage{
-multipleVariantPValue(snpMat, famInfo, sharingProbs, filter_type = NULL,
+multipleVariantPValue(snpMat, famInfo, sharingProbs, filter = NULL,
   alpha = 0)
 }
 \arguments{
@@ -16,9 +16,9 @@ sex, affected fields for each sequenced subject}
 \item{sharingProbs}{vector of sharing probabilites, must be a named vector
 with famid's for each probability}
 
-\item{alpha}{parameter for filter}
-
 \item{filter}{criteria for filtering pvalues}
+
+\item{alpha}{parameter for filter}
 }
 \value{
 list containing p-values and potential p-values for each variant

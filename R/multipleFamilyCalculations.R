@@ -24,10 +24,11 @@
 #' sharing by all affected subjects
 #' @examples
 #' data(samplePedigrees)
+#' probs <- sapply(samplePedigrees, RVsharing)
 #' notSharedFams <- c(15159, 15053, 15157)
 #' famids <- sapply(samplePedigrees, function(p) p$famid[1])
 #' shared <- !famids %in% notSharedFams
-#' probs <- sapply(samplePedigrees, RVsharing)
+#' names(shared) <- names(probs)
 #' multipleFamilyPValue(probs, shared)
 #' @references Bureau, A., Younkin, S., Parker, M.M., Bailey-Wilson, J.E.,
 #' Marazita, M.L., Murray, J.C., Mangold, E., Albacha-Hejazi, H., Beaty, T.H.
@@ -127,7 +128,7 @@ convertMatrix <- function(mat, famInfo)
 #' @param alpha parameter for filter
 #' @return list containing p-values and potential p-values for each variant
 multipleVariantPValue <- function(snpMat, famInfo, sharingProbs,
-filter_type=NULL, alpha=0)
+filter=NULL, alpha=0)
 {
     # convert matrix to list of families with each allele
     shareList <- convertMatrix(snpMat@.Data, famInfo)
@@ -145,7 +146,7 @@ filter_type=NULL, alpha=0)
 
     # subset data if filter is requested
     ppval_cutoff <- 1
-    if (!is.null(filter_type))
+    if (!is.null(filter))
     {
         sorted_ppvals <- sort(unname(pot_pvals))
         cutoff <- alpha / (1:length(pot_pvals))
@@ -174,7 +175,7 @@ filter_type=NULL, alpha=0)
 #' sharing the variant are recorded. All unique (family, variant) pairs
 #' are accumulated into a single vector and passed to multipleFamilyPValue
 #' @param threshold minimum p-value threshold passed to multipleFamilyPValue
-#' @inheritParams RVsharing
+#' @inheritParams multipleVariantPValue
 #' @return p-value
 enrichmentPValue <- function(snpMat, famInfo, sharingProbs, threshold=0)
 {

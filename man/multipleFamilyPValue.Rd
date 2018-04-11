@@ -39,10 +39,11 @@ and the remaining families sharing a rare variant.
 }
 \examples{
 data(samplePedigrees)
+probs <- sapply(samplePedigrees, RVsharing)
 notSharedFams <- c(15159, 15053, 15157)
 famids <- sapply(samplePedigrees, function(p) p$famid[1])
 shared <- !famids \%in\% notSharedFams
-probs <- sapply(samplePedigrees, RVsharing)
+names(shared) <- names(probs)
 multipleFamilyPValue(probs, shared)
 }
 \references{

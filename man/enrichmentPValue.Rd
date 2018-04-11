@@ -7,6 +7,14 @@
 enrichmentPValue(snpMat, famInfo, sharingProbs, threshold = 0)
 }
 \arguments{
+\item{snpMat}{SnpMatrix}
+
+\item{famInfo}{data frame containing pedigree, member, father, mother,
+sex, affected fields for each sequenced subject}
+
+\item{sharingProbs}{vector of sharing probabilites, must be a named vector
+with famid's for each probability}
+
 \item{threshold}{minimum p-value threshold passed to multipleFamilyPValue}
 }
 \value{
