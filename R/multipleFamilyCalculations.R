@@ -88,21 +88,31 @@ multipleFamilyPValue <- function(sharingProbs, observedSharing, minPValue=0)
     return(pvalue)
 }
 
-convertMatrix <- function(mat, famInfo)
+#' convert snpMatrix to a list of vectors of sharing
+#' @inheritParams multipleVariantPValue
+#' @return list of boolean vectors indicating sharing pattern for each variant
+convertMatrix <- function(snpMat, famInfo, minorAllele=NA)
 {
+    mat <- snpMat@.Data
     sapply(colnames(mat), function(var)
     {
         ret <- c()
-        # minor allele includes 2
-        # add option for user to specify which allele is rare
-        minorAllele <- ifelse(sum(mat[,var] == 1) < sum(mat[,var] == 3), 1, 3)
+        if (is.na(minorAllele))
+        {
+            minorCount <- ifelse(sum(mat[,var] == 1) < sum(mat[,var] == 3), 1, 3)
+        }
+        else 
+        {
+            minorCount <- ifelse(minorAllele[var] == 1, 1, 3)
+        }
+    
         for (fid in unique(famInfo$pedigree))
         {
             aff_rows <- which(famInfo$pedigree == fid & famInfo$affected == 2)
             aff_alleles <- mat[aff_rows, var]
-            if (!all(aff_alleles != minorAllele))
+            if (!all(aff_alleles != minorCount & aff_alleles != 2))
             {
-                ret <- c(ret, all(aff_alleles == minorAllele))
+                ret <- c(ret, all(aff_alleles == minorCount | aff_alleles == 2))
                 names(ret)[length(ret)] <- fid
             }
         }
@@ -124,14 +134,15 @@ convertMatrix <- function(mat, famInfo)
 #' sex, affected fields for each sequenced subject
 #' @param sharingProbs vector of sharing probabilites, must be a named vector
 #' with famid's for each probability
+#' @param minorAllele vector specifying the minor allele of each variant
 #' @param filter criteria for filtering pvalues
 #' @param alpha parameter for filter
 #' @return list containing p-values and potential p-values for each variant
 multipleVariantPValue <- function(snpMat, famInfo, sharingProbs,
-filter=NULL, alpha=0)
+minorAllele=NA, filter=NULL, alpha=0)
 {
     # convert matrix to list of families with each allele
-    shareList <- convertMatrix(snpMat@.Data, famInfo)
+    shareList <- convertMatrix(snpMat@.Data, famInfo, minorAllele)
 
     # calculate potential p-values
     pot_pvals <- sapply(shareList, function(vec)

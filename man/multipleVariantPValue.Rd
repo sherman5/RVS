@@ -4,8 +4,8 @@
 \alias{multipleVariantPValue}
 \title{generalization of multipleFamilyPValue to multiple variants}
 \usage{
-multipleVariantPValue(snpMat, famInfo, sharingProbs, filter = NULL,
-  alpha = 0)
+multipleVariantPValue(snpMat, famInfo, sharingProbs, minorAllele = NA,
+  filter = NULL, alpha = 0)
 }
 \arguments{
 \item{snpMat}{SnpMatrix}
@@ -15,6 +15,8 @@ sex, affected fields for each sequenced subject}
 
 \item{sharingProbs}{vector of sharing probabilites, must be a named vector
 with famid's for each probability}
+
+\item{minorAllele}{vector specifying the minor allele of each variant}
 
 \item{filter}{criteria for filtering pvalues}
 
