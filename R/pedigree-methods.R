@@ -76,7 +76,8 @@ function(ped, carriers)
     #    stop('some founders are affected')
     if (length(affected) < 2)
         stop('need at least 2 affected subjects')
-    if (sum(!carriers %in% affected) > 0)
+    # Check whether carriers are affected, but only if useAffected=TRUE (i.e. ped$affected has non-zero length)
+    if (length(ped$affected) & sum(!carriers %in% affected) > 0)
         stop('carriers must be a subset of affected')
 
     # save info in list
