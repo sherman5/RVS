@@ -62,14 +62,18 @@ function(ped, carriers)
     parents <- sapply(ped$id, function(i) c(ped$findex[i], ped$mindex[i]))
     founders <- which(parents[1,] == 0)
     finalDescendants <- which(!(ped$id %in% c(parents[1,], parents[2,])))
-
-    # get affected, default to finalDescendants if not provided
+    if (!is.null(carriers)) carriers <- which(origID %in% carriers)
+    
+    # get affected, default to finalDescendants if not provided and no carriers specified
+    # or the union of finalDescendants and carriers if carriers are specified
     if (length(ped$affected)) affected <- which(ped$affected == 1)
-    else                      affected <- finalDescendants
-
-    # get carriers, default to affected if not provided
+    else
+    {
+    	if (is.null(carriers)) affected <- finalDescendants
+    	else affected <- union(carriers,finalDescendants)
+    }
+    # carriers default to affected if not provided
     if (is.null(carriers))   carriers <- affected
-    else                     carriers <- which(origID %in% carriers)
 
     # check pedigree is valid
     #if (sum(affected %in% founders) > 0)
