@@ -73,12 +73,12 @@ p <- RVsharing(fam_type_D)
 ## P-Value for Multiple Families, One Variant
 
 In the case of a single variant seen across multiple families, we can compute
-the individual sharing probabilties with *RVsharing*, but the sharing
-probabilities can no longer be interpreted as a p-value. The function
+the individual sharing probabilities with *RVsharing*, but the sharing
+probabilities can no longer be interpreted as a p-value for the sharing pattern of the variant across the families. The function
 *multipleFamilyPValue* can be used to compute the p-value.
 
 ```{r}
-# compute the sharing probabilties for all families
+# compute the sharing probabilities for all families
 fams <- list(fam_type_A, fam_type_B, fam_type_C, fam_type_D)
 sharing_probs <- suppressMessages(RVsharing(fams))
 signif(sharing_probs, 3)
@@ -95,14 +95,14 @@ The *sharing_pattern* vector indicates whether or not the variant is observed in
 
 The function *multipleVariantPValue* generalizes *multipleFamilyPValue*
 across multiple variants. This function takes a *SnpMatrix* instead of a
-specific sharing pattern. The behavior of this function could be acheived
+specific sharing pattern. The behavior of this function could be achieved
 by converting every column of a *SnpMatrix* into a sharing pattern across
 families and applying *multipleFamilyPValue* across the columns.
 
-The first step is reading in the data. See the *Data Input*
+The first step is reading in the genotype data. See the *Data Input*
 [vignette](https://www.bioconductor.org/packages/release/bioc/vignettes/snpStats/inst/doc/data-input-vignette.pdf)
 in the *snpStats* package for examples using different file types. Here we use a
-pedigree file in the LINKAGE format.
+pedigree file in the LINKAGE format. See [here](#example-of-analysis-of-the-rare-variants-in-the-genomic-sequence-of-a-gene) for an example of reading genotypes data from a Variant Call Format (VCF) file.
 
 ```{r}
 pedfile <- system.file("extdata/sample.ped.gz", package="RVS")
@@ -110,7 +110,7 @@ sample <- snpStats::read.pedfile(pedfile, snps=paste('variant', LETTERS[1:20], s
 ```
 
 In this data set we have 3 copies of each family type. The sharing 
-probabilties for this set of families are:
+probabilities for this set of families are:
 
 ```{r}
 A_fams <- lapply(1:3, function(i) samplePedigrees$firstCousinPair)
@@ -127,18 +127,22 @@ sharingProbs <- suppressMessages(RVsharing(fams))
 signif(sharingProbs, 3)
 ```
 
-We call the function as follows:
+When we call the function on the genotypes from a *snpMatrix* as follows, it converts them into a sharing pattern assuming the rare variant is the allele with the lowest frequency in the family sample:
 
 ```{r}
 result <- multipleVariantPValue(sample$genotypes, sample$fam, sharingProbs)
 signif(result$pvalues, 3)
 ```
 
-Computation time may be slow with a large set of variants. 
+The argument *minorAllele* can be used to specify which allele of each variant is the rare variant.
+
+## Correcting for Multiple Testing Using Potential P-values
+
+Correcting for multiple testing reduces the cutoff below which a p-value is considered significant. With a large set of variants, it will be impossible to reject the null hypothesis for many of the variants with limited information (e.g. a variant seen in a single small family) because the smallest p-value achievable for that variant is larger than the cutoff. 
 *multipleVariantPValue* provides a filtering option based on the
 potential p-values. Potential p-values are the lower bound on the 
-p-value for each variant. In this example we omit any variants
-whose potential p-values exceed the bonferroni cutoff.
+p-value for each variant. In this example we omit any variant
+whose potential p-values exceeds the cutoff obtained by applying the Bonferroni correction for the number of variants with a sufficiently low potential p-value. In this way, we both increase the p-value cutoff (and hence the power of the test) while maintaining the family-wise error rate at 0.05 and reduce computation time.
 
 ```{r}
 result <- multipleVariantPValue(sample$genotypes, sample$fam, sharingProbs, filter='bonferroni', alpha=0.05)
@@ -170,10 +174,11 @@ much more sensitive to the MAF.
 
 ```{r}
 # calculate p-values for each MAF
-freq <- seq(0.005,0.05,0.005)
+freq <- seq(0,0.05,0.005)
 variants <- names(sort(result$pvalues))[1:3]
 pvals <- matrix(nrow=length(freq), ncol=length(variants))
-for (i in 1:length(freq))
+pvals[1,] = sort(result$pvalues)[1:3]
+for (i in 2:length(freq))
 {
     sharingProbs <- suppressMessages(RVsharing(fams, alleleFreq=freq[i]))
     pvals[i,] <- multipleVariantPValue(sample$genotypes[,variants], sample$fam, sharingProbs)$pvalues
@@ -192,20 +197,17 @@ legend(min(freq), max(pvals), legend=colnames(pvals), col=c("black", "red", "blu
 
 ## Related Founders Correction
 
-When founders of the pedigree are related, the computation is more tricky. *RVS*
-allows the user to apply a correction for this fact in two different ways. The
-first way, explained below, is a method from Bureau et al. (2014) that uses the
-mean kinship coefficient among founders to apply a correction. For more details
-on this calculation see [here](#exact-computation-with-kinship-coefficient).
-*RVS* supports more complicated corrections using a Monte Carlo simulation
+When founders of the pedigree are related, the computation is more tricky. *RVS* allows the user to apply a correction for this fact in two different ways. The first way, illustrated below, is a method from Bureau et al. (2014) that uses the mean kinship coefficient among founders to apply a correction. For more details on this calculation see [here](#computation-of-approximate-correction-based-on-kinship-coefficient).
+The same correction as well as corrections involving any prespecified relationships among founders can be implemented using a Monte Carlo simulation
 outlined [here](#using-monte-carlo-simulation).
 
 ```{r}
 # calculate p-values for each kinship coefficient
-kin_coef <- seq(0.01, 0.1, length=5)
+kin_coef <- seq(0, 0.05, length=6)
 variants <- names(sort(result$pvalues))[1:3]
 pvals <- matrix(nrow=length(kin_coef), ncol=length(variants))
-for (i in 1:length(kin_coef))
+pvals[1,] = sort(result$pvalues)[1:3]
+for (i in 2:length(kin_coef))
 {
     sharingProbs <- suppressMessages(RVsharing(fams, kinshipCoeff=kin_coef[i]))
     pvals[i,] <- multipleVariantPValue(sample$genotypes[,variants], sample$fam, sharingProbs)$pvalues
@@ -222,25 +224,31 @@ lines(kin_coef, pvals[,3], col="blue")
 legend(min(kin_coef), max(pvals), legend=colnames(pvals), col=c("black", "red", "blue"), lty=1)
 ```
 
-## Enrichment Test
+# Joint analysis of multiple variants
+The power of single variant analyses is limited due to the small number of families where a rare variant is seen (often a single family). Even if no individual variant has a significant p-value, it is possible for multiple variants considered across multiple families to exhibit an unusual amount of sharing. The procedure to test multiple rare variants depends whether the variants are far appart or close together in a short genomic region, spanning a single gene for instance.
 
-Even if no individual variant has a significant p-value, it is possible
-for all variants considered across all families to exhibit an unusual amount of
-sharing. The *enrichmentPValue* function can compute a single p-value for all
-variants seen in all families. When calculating this p-value, note that a very
+## Enrichment Test
+The *enrichmentPValue* function can compute a single p-value for all
+variants seen in all families assuming the variants are independent. This assumption is reasonable when variants are sufficiently far appart to be unlinked, such as rare deletions scattered over the whole genome as analyzed by @COPY_NUMBER. The computation is implemented using a binary tree algorithm described by @COPY_NUMBER. When calculating this p-value, note that a very
 small p-value may result in a very long computation time. Because of this, we
 can pass a minimum p-value threshold, where the greater of this threshold and
 the actual p-value will be returned.
-
-Note that this calculation assumes the variants are independent.
 
 ```{r}
 enrichmentPValue(sample$genotypes, sample$fam, sharingProbs, 0.001)
 ```
 
-# Precomputing Sharing Probabilities and Number of Carriers for all Possible Carrier Subsets
+## Gene-based analysis
 
-The *RVgene* function requires the lists *pattern.prob.list* of vectors of sharing probabilities and *N.list* of number of carriers for all possible affected carrier subsets in each family in the sample being analyzed. The elements of both of these lists must have the same names as the pedigree objects in the *ped.listfams* argument. When all affected subjecs in a family are final descendants, the sharing probabilities and number of carriers for all subsets can be generated automatically. Here is an exanple with three second cousins:
+Joint analysis of rare variants within a gene (typically single nucleotide variants and short indels, possibly filtered based on functional annotations) is another approach to increase statistical power. Here the assumption of independence of rare variants does not hold when variants are seen in the same family, and the solution described by @UPDATE and implemented in the *RVgene* function is to keep the variant with the sharing pattern having the lowest probability (usually the variant shared by the largest number of affected relatives in the family). The application of the *RVgene* function is illustrated in the following section.
+
+# Partial sharing test
+
+Phenocopies, diagnosis error and intra-familial genetic heterogeneity in complex disorders result in disease susceptibility variants being shared by a subset of affected subjects. In order to detect such causal variants, a partial sharing test was defined by @UPDATE where the p-value is the probability of sharing events as or more extreme as the observed event. A more extreme sharing event is defined as having lower probability and involving more carriers of the variant.
+
+## Precomputing Sharing Probabilities and Number of Carriers for all Possible Carrier Subsets
+
+In order to perfore the partial sharing test, the *RVgene* function requires the lists *pattern.prob.list* of vectors of sharing probabilities and *N.list* of number of carriers for all possible affected carrier subsets in each family in the sample being analyzed. The arguments of the *RVsharing* function allowing the computation of sharing probabilities by a subset of affected subjects are described [here](#rare-variant-sharing-probabilities-for-a-subset-of-affected-pedigree-members). The elements of both of these lists must have the same names as the pedigree objects in the *ped.listfams* argument. When all affected subjecs in a family are final descendants, the sharing probabilities and number of carriers for all subsets can be generated automatically. Here is an exanple with three second cousins:
 
 ```{r}
 carriers = c(15,16,17)
@@ -328,7 +336,7 @@ ex.nequiv.list = list("15157"=fam15157.nequiv,"28003"=fam28003.nequiv)
 ex.N.list = list("15157"=fam15157.N,"28003"=fam28003.N)
 ```
 
-# Analyzing variants in genomic sequence
+## Example of Analysis of the Rare Variants in the Genomic Sequence of a Gene
 
 We now turn to the analysis of variants observed in the simulated genomic sequence of the gene *PEAR1* in a sample of related affected subjects. The processing of the sequence data results in Variant Call Format (VCF) files, which can be read into R with the function *readVcf* from the *variantAnnotatin* package. Two *VCF* objects obtained with *readVcf* from VCF files of sequence data for the second cousin triple and first and second cousin triple families are contained in the *famVCF* data. These VCF files are converted to *snpMatrix* objects using the *genotypeToSnpMatrix* function. 
 
@@ -357,13 +365,12 @@ ex.SnpMatrix.list[["fam28003"]][,sites[2]]@.Data
 Finally, the call to *RVgene* returns the P-value of the exact rare variant sharing test allowing for sharing by a subset of affected subjects (p), the P-value of the exact rare variant sharing test requiring sharing by all affected subjects (pall) and the minimum achievable p-value if all affected subjects were carriers of a rare variant (potentialp).
 
 ```{r}
-RVgene(ex.SnpMatrix.list,ex.ped.obj,sites,pattern.prob.list=ex.pattern.prob.list,
-nequiv.list=ex.nequiv.list,N.list=ex.N.list,type="count")
+RVgene(ex.SnpMatrix.list,ex.ped.obj,sites,pattern.prob.list=ex.pattern.prob.list,nequiv.list=ex.nequiv.list,N.list=ex.N.list,type="count")
 ```
 
 # Appendix
 
-## Assuming One Founder Introduces the Variant
+## Rare Variant Sharing Probability Assuming One Founder Introduces the Variant
 
 In this case, we assume the variant is rare enough so that the probability of
 more than one founder introducing it to the pedigree is negligible. This is 
@@ -392,7 +399,7 @@ single copy of that RV among all alleles present in the $n_f$ founders. The
 probabilities $P[F_j] = {1 \over n_f}$ cancel from the numerator and
 denominator.
 
-## Sharing Probabilties in a Subset of a Pedigree
+## Rare Variant Sharing Probabilities for a Subset of Affected Pedigree Members
 
 By default, *RVsharing* will compute the probability that all of the final 
 descendants share the variant given that it is seen in at least one of them. 
@@ -400,8 +407,7 @@ Final descendants are defined as subjects of the pedigree with no children.
 This event can be customized with the *carriers* and *useAffected* arguments.
 
 If the argument *carriers* is provided, then the probability of all carriers 
-having the variant given it is seen in at least one final descendant will be 
-computed.
+having the variant given it is seen in at least one subject in the union of the final descendants and the carriers will be computed.
 
 If the argument *useAffected* is TRUE and the pedigree has a slot for 
 *affected*, then the probability of all carriers having the variant given 
@@ -417,14 +423,14 @@ plot(ped)
 
 p <- RVsharing(ped)
 p <- RVsharing(ped, useAffected=TRUE)
-p <- RVsharing(ped, carriers=c(9,10))
+p <- RVsharing(ped, carriers=c(7,9,10))
 p <- RVsharing(ped, carriers=c(10,11), useAffected=TRUE)
 ```
 
 ## Using Monte Carlo Simulation
 
-*RVsharing* also allows for estimating sharing probabilities through monte 
-carlo simulation. The primary use of this feature is for calculating sharing 
+*RVsharing* also allows for estimating sharing probabilities through Monte 
+Carlo simulation. The primary use of this feature is for calculating sharing 
 probabilities under non standard assumptions about the founders. However, 
 this feature is available for the standard assumptions as well. To run a 
 monte carlo simulation, specify all parameters as normal and additionally 
@@ -447,8 +453,9 @@ fDist <- function(N) sample(c(rep(0,N-1), 1))
 p <- RVsharing(samplePedigrees$firstCousinPair, nSim=1e5, founderDist=fDist)
 p <- RVsharing(samplePedigrees$firstCousinPair)
 ```
+## Correcting for Related Founders
 
-## Exact Computation with Kinship Coefficient
+### Computation of Approximate Correction Based on Kinship Coefficient
 
 In this method, a mean kinship coefficient among the founders is passed in 
 with the *kinshipCoeff* parameter. Using the methods from @METHODS, 
@@ -475,7 +482,7 @@ where $w = n_f P_U$. Notice that the above equation corrects equation (3) of
 @METHODS, where the divisions by the number of terms in the summations where 
 missing.
 
-## Estimating Mean Kinship Coefficient Among Founders
+### Estimating Mean Kinship Coefficient Among Founders
 
 Given the observed kinship between two subjects, $\hat{\phi}_{i,j}$, and the 
 expected kinship , $\phi^p_{i,j}$, it is possible to estimate the mean kinship 
