@@ -188,6 +188,8 @@ minorAllele=NA, filter=NULL, alpha=0)
 #' @param threshold minimum p-value threshold passed to multipleFamilyPValue
 #' @inheritParams multipleVariantPValue
 #' @return p-value
+#' @references Fu, J., Beaty, T.H., Scott, A.F., Hetmanski, J., Parker, M.M., Bailey-Wilson, J.E.,
+#' Marazita, M.L., et al. 2017. “Whole Exome Association of Rare Deletions in Multiplex Oral Cleft Families.” Genetic Epidemiology 41 (1): 61–69. doi:10.1002/gepi.22010.
 enrichmentPValue <- function(snpMat, famInfo, sharingProbs, threshold=0)
 {
     # convert matrix to list of families with each allele

@@ -20,4 +20,3 @@ this function simulates mendelian inheritance and returns the states
 of all subjects in the pedigree
 }
 \keyword{internal}
-

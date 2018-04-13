@@ -20,4 +20,3 @@ minimum distance (number generations) between a and d
 distance between a descendant and an ancestor
 }
 \keyword{internal}
-

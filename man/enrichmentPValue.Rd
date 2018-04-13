@@ -29,4 +29,7 @@ sharing the variant and the families which have some sequenced subjects
 sharing the variant are recorded. All unique (family, variant) pairs
 are accumulated into a single vector and passed to multipleFamilyPValue
 }
-
+\references{
+Fu, J., Beaty, T.H., Scott, A.F., Hetmanski, J., Parker, M.M., Bailey-Wilson, J.E.,
+Marazita, M.L., et al. 2017. “Whole Exome Association of Rare Deletions in Multiplex Oral Cleft Families.” Genetic Epidemiology 41 (1): 61–69. doi:10.1002/gepi.22010.
+}

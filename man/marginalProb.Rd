@@ -28,4 +28,3 @@ giving the probability P(B|C). This process continues from right to
 left until the entire product has been computed.
 }
 \keyword{internal}
-

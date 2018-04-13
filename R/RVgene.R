@@ -229,6 +229,7 @@ extract_carriers = function(ped,site,fam,type="alleles",minor.allele=2)
 #' and Ruczinski, I. (2014) Inferring rare disease risk variants based on
 #' exact probabilities of sharing by multiple affected relatives.
 #' Bioinformatics, 30(15): 2189-96, doi:10.1093/bioinformatics/btu198.
+#' @references Bureau, A., Begum, F., Taub, M.A., Hetmanski, J., Parker, M.M., Albacha-Hejazi, H., Scott, A.F., et al. 2018. “Inferring Disease Risk Genes from Sequencing Data in Multiplex Pedigrees Through Sharing of Rare Variants.” Http://Biorxiv.org/Cgi/Content/Short/285874v1.
 RVgene <- function(data, ped.listfams, sites, fams, pattern.prob.list,
 nequiv.list, N.list, type="alleles", minor.allele.vec,
 precomputed.prob=list(0), maxdim = 1e9, partial.sharing=TRUE, ...)

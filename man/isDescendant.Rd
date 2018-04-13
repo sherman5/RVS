@@ -20,4 +20,3 @@ true if d is descended from a
 determine if one subject is a descendant of another
 }
 \keyword{internal}
-
