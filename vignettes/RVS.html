@@ -247,7 +247,7 @@ legend(min(kin_coef), max(pvals), legend=colnames(pvals), col=c(&quot;black&quot
 <p>The power of single variant analyses is limited due to the small number of families where a rare variant is seen (often a single family). Even if no individual variant has a significant p-value, it is possible for multiple variants considered across multiple families to exhibit an unusual amount of sharing. The procedure to test multiple rare variants depends whether the variants are far appart or close together in a short genomic region, spanning a single gene for instance.</p>
 <div id="enrichment-test" class="section level2">
 <h2><span class="header-section-number">3.1</span> Enrichment Test</h2>
-<p>The <em>enrichmentPValue</em> function can compute a single p-value for all variants seen in all families assuming the variants are independent. This assumption is reasonable when variants are sufficiently far appart to be unlinked, such as rare deletions scattered over the whole genome as analyzed by <span class="citation">Fu et al. (2017)</span>. The computation is implemented using a binary tree algorithm described by <span class="citation">Fu et al. (2017)</span>. When calculating this p-value, note that a very small p-value may result in a very long computation time. Because of this, we can pass a minimum p-value threshold, where the greater of this threshold and the actual p-value will be returned.</p>
+<p>The <em>enrichmentPValue</em> function can compute a single p-value for all variants seen in all families assuming the variants are independent. This assumption is reasonable when variants are sufficiently far apart to be unlinked, such as rare deletions scattered over the whole genome as analyzed by <span class="citation">Fu et al. (2017)</span>. The computation is implemented using a binary tree algorithm described by <span class="citation">Fu et al. (2017)</span>. When calculating this p-value, note that a very small p-value may result in a very long computation time. Because of this, we can pass a minimum p-value threshold, where the greater of this threshold and the actual p-value will be returned.</p>
 <pre class="r"><code>enrichmentPValue(sample$genotypes, sample$fam, sharingProbs, 0.001)</code></pre>
 <pre><code>## [1] 0.3989292</code></pre>
 </div>
@@ -501,12 +501,12 @@ plot(ped)</code></pre>
 <pre class="r"><code>p &lt;- RVsharing(samplePedigrees$firstCousinPair, alleleFreq=0.01)</code></pre>
 <pre><code>## Probability subjects 7 8 among 7 8 share a rare variant: 0.07631</code></pre>
 <pre class="r"><code>p &lt;- RVsharing(samplePedigrees$firstCousinPair, alleleFreq=0.01, nSim=1e5)</code></pre>
-<pre><code>## Probability subjects 7 8 among 7 8 share a rare variant: 0.08572</code></pre>
+<pre><code>## Probability subjects 7 8 among 7 8 share a rare variant: 0.0812</code></pre>
 <p>This method allows for more complex relationships among the founders to be given. <em>RVsharing</em> allows for a complete distribution among the founders to be passed in as the parameter <em>founderDist</em>. This function should accept a single argument, N, and should return a vector of length N with values in {0,1,2} representing the number of copies of the variant each founder has.</p>
 <pre class="r"><code># assumption that 1 founder introduces variant
 fDist &lt;- function(N) sample(c(rep(0,N-1), 1))
 p &lt;- RVsharing(samplePedigrees$firstCousinPair, nSim=1e5, founderDist=fDist)</code></pre>
-<pre><code>## Probability subjects 7 8 among 7 8 share a rare variant: 0.06784</code></pre>
+<pre><code>## Probability subjects 7 8 among 7 8 share a rare variant: 0.06995</code></pre>
 <pre class="r"><code>p &lt;- RVsharing(samplePedigrees$firstCousinPair)</code></pre>
 <pre><code>## Probability subjects 7 8 among 7 8 share a rare variant: 0.06667</code></pre>
 </div>

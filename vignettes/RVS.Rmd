@@ -229,7 +229,7 @@ The power of single variant analyses is limited due to the small number of famil
 
 ## Enrichment Test
 The *enrichmentPValue* function can compute a single p-value for all
-variants seen in all families assuming the variants are independent. This assumption is reasonable when variants are sufficiently far appart to be unlinked, such as rare deletions scattered over the whole genome as analyzed by @COPY_NUMBER. The computation is implemented using a binary tree algorithm described by @COPY_NUMBER. When calculating this p-value, note that a very
+variants seen in all families assuming the variants are independent. This assumption is reasonable when variants are sufficiently far apart to be unlinked, such as rare deletions scattered over the whole genome as analyzed by @COPY_NUMBER. The computation is implemented using a binary tree algorithm described by @COPY_NUMBER. When calculating this p-value, note that a very
 small p-value may result in a very long computation time. Because of this, we
 can pass a minimum p-value threshold, where the greater of this threshold and
 the actual p-value will be returned.
