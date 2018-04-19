@@ -338,13 +338,12 @@ ex.N.list = list("15157"=fam15157.N,"28003"=fam28003.N)
 
 ## Example of Analysis of the Rare Variants in the Genomic Sequence of a Gene
 
-We now turn to the analysis of variants observed in the simulated genomic sequence of the gene *PEAR1* in a sample of related affected subjects. The processing of the sequence data results in Variant Call Format (VCF) files, which can be read into R with the function *readVcf* from the *variantAnnotatin* package. Two *VCF* objects obtained with *readVcf* from VCF files of sequence data for the second cousin triple and first and second cousin triple families are contained in the *famVCF* data. These VCF files are converted to *snpMatrix* objects using the *genotypeToSnpMatrix* function. 
+We now turn to the analysis of variants observed in the simulated genomic sequence of the gene *PEAR1* in a sample of related affected subjects. The processing of the sequence data results in Variant Call Format (VCF) files, which can be read into R with the function *readVcf* from the *variantAnnotation* package. Two *VCF* objects obtained with *readVcf* from VCF files of sequence data for the second cousin triple and first and second cousin triple families are contained in the *famVCF* data. These VCF files are converted to *snpMatrix* objects using the *genotypeToSnpMatrix* function. 
 
 ```{r}
 data(famVCF)
-suppressMessages(library(VariantAnnotation))
-fam15157.snp = genotypeToSnpMatrix(fam15157.vcf)
-fam28003.snp = genotypeToSnpMatrix(fam28003.vcf)
+fam15157.snp = VariantAnnotation::genotypeToSnpMatrix(fam15157.vcf)
+fam28003.snp = VariantAnnotation::genotypeToSnpMatrix(fam28003.vcf)
 ```
 
 *RVgene* requires lists of the *snpMatrix* and *pedigree* objects for these two families. The names given to the elements of these lists are not used by *RVgene* and are thus arbitrary. Family IDs are extracted from the *famid* element of the *pedigree* objects. Please note that currently *RVgene* does not accept a *pedigreeList*, but only a plain list of *pedigree* objects.
