@@ -240,7 +240,7 @@ enrichmentPValue(sample$genotypes, sample$fam, sharingProbs, 0.001)
 
 ## Gene-based analysis
 
-Joint analysis of rare variants within a gene (typically single nucleotide variants and short indels, possibly filtered based on functional annotations) is another approach to increase statistical power. Here the assumption of independence of rare variants does not hold when variants are seen in the same family, and the solution described by @UPDATE and implemented in the *RVgene* function is to keep the variant with the sharing pattern having the lowest probability (usually the variant shared by the largest number of affected relatives in the family). The application of the *RVgene* function is illustrated in the following section.
+Joint analysis of rare variants within a gene (typically single nucleotide variants and short indels, possibly filtered based on functional annotations) is another approach to increase statistical power. Here the assumption of independence of rare variants does not hold when variants are seen in the same family, and the solution described by @UPDATE and implemented in the *RVgene* function is to keep the variant with the sharing pattern having the lowest probability (usually the variant shared by the largest number of affected relatives in the family). The gene-based analysis with the *RVgene* function is illustrated in section [4.2](#example-of-analysis-of-the-rare-variants-in-the-genomic-sequence-of-a-gene) along with another new feature: the partial sharing test.
 
 # Partial sharing test
 
