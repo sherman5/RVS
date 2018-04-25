@@ -19,3 +19,4 @@ and should not be used.
 \examples{
 tryCatch(ped2trio(), error = function(e) message(e))
 }
+

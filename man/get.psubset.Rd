@@ -35,3 +35,4 @@ probs <- sapply(samplePedigrees, RVsharing)
 get.psubset(famids, notShared, data.frame(pshare=probs,
 ped.tocompute.vec=famids))
 }
+

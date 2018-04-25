@@ -156,3 +156,4 @@ Bioinformatics, 30(15): 2189-96, doi:10.1093/bioinformatics/btu198.
 
 Bureau, A., Begum, F., Taub, M.A., Hetmanski, J., Parker, M.M., Albacha-Hejazi, H., Scott, A.F., et al. 2018. “Inferring Disease Risk Genes from Sequencing Data in Multiplex Pedigrees Through Sharing of Rare Variants.” Http://Biorxiv.org/Cgi/Content/Short/285874v1.
 }
+

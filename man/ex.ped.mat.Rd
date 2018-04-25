@@ -10,3 +10,4 @@ ex.ped.mat
 \description{
 matrix of pedigree information and genotype data from famVCF stored in the LINKAGE format
 }
+

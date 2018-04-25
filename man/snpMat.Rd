@@ -10,3 +10,4 @@ snpMat
 \description{
 SnpMatrix with genotype information from famVCF for fam15157
 }
+

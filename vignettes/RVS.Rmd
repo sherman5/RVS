@@ -74,8 +74,11 @@ p <- RVsharing(fam_type_D)
 
 In the case of a single variant seen across multiple families, we can compute
 the individual sharing probabilities with *RVsharing*, but the sharing
-probabilities can no longer be interpreted as a p-value for the sharing pattern of the variant across the families. The function
-*multipleFamilyPValue* can be used to compute the p-value.
+probabilities can no longer be interpreted as a p-value for the sharing pattern
+of the variant across the families. The function *multipleFamilyPValue* can be
+used to compute the p-value which is defined as the sum of all sharing 
+probabilities across families at most as large as the sharing probability
+observed.
 
 ```{r}
 # compute the sharing probabilities for all families
@@ -89,7 +92,8 @@ names(sharing_pattern) <- names(sharing_probs)
 multipleFamilyPValue(sharing_probs, sharing_pattern)
 ```
 
-The *sharing_pattern* vector indicates whether or not the variant is observed in all sequenced subjects.
+The *sharing_pattern* vector indicates whether or not the variant is observed
+in all sequenced subjects.
 
 ## P-Value for Multiple Families, Multiple Variants
 
@@ -127,7 +131,9 @@ sharingProbs <- suppressMessages(RVsharing(fams))
 signif(sharingProbs, 3)
 ```
 
-When we call the function on the genotypes from a *snpMatrix* as follows, it converts them into a sharing pattern assuming the rare variant is the allele with the lowest frequency in the family sample:
+When we call the function on the genotypes from a *snpMatrix* as follows, it
+converts them into a sharing pattern assuming the rare variant is the allele
+with the lowest frequency in the family sample:
 
 ```{r}
 result <- multipleVariantPValue(sample$genotypes, sample$fam, sharingProbs)
@@ -138,17 +144,32 @@ The argument *minorAllele* can be used to specify which allele of each variant i
 
 ## Correcting for Multiple Testing Using Potential P-values
 
-Correcting for multiple testing reduces the cutoff below which a p-value is considered significant. With a large set of variants, it will be impossible to reject the null hypothesis for many of the variants with limited information (e.g. a variant seen in a single small family) because the smallest p-value achievable for that variant is larger than the cutoff. 
-*multipleVariantPValue* provides a filtering option based on the
-potential p-values. Potential p-values are the lower bound on the 
-p-value for each variant. In this example we omit any variant
-whose potential p-values exceeds the cutoff obtained by applying the Bonferroni correction for the number of variants with a sufficiently low potential p-value. In this way, we both increase the p-value cutoff (and hence the power of the test) while maintaining the family-wise error rate at 0.05 and reduce computation time.
+Correcting for multiple testing reduces the cutoff below which a p-value is
+considered significant. With a large set of variants, it will be impossible
+to reject the null hypothesis for many of the variants with limited information
+(e.g. a variant seen in a single small family) because the smallest p-value
+achievable for that variant is larger than the cutoff. 
+*multipleVariantPValue* provides a filtering option based on the potentia
+p-values. Potential p-values are the lower bound on the p-value for each
+variant (@Bureau2014). In this example we omit any variant whose potential
+p-values exceeds the cutoff obtained by applying the Bonferroni correction for
+the number of variants with a sufficiently low potential p-value. In this way,
+we both increase the p-value cutoff (and hence the power of the test) while
+maintaining the family-wise error rate at 0.05 and reduce computation time.
 
 ```{r}
 result <- multipleVariantPValue(sample$genotypes, sample$fam, sharingProbs, filter='bonferroni', alpha=0.05)
 ```
 
-The effects of this filter can be seen here.
+The effects of this filter can be seen here. The blue curves show the potential
+p-value, sorted from most to least significant. It is important to note that
+these potential p-values are independent of the actual sharing pattern among
+affected subjects, and therefore of the subsequent testing of variant sharing.
+The red curve shows the Bonferroni cut-off depending on how many variants are
+tested. Only 11 variants are included, as sharing here could produce a
+sharing p-value below the Bonferroni cutoff. The black points show the observed
+sharing p-values, with six variants being significant after multiple comparisons
+correction.
 
 ```{r}
 pvals <- result$pvalues
@@ -197,8 +218,14 @@ legend(min(freq), max(pvals), legend=colnames(pvals), col=c("black", "red", "blu
 
 ## Related Founders Correction
 
-When founders of the pedigree are related, the computation is more tricky. *RVS* allows the user to apply a correction for this fact in two different ways. The first way, illustrated below, is a method from Bureau et al. (2014) that uses the mean kinship coefficient among founders to apply a correction. For more details on this calculation see [here](#computation-of-approximate-correction-based-on-kinship-coefficient).
-The same correction as well as corrections involving any prespecified relationships among founders can be implemented using a Monte Carlo simulation
+When founders of the pedigree are related, the computation is more tricky.
+*RVS* allows the user to apply a correction for this fact in two different ways.
+The first way, illustrated below, is a method from @Bureau2014 that
+uses the mean kinship coefficient among founders to apply a correction. For more
+details on this calculation see
+[here](#computation-of-approximate-correction-based-on-kinship-coefficient).
+The same correction as well as corrections involving any prespecified
+relationships among founders can be implemented using a Monte Carlo simulation
 outlined [here](#using-monte-carlo-simulation).
 
 ```{r}
@@ -225,7 +252,7 @@ legend(min(kin_coef), max(pvals), legend=colnames(pvals), col=c("black", "red", 
 ```
 
 # Joint analysis of multiple variants
-The power of single variant analyses is limited due to the small number of families where a rare variant is seen (often a single family). Even if no individual variant has a significant p-value, it is possible for multiple variants considered across multiple families to exhibit an unusual amount of sharing. The procedure to test multiple rare variants depends whether the variants are far appart or close together in a short genomic region, spanning a single gene for instance.
+The power of single variant analyses is limited due to the small number of families where a rare variant is seen (often a single family). Even if no individual variant has a significant p-value, it is possible for multiple variants considered across multiple families to exhibit an unusual amount of sharing. The procedure to test multiple rare variants depends whether the variants are far apart or close together in a short genomic region, spanning a single gene for instance.
 
 ## Enrichment Test
 The *enrichmentPValue* function can compute a single p-value for all
