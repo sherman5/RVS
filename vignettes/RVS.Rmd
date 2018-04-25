@@ -151,7 +151,7 @@ to reject the null hypothesis for many of the variants with limited information
 achievable for that variant is larger than the cutoff. 
 *multipleVariantPValue* provides a filtering option based on the potentia
 p-values. Potential p-values are the lower bound on the p-value for each
-variant (@Bureau2014). In this example we omit any variant whose potential
+variant (@METHODS). In this example we omit any variant whose potential
 p-values exceeds the cutoff obtained by applying the Bonferroni correction for
 the number of variants with a sufficiently low potential p-value. In this way,
 we both increase the p-value cutoff (and hence the power of the test) while
@@ -220,7 +220,7 @@ legend(min(freq), max(pvals), legend=colnames(pvals), col=c("black", "red", "blu
 
 When founders of the pedigree are related, the computation is more tricky.
 *RVS* allows the user to apply a correction for this fact in two different ways.
-The first way, illustrated below, is a method from @Bureau2014 that
+The first way, illustrated below, is a method from @METHODS that
 uses the mean kinship coefficient among founders to apply a correction. For more
 details on this calculation see
 [here](#computation-of-approximate-correction-based-on-kinship-coefficient).
