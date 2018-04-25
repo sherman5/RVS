@@ -145,15 +145,4 @@ RVgene(list(snpMat),ex.ped.obj,sites,
     pattern.prob.list=ex.pattern.prob.list, nequiv.list=ex.nequiv.list,
     N.list=ex.N.list,minor.allele.vec=minor.allele.vec)
 }
-\references{
-http://www.cog-genomics.org/plink2/formats
-
-Bureau, A., Younkin, S., Parker, M.M., Bailey-Wilson, J.E.,
-Marazita, M.L., Murray, J.C., Mangold, E., Albacha-Hejazi, H., Beaty, T.H.
-and Ruczinski, I. (2014) Inferring rare disease risk variants based on
-exact probabilities of sharing by multiple affected relatives.
-Bioinformatics, 30(15): 2189-96, doi:10.1093/bioinformatics/btu198.
-
-Bureau, A., Begum, F., Taub, M.A., Hetmanski, J., Parker, M.M., Albacha-Hejazi, H., Scott, A.F., et al. 2018. “Inferring Disease Risk Genes from Sequencing Data in Multiplex Pedigrees Through Sharing of Rare Variants.” Http://Biorxiv.org/Cgi/Content/Short/285874v1.
-}
 
