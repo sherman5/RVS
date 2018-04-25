@@ -145,4 +145,10 @@ RVgene(list(snpMat),ex.ped.obj,sites,
     pattern.prob.list=ex.pattern.prob.list, nequiv.list=ex.nequiv.list,
     N.list=ex.N.list,minor.allele.vec=minor.allele.vec)
 }
+\references{
+Bureau, A., Begum, F., Taub, M.A., Hetmanski, J., Parker, M.M.,
+Albacha-Hejazi, H., Scott, A.F., et al. 2018. Inferring Disease Risk Genes
+from Sequencing Data in Multiplex Pedigrees Through Sharing of Rare Variants.
+http://Biorxiv.org/Cgi/Content/Short/285874v1.
+}
 
