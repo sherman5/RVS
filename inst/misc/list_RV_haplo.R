@@ -8,7 +8,7 @@ listRVhaplo = function(vec,chr,legend.dat,haplo.dat,filteredvcf.dat,sample.dat,s
 	# 					in the analysis and a RefgeneGeneName column with the gene name.
 	# sample.dat : data.frame with a variable ID_1 identifying the family.
 	# selected.dat : optional logical vector of weather each variant in legend.dat meets the desired selection criterion
-	
+	famid = as.character(sample.dat$ID_1)
          # gene name
         g = as.character(unlist(vec[1]))
         # Read section of haplotype file for the gene
@@ -53,13 +53,16 @@ if (!is.matrix(RVhaplotypes )) RVhaplotypes  = matrix(RVhaplotypes,1,ncol(haplot
 # on multiple haplotypes defined by these RVs
 if (nrow(common_var_haplo)>0)
 {
-trueRV = apply(RVhaplotypes,1,ncvhaplo,chm = common_var_haplo,fams=rep(sample.dat$ID_1,rep(2,nrow(sample.dat))))==1
+trueRV = apply(RVhaplotypes,1,ncvhaplo,chm = common_var_haplo,fams=rep(famid,rep(2,length(famid))))==1
 if (sum(trueRV)>0)
 {
 trueRVhaplotypes = RVhaplotypes[trueRV,]
 if (!is.matrix(trueRVhaplotypes )) trueRVhaplotypes  = matrix(trueRVhaplotypes,1,ncol(haplotypes))
 
-common_var_string = apply(common_var_haplo,2,function(vec) paste(vec,collapse=""))
+# Add the family ID as an additional "variant", so the same common haplotype in different families 
+# is assigned a different common_var_string
+tmp = rbind(as.character(common_var_haplo),famid)
+common_var_string = apply(tmp,2,function(vec) paste(vec,collapse=""))
 recodedRV.vec = apply(trueRVhaplotypes,2,sum)
 
 # Recoding haplotypes into variants
@@ -72,6 +75,8 @@ recodedRV.mat = matrix(0,sum(RVonhaplo),ncol(haplotypes))
 # The row names are the common variant haplotypes with RVs on them (without specification of which RV)
 dimnames(recodedRV.mat) = list(names(recodedRV.list)[RVonhaplo],common_var_string)
 for (i in names(recodedRV.list)[RVonhaplo])
+	# Each common haplotype copy present in the haplotype sample is assigned the number of RVs it carries on 
+	# the recoded haplotypes (should be the same for all)
 	recodedRV.mat[i,dimnames(recodedRV.mat)[[2]]==i] = recodedRV.list[[i]]
 
 tt = table(trueRV)
