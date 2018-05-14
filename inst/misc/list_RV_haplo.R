@@ -61,7 +61,7 @@ if (!is.matrix(trueRVhaplotypes )) trueRVhaplotypes  = matrix(trueRVhaplotypes,1
 
 # Add the family ID as an additional "variant", so the same common haplotype in different families 
 # is assigned a different common_var_string
-tmp = rbind(as.character(common_var_haplo),famid)
+tmp = rbind(common_var_haplo,rep(famid,rep(2,length(famid))))
 common_var_string = apply(tmp,2,function(vec) paste(vec,collapse=""))
 recodedRV.vec = apply(trueRVhaplotypes,2,sum)
 
