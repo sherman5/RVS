@@ -55,6 +55,7 @@ marginalProb <- function(net, states)
             # calculate probability for this node
             p <- unname(gRain::querygrain(net, n, exclude=FALSE)[[1]])
             prob <- prob * sum(p[states[[n]]+1])
+            prob <- ifelse(is.na(prob), 0, prob)
 
             # condition on this node being in the correct states
             net <- gRain::setEvidence(net, evidence=sapply(simplify=FALSE,
