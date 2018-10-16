@@ -17,6 +17,7 @@ License: GPL-2
 Depends:
     R (>= 3.4.0)
 Imports:
+    GENLIB,
     gRain,
     snpStats,
     kinship2,
@@ -42,3 +43,4 @@ Collate:
     'multipleFamilyCalculations.R'
     'relatedFoundersCorrection.R'
     'sharingProbabilityCalculations.R'
+    'sharingProbabilityCalculationsSplitting.R'
