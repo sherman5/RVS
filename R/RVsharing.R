@@ -66,6 +66,8 @@ founderDist, useAffected, kinshipOrder, ...)
     checkArgs(alleleFreq, kinshipCoeff, nSim, founderDist)
     if (!useAffected) ped$affected <- numeric(0)
     procPed <- processPedigree(ped, carriers)
+    if (length(procPed$affected) < 2)
+        stop('need at least 2 affected subjects')
 
     # calculate sharing prob with appropiate method
     if (!is.na(nSim))

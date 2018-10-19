@@ -78,8 +78,8 @@ function(ped, carriers)
     # check pedigree is valid
     #if (sum(affected %in% founders) > 0)
     #    stop('some founders are affected')
-    if (length(affected) < 2)
-        stop('need at least 2 affected subjects')
+    #if (length(affected) < 2)
+    #    stop('need at least 2 affected subjects')
     if (sum(!carriers %in% affected) > 0)
         stop('carriers must be a subset of affected')
 
