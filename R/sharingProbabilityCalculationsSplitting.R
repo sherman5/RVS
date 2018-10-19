@@ -48,7 +48,7 @@ oneFounderSharingProbSplitting <- function(procPed)
 	    if (class(net)[1]!="try-error")
 	    {
 	    evid = rep('0', length(subprocPed$founders))
-	    evid[f] = '1';
+	    evid[which(subped$ind==f)] = '1';
 	    net <- gRain::setEvidence(net, as.character(subprocPed$founders),evid)		
 		
         # compute probabilities
