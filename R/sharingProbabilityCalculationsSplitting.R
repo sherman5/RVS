@@ -61,12 +61,13 @@ oneFounderSharingProbSplitting <- function(procPed)
 
 numerProbSet <- function(carriers,net,procPed)
 {
-if (all(carriers %in% procPed$affected))
+carriersi = which(procPed$origID%in%carriers)
+if (all(carriersi %in% procPed$affected))
 	{
 	rvInCarriers <- sapply(simplify=FALSE, FUN=function(dummy) 1:2,
-        X=as.character(carriers))
+      X=as.character(carriersi))
     noRvInNonCarriers <- sapply(simplify=FALSE, FUN=function(dummy) 0,
-        X=as.character(setdiff(procPed$affected, carriers)))
+      X=as.character(setdiff(procPed$affected, carriersi)))
     return(marginalProb(net, c(rvInCarriers, noRvInNonCarriers)))
 	}
 else return (0)
