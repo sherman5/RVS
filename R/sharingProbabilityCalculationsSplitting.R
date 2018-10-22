@@ -45,7 +45,8 @@ oneFounderSharingProbSplitting <- function(procPed)
 						
 		    # set all founders to 0 (no variant)	 except current founder f	    
 	    net <- try(createNetwork(subprocPed))
-	    if (class(net)[1]!="try-error")
+	    if (class(net)[1]=="try-error") stop("Creation of subpedigree below founder ",procPed$origID[f]," failed.")
+	    else
 	    {
 	    evid = rep('0', length(subprocPed$founders))
 	    evid[which(subped$ind==f)] = '1';
