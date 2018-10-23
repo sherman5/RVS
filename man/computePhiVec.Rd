@@ -19,4 +19,3 @@ numbers of distinct alleles from amin to 2*nf-1
 expected kinship coefficient for different number of alleles
 }
 \keyword{internal}
-

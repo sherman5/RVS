@@ -20,4 +20,3 @@ true if both subjects share a child
 determine if two subjects have a child together
 }
 \keyword{internal}
-

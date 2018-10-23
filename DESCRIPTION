@@ -30,7 +30,7 @@ Suggests:
     rmarkdown,
     BiocStyle
 VignetteBuilder: knitr
-RoxygenNote: 5.0.1
+RoxygenNote: 6.1.0
 biocViews: Genetics, GenomeWideAssociation, VariantDetection, ExomeSeq,
     WholeGenome
 Collate:

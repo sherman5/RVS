@@ -35,4 +35,3 @@ Bailey-Wilson, J.E., Marazita, M.L., et al. 2017. Whole Exome Association of
 Rare Deletions in Multiplex Oral Cleft Families. Genetic Epidemiology 41
 (1): 61–69. doi:10.1002/gepi.22010.
 }
-
