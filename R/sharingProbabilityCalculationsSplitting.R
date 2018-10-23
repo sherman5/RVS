@@ -9,6 +9,11 @@
 oneFounderSharingProbSplitting <- function(procPed)
 {
 	nf = length(procPed$founders)
+	# Identifying founder couples
+	fci = apply(procPed$parents,2,function(vec,founder.vec) all(vec %in% founder.vec), founder.vec = procPed$founders)
+	founder.couples = unique(t(as.matrix(procPed$parents[,fci])))
+	other.founders = procPed$founders[!(procPed$founders%in%founder.couples)]
+	
 	# Creating genealogy with procPed
 	peddat = data.frame(procPed$id,t(procPed$parents),as.numeric(procPed$ped$sex))
 	colnames(peddat) = c("ind","father","mother","sex")
@@ -23,7 +28,8 @@ oneFounderSharingProbSplitting <- function(procPed)
 	carrier.sets = c(carrier.sets, combn(procPed$affected,i,simplify=FALSE))
     carrier.numer <- rep(0,length(carrier.sets))
     carrier.noRV <- 0
-    for (f in procPed$founders) #TODO: use sapply here
+    # First loop over the founder couples, using the father as index, then the other founders
+    for (f in c(founder.couples[,1],other.founders)) 
     {
     	# Extract subpedigree 
     	subaffected = procPed$affected[affByFounder[rownames(affByFounder)==as.character(f),]>0]
@@ -39,6 +45,9 @@ oneFounderSharingProbSplitting <- function(procPed)
 		pedtmp=data.frame(ind=c(p.vec,m.vec),father=0,mother=0,sex=c(rep(1,length(p.vec)),rep(2,length(m.vec))))
 		subped = rbind(subped,pedtmp)
 		
+		# Code to follow progression
+		cat ("Founder ",f," subped size ",nrow(subped),"\n")
+		
 		# Recreating a processed ped
 		#subprocPed = list('parents'=rbind(subped$father,subped$mother),'id'=subped$ind,'affected'=subaffected,'founders'=which(subped$father == 0))
 		subprocPed = processPedigree(kinship2::pedigree(subped$ind,subped$father,subped$mother,subped$sex,subped$ind%in%subaffected))
@@ -53,8 +62,17 @@ oneFounderSharingProbSplitting <- function(procPed)
 	    net <- gRain::setEvidence(net, as.character(subprocPed$founders),evid)		
 		
         # compute probabilities
-        carrier.noRV <- carrier.noRV + 1 - denomProb(net,subprocPed)
-        carrier.numer <- carrier.numer + sapply(carrier.sets,numerProbSet,net=net, procPed=subprocPed)
+        if (f %in% founder.couples[,1])
+        {
+        	# Multiply probabilities by 2 to account for the mother contribution
+        	carrier.noRV <- carrier.noRV + 2*(1 - denomProb(net,subprocPed))
+        	carrier.numer <- carrier.numer + 2*sapply(carrier.sets,numerProbSet,net=net, procPed=subprocPed)
+        }
+        else
+        {
+        	carrier.noRV <- carrier.noRV + 1 - denomProb(net,subprocPed)
+        	carrier.numer <- carrier.numer + sapply(carrier.sets,numerProbSet,net=net, procPed=subprocPed)
+        }
         }
     }
     return(carrier.numer/(nf-carrier.noRV))
