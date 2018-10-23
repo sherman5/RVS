@@ -2,7 +2,7 @@
 title: "The RVS (Rare Variant Sharing) Package"
 author: "Alexandre Bureau, Ingo Ruczinski, Samuel Younkin, Thomas Sherman"
 data: "`r Sys.Date()`"
-package: "`r pkg_ver('RVS')`"
+package: "`r BiocStyle::pkg_ver('RVS')`"
 bibliography: References.bib
 vignette: >
     %\VignetteIndexEntry{The RVS Package}
