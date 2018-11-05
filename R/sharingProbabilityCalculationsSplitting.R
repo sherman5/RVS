@@ -59,7 +59,8 @@ oneFounderSharingProbSplitting <- function(procPed)
 	    {
 	    evid = rep('0', length(subprocPed$founders))
 	    evid[which(subped$ind==f)] = '1';
-	    net <- gRain::setEvidence(net, as.character(subprocPed$founders),evid)		
+	    net <- try(gRain::setEvidence(net, as.character(subprocPed$founders),evid))		
+	    if (class(net)[1]=="try-error") stop("Setting founder genotypes of subpedigree below founder ",procPed$origID[f]," failed.")
 		
         # compute probabilities
         if (f %in% founder.couples[,1])
