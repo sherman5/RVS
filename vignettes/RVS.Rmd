@@ -286,6 +286,11 @@ fam15157.pattern.prob = sapply(carrier.sets,function (vec) RVsharing(samplePedig
 fam15157.N = sapply(carrier.sets,length)
 ```
 
+When the *splitPed* option is *TRUE*, the generation of all carrier subsets is performed within the *RVsharing* function, which then returns the vector of sharing probabilities for all subsets. So the following code is equivalent to the *sapply* of *RVsharing* above:
+```{r}
+fam15157.pattern.prob = RVsharing(samplePedigrees$secondCousinTriple,splitPed=TRUE)
+```
+
 While this code applies to any configuration of affected final descendants, symmetries in the relationships of these third cousins results in equal sharing probabilities for multiple subsets. Subsets with the same probabilities are equivalent, and the optional argument *nequiv.list* can be used to indicate the number of equivalent subset for each sharing probability. While shorter vectors in *pattern.prob.list* and *N.list* result in more efficient computation, identification of the equivalent subsets is not easily automated, and will usually require custom code for each pedigree in a sample. With three second cousins we can use:
 
 ```{r}
