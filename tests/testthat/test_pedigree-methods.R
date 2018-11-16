@@ -19,9 +19,6 @@ test_that('pre-process pedigree',
     expect_equal(procPed$carriers, c(7,8))
     expect_equal(procPed$id, 1:8)
     expect_equal(procPed$finalDescendants, c(7,8))
-    
-    ped$affected <- rep(0, procPed$size)
-    expect_error(processPedigree(ped), 'need at least 2 affected subjects')
 })
 
 test_that('pedigree calculations',
