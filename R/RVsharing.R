@@ -97,8 +97,18 @@ founderDist, useAffected, kinshipOrder, splitPed=FALSE, ...)
     # print and return result
     carrierText <- paste(procPed$origID[procPed$carriers], collapse=' ')
     affectedText <- paste(procPed$origID[procPed$affected], collapse=' ')
-    message(paste('Probability subjects', carrierText, 'among',
-        affectedText, 'share a rare variant:', signif(prob, 4)))
+
+    if (splitPed)
+    {
+        message('Probability every subset of subjects among ', affectedText,
+            ' share a rare variant:')
+        print(signif(prob, 4))
+    }
+    else
+    {
+        message(paste('Probability subjects', carrierText, 'among',
+            affectedText, 'share a rare variant:', signif(prob, 4)))
+    }
     return(prob)
 })
 
