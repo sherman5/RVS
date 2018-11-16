@@ -39,6 +39,15 @@ test_that('RVsharing runs on all sample pedigrees',
     expect_equal(RVsharing(samplePedigrees[[9]]), 0.0028, tolerance=1e-3)
 })
 
+test_that('splitPed returns consistent results',
+{
+    data(samplePedigrees)
+    
+    expect_equal(length(samplePedigrees), 9)
+    res8 <- RVsharing(samplePedigrees[[8]], splitPed=TRUE)
+    expect_true(all.equal(res8, c(0.0187, 0.4997, 0.4815), tol=1e-3))
+})
+
 test_that('monte carlo close to exact',
 {
     set.seed(0)
