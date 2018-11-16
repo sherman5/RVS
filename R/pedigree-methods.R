@@ -184,6 +184,25 @@ areMating <- function(procPed, f1, f2)
     sum(apply(procPed$parents, 2, function(p) f1 %in% p & f2 %in% p)) > 0
 }
 
+#' determine if subjects are descended from founders
+#' @keywords internal
+#'
+#' @param procPed pedigree that has been through \code{processPedigree}
+#' @param subjects vector of subject ids
+#' @param founders vector of founder ids
+#' @return data frame with 0/1 for if a subject if descended from founder
+founderOccurence <- function(procPed, subjects, founders)
+{
+    df <- as.data.frame(sapply(subjects, function(sub)
+        sapply(founders, function(found) 
+            as.numeric(RVS:::isDescendant(procPed, found, sub))
+        )
+    ))
+    colnames(df) <- subjects
+    rownames(df) <- founders
+    return(df)
+}
+
 #' deprecated function
 #' @export
 #' @description This function is deprecated with version >= 2.0

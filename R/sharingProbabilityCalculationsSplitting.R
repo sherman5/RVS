@@ -20,7 +20,8 @@ oneFounderSharingProbSplitting <- function(procPed)
 	gen = GENLIB::gen.genealogy(peddat)
 
 	# Find occurence of founders in ancestry of each affected subject
-	affByFounder = GENLIB::gen.occ(gen,pro=procPed$affected,procPed$founders)
+    affByFounder <- founderOccurence(procPed, procPed$affected, procPed$founders)
+    #affByFounder = GENLIB::gen.occ(gen,pro=procPed$affected,procPed$founders)
 	
     # sum over probs, conditioning on each founder introducing variant
 	carrier.sets = list()
