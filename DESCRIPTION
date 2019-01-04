@@ -2,7 +2,7 @@ Package: RVS
 Type: Package
 Title: Computes estimates of the probability of related individuals sharing a
     rare variant
-Version: 1.5.0
+Version: 1.5.1
 Date: 2017-07-11
 Author: Alexandre Bureau, Ingo Ruczinski, Samuel Younkin, Thomas Sherman
 Maintainer: Thomas Sherman <tsherma4@jhu.edu>
@@ -30,7 +30,7 @@ Suggests:
     BiocStyle
 VignetteBuilder: knitr
 RoxygenNote: 5.0.1
-biocViews: Genetics, GenomeWideAssociation, VariantDetection, ExomeSeq,
+biocViews: ImmunoOncology, Genetics, GenomeWideAssociation, VariantDetection, ExomeSeq,
     WholeGenome
 Collate:
     'RVgene.R'
