@@ -353,7 +353,7 @@ precomputed.prob=list(0), maxdim = 1e9, partial.sharing=TRUE, ...)
                 tmp = suppressMessages(RVsharing(ped.listfams[[fams.vec[f]]],
                     carriers=carriers,...))
             # If the RV has lower sharing probability, we keep it for this fam
-            if (is.na(famRVprob[fams.vec[f]]) || tmp < famRVprob[fams.vec[f]])
+            if (is.na(famRVprob[fams.vec[f]]) || (tmp > 0 & tmp < famRVprob[fams.vec[f]]))
             {
                 famRVprob[fams.vec[f]] = tmp
                 famNcarriers[fams.vec[f]] = length(carriers)
