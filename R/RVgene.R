@@ -265,6 +265,7 @@ precomputed.prob=list(0), maxdim = 1e9, partial.sharing=TRUE, ...)
                 fams.site = unique(ped.mat[ped.mat[,6]==2 &
                     (ped.mat[,5+2*sites[i]]==minor.allele.vec[i] |
                     ped.mat[,6+2*sites[i]]==minor.allele.vec[i]),1])
+                if (length(fams.site)==0) stop("No variant allele at site ",sites[i])
                 if (is.factor(fams.site)) fams.site=as.character(fams.site)
                 fams.vec = c(fams.vec,fams.site)
                 sites.alongfams = c(sites.alongfams,
