@@ -195,7 +195,7 @@ founderOccurence <- function(procPed, subjects, founders)
 {
     df <- as.data.frame(sapply(subjects, function(sub)
         sapply(founders, function(found) 
-            as.numeric(RVS:::isDescendant(procPed, found, sub))
+            as.numeric(isDescendant(procPed, found, sub))
         )
     ))
     colnames(df) <- subjects
