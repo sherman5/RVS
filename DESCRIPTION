@@ -30,7 +30,8 @@ Suggests:
     rmarkdown,
     BiocStyle
 VignetteBuilder: knitr
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
+Encoding: UTF-8
 biocViews: Genetics, GenomeWideAssociation, VariantDetection, ExomeSeq,
     WholeGenome
 Collate:
