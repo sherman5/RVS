@@ -24,4 +24,3 @@ make the neccesary correction for when founders have a non-zero
 kinship coefficient
 }
 \keyword{internal}
-

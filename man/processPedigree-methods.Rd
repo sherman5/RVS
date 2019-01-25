@@ -26,4 +26,3 @@ subsequent computations much easier.
 data(samplePedigrees)
 processPedigree(samplePedigrees$firstCousinPair)
 }
-

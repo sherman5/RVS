@@ -78,8 +78,8 @@ function(ped, carriers)
     # check pedigree is valid
     #if (sum(affected %in% founders) > 0)
     #    stop('some founders are affected')
-    if (length(affected) < 2)
-        stop('need at least 2 affected subjects')
+    #if (length(affected) < 2)
+    #    stop('need at least 2 affected subjects')
     if (sum(!carriers %in% affected) > 0)
         stop('carriers must be a subset of affected')
 
@@ -182,6 +182,25 @@ ancestorDistance <- function(procPed, a, d)
 areMating <- function(procPed, f1, f2)
 {
     sum(apply(procPed$parents, 2, function(p) f1 %in% p & f2 %in% p)) > 0
+}
+
+#' determine if subjects are descended from founders
+#' @keywords internal
+#'
+#' @param procPed pedigree that has been through \code{processPedigree}
+#' @param subjects vector of subject ids
+#' @param founders vector of founder ids
+#' @return data frame with 0/1 for if a subject if descended from founder
+founderOccurence <- function(procPed, subjects, founders)
+{
+    df <- as.data.frame(sapply(subjects, function(sub)
+        sapply(founders, function(found) 
+            as.numeric(RVS:::isDescendant(procPed, found, sub))
+        )
+    ))
+    colnames(df) <- subjects
+    rownames(df) <- founders
+    return(df)
 }
 
 #' deprecated function

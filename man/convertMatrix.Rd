@@ -20,4 +20,3 @@ list of boolean vectors indicating sharing pattern for each variant
 \description{
 convert snpMatrix to a list of vectors of sharing
 }
-

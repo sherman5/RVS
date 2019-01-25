@@ -3,21 +3,20 @@
 \docType{methods}
 \name{RVsharing}
 \alias{RVsharing}
-\alias{RVsharing,list-method}
 \alias{RVsharing,pedigree-method}
+\alias{RVsharing,list-method}
 \title{probability of sharing a rare variant among relatives}
 \usage{
 RVsharing(ped, carriers = NULL, alleleFreq = NA, kinshipCoeff = NA,
-  nSim = NA, founderDist = NULL, useAffected = FALSE, kinshipOrder = 5,
-  ...)
-
-\S4method{RVsharing}{pedigree}(ped, carriers = NULL, alleleFreq = NA,
-  kinshipCoeff = NA, nSim = NA, founderDist = NULL, useAffected = FALSE,
+  nSim = NA, founderDist = NULL, useAffected = FALSE,
   kinshipOrder = 5, ...)
+
+\S4method{RVsharing}{pedigree}(ped, carriers, alleleFreq, kinshipCoeff,
+  nSim, founderDist, useAffected, kinshipOrder, splitPed = FALSE, ...)
 
 \S4method{RVsharing}{list}(ped, carriers = NULL, alleleFreq = NA,
-  kinshipCoeff = NA, nSim = NA, founderDist = NULL, useAffected = FALSE,
-  kinshipOrder = 5, ...)
+  kinshipCoeff = NA, nSim = NA, founderDist = NULL,
+  useAffected = FALSE, kinshipOrder = 5, ...)
 }
 \arguments{
 \item{ped}{S3 pedigree object or a list of pedigree objects}
@@ -35,7 +34,7 @@ the carriers in each pedigree}
 \item{founderDist}{custom distribution among founders - only used
 when simulating probability with nSim}
 
-\item{useAffected}{allows the user to condition on seeing the variant
+\item{useAffected}{a logical value indicating whether to condition on seeing the variant
 among the affected subjects instead of the final descendants}
 
 \item{kinshipOrder}{order of the polynomial approximation to the distribtion
@@ -43,9 +42,11 @@ of the number of distinct alleles in the founders (d in Bureau et al.).
 Must be <= 5}
 
 \item{...}{allows for arguments in the style of v1.7}
+
+\item{splitPed}{a logical value indicating whether to split the pedigree in subpedigrees below each founder to enable computations in pedigrees too large to be stored in a single Bayesian network}
 }
 \value{
-sharing probability between all carriers in pedigree
+sharing probability between all carriers in pedigree, or if splitPed = TRUE, a vector of sharing probabilities for all subsets of the carriers
 }
 \description{
 computing probability that a rare variant is shared by a
@@ -79,4 +80,3 @@ and Ruczinski, I. (2014) Inferring rare disease risk variants based on
 exact probabilities of sharing by multiple affected relatives.
 Bioinformatics, 30(15): 2189-96, doi:10.1093/bioinformatics/btu198.
 }
-

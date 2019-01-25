@@ -223,6 +223,10 @@ extract_carriers = function(ped,site,fam,type="alleles",minor.allele=2)
 #' RVgene(list(snpMat),ex.ped.obj,sites,
 #'     pattern.prob.list=ex.pattern.prob.list, nequiv.list=ex.nequiv.list,
 #'     N.list=ex.N.list,minor.allele.vec=minor.allele.vec)
+#' @references Bureau, A., Begum, F., Taub, M.A., Hetmanski, J., Parker, M.M.,
+#' Albacha-Hejazi, H., Scott, A.F., et al. 2018. Inferring Disease Risk Genes
+#' from Sequencing Data in Multiplex Pedigrees Through Sharing of Rare Variants.
+#' http://Biorxiv.org/Cgi/Content/Short/285874v1.
 RVgene <- function(data, ped.listfams, sites, fams, pattern.prob.list,
 nequiv.list, N.list, type="alleles", minor.allele.vec,
 precomputed.prob=list(0), maxdim = 1e9, partial.sharing=TRUE, ...)
@@ -261,6 +265,7 @@ precomputed.prob=list(0), maxdim = 1e9, partial.sharing=TRUE, ...)
                 fams.site = unique(ped.mat[ped.mat[,6]==2 &
                     (ped.mat[,5+2*sites[i]]==minor.allele.vec[i] |
                     ped.mat[,6+2*sites[i]]==minor.allele.vec[i]),1])
+                if (length(fams.site)==0) stop("No variant allele at site ",sites[i])
                 if (is.factor(fams.site)) fams.site=as.character(fams.site)
                 fams.vec = c(fams.vec,fams.site)
                 sites.alongfams = c(sites.alongfams,
@@ -349,7 +354,7 @@ precomputed.prob=list(0), maxdim = 1e9, partial.sharing=TRUE, ...)
                 tmp = suppressMessages(RVsharing(ped.listfams[[fams.vec[f]]],
                     carriers=carriers,...))
             # If the RV has lower sharing probability, we keep it for this fam
-            if (is.na(famRVprob[fams.vec[f]]) || tmp < famRVprob[fams.vec[f]])
+            if (is.na(famRVprob[fams.vec[f]]) || (tmp > 0 & tmp < famRVprob[fams.vec[f]]))
             {
                 famRVprob[fams.vec[f]] = tmp
                 famNcarriers[fams.vec[f]] = length(carriers)
