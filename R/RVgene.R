@@ -282,6 +282,7 @@ precomputed.prob=list(0), maxdim = 1e9, partial.sharing=TRUE, ...)
                 ped.obs = ped.mat[!is.na(ped.mat[,6+sites[i]]),]
                 fams.site = unique(ped.obs[ped.obs[,6]==2 &
                     ped.obs[,6+sites[i]]>0,1])
+                if (length(fams.site)==0) stop("No variant allele at site ",sites[i])
                 if (is.factor(fams.site)) fams.site=as.character(fams.site)
                 fams.vec = c(fams.vec,fams.site)
                 sites.alongfams = c(sites.alongfams,
