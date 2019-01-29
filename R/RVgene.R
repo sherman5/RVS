@@ -206,27 +206,40 @@ extract_carriers = function(ped,site,fam,type="alleles",minor.allele=2)
 #' # check that distribution sums to 1
 #' sum(fam15157.pattern.prob*fam15157.nequiv)
 #' fam15157.N = 3:1
+#' fam28003 <- samplePedigrees$firstAndSecondCousinsTriple
+#' fam28003.pattern.prob = c(RVsharing(fam28003,carriers=c(36,104,110)),
+#'     RVsharing(fam28003,carriers=c(36,104)),
+#'     RVsharing(fam28003,carriers=c(104,110)),
+#'     RVsharing(fam28003,carriers=c(36)),
+#'     RVsharing(fam28003,carriers=c(104)))
+#' fam28003.N = c(3,2,2,1,1)
+#' fam28003.nequiv = c(1,2,1,1,2)
+#' # check that distribution sums to 1
+#' sum(fam28003.pattern.prob*fam28003.nequiv)
 #' # Creating lists
-#' ex.pattern.prob.list = list("15157"=fam15157.pattern.prob)
-#' ex.nequiv.list = list("15157"=fam15157.nequiv)
-#' ex.N.list = list("15157"=fam15157.N)
-#' ex.ped.obj = list(fam15157)
-#' names(ex.ped.obj) = c("15157")
+#' ex.pattern.prob.list = list("15157"=fam15157.pattern.prob,"28003"=fam28003.pattern.prob)
+#' ex.nequiv.list = list("15157"=fam15157.nequiv,"28003"=fam28003.nequiv)
+#' ex.N.list = list("15157"=fam15157.N,"28003"=fam28003.N)
+#' ex.ped.obj = list(fam15157,fam28003)
+#' names(ex.ped.obj) = c("15157","28003")
 #' sites = c(92,119)
 #' minor.allele.vec=c(1,4)
-#' RVgene(ex.ped.mat[1:17,],ex.ped.obj,sites,
+#' RVgene(ex.ped.mat,ex.ped.obj,sites,
 #'     pattern.prob.list=ex.pattern.prob.list,
 #' nequiv.list=ex.nequiv.list,N.list=ex.N.list,
 #'     minor.allele.vec=minor.allele.vec)
-#' # calling with a SnpMatrix
-#' data(snpMat)
-#' RVgene(list(snpMat),ex.ped.obj,sites,
+#' # calling with a SnpMatrix list
+#' data(famVCF)
+#' fam15157.snp = suppressWarnings(VariantAnnotation::genotypeToSnpMatrix(fam15157.vcf))
+#' fam28003.snp = suppressWarnings(VariantAnnotation::genotypeToSnpMatrix(fam28003.vcf))
+#' ex.SnpMatrix.list = list(fam15157=fam15157.snp$genotypes,fam28003=fam28003.snp$genotypes)
+#' RVgene(ex.SnpMatrix.list,ex.ped.obj,sites,
 #'     pattern.prob.list=ex.pattern.prob.list, nequiv.list=ex.nequiv.list,
 #'     N.list=ex.N.list,minor.allele.vec=minor.allele.vec)
 #' @references Bureau, A., Begum, F., Taub, M.A., Hetmanski, J., Parker, M.M.,
-#' Albacha-Hejazi, H., Scott, A.F., et al. 2018. Inferring Disease Risk Genes
+#' Albacha-Hejazi, H., Scott, A.F., et al. (2019) Inferring Disease Risk Genes
 #' from Sequencing Data in Multiplex Pedigrees Through Sharing of Rare Variants.
-#' http://Biorxiv.org/Cgi/Content/Short/285874v1.
+#' Genet Epidemiol. 43(1):37-49. doi: 10.1002/gepi.22155.
 RVgene <- function(data, ped.listfams, sites, fams, pattern.prob.list,
 nequiv.list, N.list, type="alleles", minor.allele.vec,
 precomputed.prob=list(0), maxdim = 1e9, partial.sharing=TRUE, ...)
@@ -282,6 +295,7 @@ precomputed.prob=list(0), maxdim = 1e9, partial.sharing=TRUE, ...)
                 ped.obs = ped.mat[!is.na(ped.mat[,6+sites[i]]),]
                 fams.site = unique(ped.obs[ped.obs[,6]==2 &
                     ped.obs[,6+sites[i]]>0,1])
+                if (length(fams.site)==0) stop("No variant allele at site ",sites[i])
                 if (is.factor(fams.site)) fams.site=as.character(fams.site)
                 fams.vec = c(fams.vec,fams.site)
                 sites.alongfams = c(sites.alongfams,

@@ -1,0 +1,13 @@
+# necessary yml
+language: r
+cache: packages
+sudo: required
+
+# dependencies
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install -y libxml2-dev libssl-dev libcurl4-openssl-dev
+
+# use bioconductor
+bioc_required: true
+bioc_use_devel: false
