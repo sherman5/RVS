@@ -17,6 +17,7 @@ License: GPL-2
 Depends:
     R (>= 3.4.0)
 Imports:
+    GENLIB,
     gRain,
     snpStats,
     kinship2,
@@ -27,9 +28,11 @@ Suggests:
     knitr,
     testthat,
     rmarkdown,
-    BiocStyle
+    BiocStyle,
+    VariantAnnotation
 VignetteBuilder: knitr
-RoxygenNote: 5.0.1
+RoxygenNote: 6.1.1
+Encoding: UTF-8
 biocViews: Genetics, GenomeWideAssociation, VariantDetection, ExomeSeq,
     WholeGenome
 Collate:
@@ -42,3 +45,4 @@ Collate:
     'multipleFamilyCalculations.R'
     'relatedFoundersCorrection.R'
     'sharingProbabilityCalculations.R'
+    'sharingProbabilityCalculationsSplitting.R'

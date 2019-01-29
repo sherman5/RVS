@@ -33,13 +33,14 @@ NULL
 #' @param nSim number of simulations used in monte carlo calculation
 #' @param founderDist custom distribution among founders - only used
 #' when simulating probability with nSim
-#' @param useAffected allows the user to condition on seeing the variant
+#' @param useAffected a logical value indicating whether to condition on seeing the variant
 #' among the affected subjects instead of the final descendants
 #' @param kinshipOrder order of the polynomial approximation to the distribtion
 #' of the number of distinct alleles in the founders (d in Bureau et al.).
 #' Must be <= 5
+#' @param splitPed a logical value indicating whether to split the pedigree in subpedigrees below each founder to enable computations in pedigrees too large to be stored in a single Bayesian network
 #' @param ... allows for arguments in the style of v1.7
-#' @return sharing probability between all carriers in pedigree
+#' @return sharing probability between all carriers in pedigree, or if splitPed = TRUE, a vector of sharing probabilities for all subsets of the carriers
 #' @examples
 #' data("samplePedigrees")
 #' RVsharing(samplePedigrees$firstCousinPair)
@@ -57,7 +58,7 @@ kinshipOrder=5, ...)
 #' @aliases RVsharing
 setMethod('RVsharing', signature(ped='pedigree'),
 function(ped, carriers, alleleFreq, kinshipCoeff, nSim,
-founderDist, useAffected, kinshipOrder, ...)
+founderDist, useAffected, kinshipOrder, splitPed=FALSE, ...)
 {
     # needed for backwards compatibility with v1.7
     ped <- oldArgs(ped, list(...)$data, list(...)$dad.id, list(...)$mom.id)
@@ -66,6 +67,8 @@ founderDist, useAffected, kinshipOrder, ...)
     checkArgs(alleleFreq, kinshipCoeff, nSim, founderDist)
     if (!useAffected) ped$affected <- numeric(0)
     procPed <- processPedigree(ped, carriers)
+    if (length(procPed$affected) < 2)
+        stop('need at least 2 affected subjects')
 
     # calculate sharing prob with appropiate method
     if (!is.na(nSim))
@@ -82,6 +85,10 @@ founderDist, useAffected, kinshipOrder, ...)
     {
         prob <- twoFounderSharingProb(procPed, kinshipCoeff, kinshipOrder)
     }
+    else if (splitPed)
+    {
+        prob <- oneFounderSharingProbSplitting(procPed)
+    }
     else
     {
         prob <- oneFounderSharingProb(procPed)
@@ -90,8 +97,18 @@ founderDist, useAffected, kinshipOrder, ...)
     # print and return result
     carrierText <- paste(procPed$origID[procPed$carriers], collapse=' ')
     affectedText <- paste(procPed$origID[procPed$affected], collapse=' ')
-    message(paste('Probability subjects', carrierText, 'among',
-        affectedText, 'share a rare variant:', signif(prob, 4)))
+
+    if (splitPed)
+    {
+        message('Probability every subset of subjects among ', affectedText,
+            ' share a rare variant:')
+        print(signif(prob, 4))
+    }
+    else
+    {
+        message(paste('Probability subjects', carrierText, 'among',
+            affectedText, 'share a rare variant:', signif(prob, 4)))
+    }
     return(prob)
 })
 

@@ -41,10 +41,12 @@ denomProb <- function(net, procPed)
 oneFounderSharingProb <- function(procPed)
 {
     # set all founders to 0 (no variant)
-    net <- createNetwork(procPed)
-    net <- gRain::setEvidence(net, as.character(procPed$founders),
-        rep('0', length(procPed$founders)))
-
+    net <- try(createNetwork(procPed))
+    if (class(net)[1]=="try-error") stop("Creation of Bayesian network for the pedigree failed.")
+    net <- try(gRain::setEvidence(net, as.character(procPed$founders),
+        rep('0', length(procPed$founders))))
+    if (class(net)[1]=="try-error") stop("Setting founder genotypes of the pedigree failed.")
+    
     # sum over probs, conditioning on each founder introducing variant
     numer <- denom <- 0
     for (f in procPed$founders) #TODO: use sapply here
@@ -75,10 +77,12 @@ oneFounderSharingProb <- function(procPed)
 twoFounderSharingProb <- function(procPed, kinshipCoeff, kinshipOrder)
 {
     # set all founders to 0 (no variant)
-    net <- createNetwork(procPed)
-    net <- gRain::setEvidence(net, as.character(procPed$founders),
-        rep('0', length(procPed$founders)))
-
+    net <- try(createNetwork(procPed))
+    if (class(net)[1]=="try-error") stop("Creation of Bayesian network for the pedigree failed.")
+    net <- try(gRain::setEvidence(net, as.character(procPed$founders),
+        rep('0', length(procPed$founders))))
+    if (class(net)[1]=="try-error") stop("Setting founder genotypes of the pedigree failed.")
+    
     # calculate kinship correction and initialize variables
     numer <- denom <- 0
     remainingFounders <- procPed$founders
