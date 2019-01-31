@@ -2,8 +2,8 @@ Package: RVS
 Type: Package
 Title: Computes estimates of the probability of related individuals sharing a
     rare variant
-Version: 1.3.1
-Date: 2017-07-11
+Version: 1.5.2
+Date: 2019-01-30
 Author: Alexandre Bureau, Ingo Ruczinski, Samuel Younkin, Thomas Sherman
 Maintainer: Thomas Sherman <tsherma4@jhu.edu>
 Description: Rare Variant Sharing (RVS) implements tests of association
@@ -33,8 +33,7 @@ Suggests:
 VignetteBuilder: knitr
 RoxygenNote: 6.1.1
 Encoding: UTF-8
-biocViews: Genetics, GenomeWideAssociation, VariantDetection, ExomeSeq,
-    WholeGenome
+biocViews: ImmunoOncology, Genetics, GenomeWideAssociation, VariantDetection, ExomeSeq, WholeGenome
 Collate:
     'RVgene.R'
     'pedigree-methods.R'
