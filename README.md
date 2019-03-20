@@ -28,7 +28,7 @@ devtools::install_github("sherman5/RVS")
 
 # Using RVS
 
-Follow the vignette here: https://bioconductor.org/packages/release/bioc/vignettes/RVS/inst/doc/RVS.html
+Follow the vignette [here](https://bioconductor.org/packages/release/bioc/vignettes/RVS/inst/doc/RVS.html)
 
 # Reporting Bugs/Getting Help
 
