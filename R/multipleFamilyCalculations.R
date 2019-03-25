@@ -94,7 +94,7 @@ multipleFamilyPValue <- function(sharingProbs, observedSharing, minPValue=0)
 convertMatrix <- function(snpMat, famInfo, minorAllele=NA)
 {
     mat <- snpMat@.Data
-    sapply(colnames(mat), function(var)
+    shareList <- sapply(colnames(mat), function(var)
     {
         ret <- c()
         if (is.na(minorAllele))
@@ -118,6 +118,7 @@ convertMatrix <- function(snpMat, famInfo, minorAllele=NA)
         }
         return(ret)
     }, USE.NAMES=TRUE, simplify=FALSE)
+    return(shareList[!sapply(shareList, is.null)])
 }
 
 #' generalization of multipleFamilyPValue to multiple variants
@@ -141,12 +142,18 @@ convertMatrix <- function(snpMat, famInfo, minorAllele=NA)
 multipleVariantPValue <- function(snpMat, famInfo, sharingProbs,
 minorAllele=NA, filter=NULL, alpha=0)
 {
+    # check inputs
+    if (is.null(names(sharingProbs)))
+        stop('sharingProbs must be a named vector')
+
     # convert matrix to list of families with each allele
     shareList <- convertMatrix(snpMat@.Data, famInfo, minorAllele)
 
     # calculate potential p-values
     pot_pvals <- sapply(shareList, function(vec)
     {
+        if (!all(names(vec) %in% names(sharingProbs)))
+            stop('sharingProbs is missing a value for some families')
         prob <- 1
         for (fid in names(vec))
         {
