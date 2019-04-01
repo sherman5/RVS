@@ -15,7 +15,7 @@ Description: Rare Variant Sharing (RVS) implements tests of association
     multiple variants in a region (e.g. gene-based test).
 License: GPL-2
 Depends:
-    R (>= 3.4.0)
+    R (>= 3.5.0)
 Imports:
     GENLIB,
     gRain,
