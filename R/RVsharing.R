@@ -49,6 +49,10 @@ NULL
 #' and Ruczinski, I. (2014) Inferring rare disease risk variants based on
 #' exact probabilities of sharing by multiple affected relatives.
 #' Bioinformatics, 30(15): 2189-96, doi:10.1093/bioinformatics/btu198.
+#'
+#' Sherman, T., Fu, J., Scharpf, R., Bureau, A., and Ruczinski, I. (2018)
+#' Detection of rare disease variants in extended pedigrees using RVS.
+#' Bioinformatics, 1-3, doi: 10.1093/bioinformatics/bty976
 setGeneric('RVsharing', function(ped, carriers=NULL, alleleFreq=NA,
 kinshipCoeff=NA, nSim=NA, founderDist=NULL, useAffected=FALSE,
 kinshipOrder=5, ...)

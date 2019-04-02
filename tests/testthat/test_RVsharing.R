@@ -50,11 +50,11 @@ test_that('splitPed returns consistent results',
 
 test_that('monte carlo close to exact',
 {
-    set.seed(0)
+    set.seed(42)
     monteCarloComp <- function(ped, freq=NA, kin=NA)
     {
         abs(RVsharing(ped, alleleFreq=freq, kinshipCoeff=kin) - 
-            RVsharing(ped, alleleFreq=freq, kinshipCoeff=kin, nSim=2e4))
+            RVsharing(ped, alleleFreq=freq, kinshipCoeff=kin, nSim=5e4))
     }
 
     data(samplePedigrees)

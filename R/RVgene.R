@@ -244,7 +244,7 @@ RVgene <- function(data, ped.listfams, sites, fams, pattern.prob.list,
 nequiv.list, N.list, type="alleles", minor.allele.vec,
 precomputed.prob=list(0), maxdim = 1e9, partial.sharing=TRUE, ...)
 {
-    if (class(data) == 'list')
+    if (is(data, 'list'))
     {
         ped.mat <- SnpMatrixToCount(data, ped.listfams)
         type <- 'count'
