@@ -19,11 +19,7 @@ BiocManager::install("RVS")
 The most up-to-date version of *RVS* can be installed directly from Github:
 
 ```
-## Method 1 using BiocManager
 BiocManager::install("sherman5/RVS")
-
-## Method 2 using devtools package
-devtools::install_github("sherman5/RVS")
 ```
 
 # Using RVS
