@@ -93,6 +93,7 @@ multipleFamilyPValue <- function(sharingProbs, observedSharing, minPValue=0)
 #' @return list of boolean vectors indicating sharing pattern for each variant
 convertMatrix <- function(snpMat, famInfo, minorAllele=NA)
 {
+    print("matrix called")
     # load parallel
     if (!require(parallel)) stop("Parallel package did not load")
     
@@ -163,10 +164,12 @@ minorAllele=NA, filter=NULL, alpha=0)
     print("this is the problem")
     if (is.na(minorAllele))
     {
+        print("it forked")
         shareList <- convertMatrix(snpMat@.Data, famInfo)
     }
     else 
     {
+        print("it did not fork")
         shareList <- convertMatrix(snpMat@.Data, famInfo, minorAllele)
     }
     print("sharelist")
