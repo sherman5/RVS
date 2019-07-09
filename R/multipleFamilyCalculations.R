@@ -152,7 +152,6 @@ convertMatrix <- function(snpMat, famInfo, minorAllele=NA)
 multipleVariantPValue <- function(snpMat, famInfo, sharingProbs,
 minorAllele=NA, filter=NULL, alpha=0)
 {
-    print("not even printing")
     # load parallel
     if (!require(parallel)) stop("Parallel package did not load")
     
@@ -160,9 +159,16 @@ minorAllele=NA, filter=NULL, alpha=0)
     if (is.null(names(sharingProbs)))
         stop('sharingProbs must be a named vector')
     
-    print("this is the problem")
     # convert matrix to list of families with each allele
-    shareList <- convertMatrix(snpMat@.Data, famInfo, minorAllele)
+    print("this is the problem")
+    if (is.na(minorAllele))
+    {
+        shareList <- convertMatrix(snpMat@.Data, famInfo)
+    }
+    else 
+    {
+        shareList <- convertMatrix(snpMat@.Data, famInfo, minorAllele)
+    }
     print("sharelist")
 
     #setup parallel
@@ -199,7 +205,7 @@ minorAllele=NA, filter=NULL, alpha=0)
     #cores <- detectCores()
     #cores_cluster <- makeCluster(cores)
     clusterExport(cores_cluster, varlist = c("pot_pvals", "ppval_cutoff", "sharingProbs",
-                  "shareList", "minorAllele", "multipleFamilyPValue"))
+                  "shareList", "multipleFamilyPValue"))
     print("second export")
     
     # compute p-values
