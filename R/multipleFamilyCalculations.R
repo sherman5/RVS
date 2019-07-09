@@ -152,13 +152,15 @@ convertMatrix <- function(snpMat, famInfo, minorAllele=NA)
 multipleVariantPValue <- function(snpMat, famInfo, sharingProbs,
 minorAllele=NA, filter=NULL, alpha=0)
 {
+    print("not even printing")
     # load parallel
     if (!require(parallel)) stop("Parallel package did not load")
     
     # check inputs
     if (is.null(names(sharingProbs)))
         stop('sharingProbs must be a named vector')
-
+    
+    print("this is the problem")
     # convert matrix to list of families with each allele
     shareList <- convertMatrix(snpMat@.Data, famInfo, minorAllele)
     print("sharelist")
