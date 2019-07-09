@@ -93,7 +93,6 @@ multipleFamilyPValue <- function(sharingProbs, observedSharing, minPValue=0)
 #' @return list of boolean vectors indicating sharing pattern for each variant
 convertMatrix <- function(snpMat, famInfo, minorAllele=NA)
 {
-    print("matrix called")
     # load parallel
     if (!require(parallel)) stop("Parallel package did not load")
     
@@ -102,12 +101,8 @@ convertMatrix <- function(snpMat, famInfo, minorAllele=NA)
     #setup parallel
     cores <- detectCores()
     cores_cluster <- makeCluster(cores)
-    
-    print(minorAllele)
-
     clusterExport(cores_cluster, varlist = c("minorAllele", "mat", "famInfo"), envir=environment())
-    print("matrix export")
-    
+
     shareList <- parSapply(cores_cluster, colnames(mat), function(var)
     {
         ret <- c()
@@ -196,15 +191,19 @@ minorAllele=NA, filter=NULL, alpha=0)
     if (!is.null(filter))
     {
         sorted_ppvals <- sort(unname(pot_pvals))
+        print("sort")
         cutoff <- alpha / (1:length(pot_pvals))
+        print("cutoff")
         ppval_cutoff <- sorted_ppvals[max(which(sorted_ppvals < cutoff))]
+        print("pval cutoff")
     }
 
     #setup parallel
     #cores <- detectCores()
     #cores_cluster <- makeCluster(cores)
+    print("new problem")
     clusterExport(cores_cluster, varlist = c("pot_pvals", "ppval_cutoff", "sharingProbs",
-                  "shareList", "multipleFamilyPValue"))
+                  "shareList", "multipleFamilyPValue"), envir=environment())
     print("second export")
     
     # compute p-values
