@@ -93,8 +93,17 @@ multipleFamilyPValue <- function(sharingProbs, observedSharing, minPValue=0)
 #' @return list of boolean vectors indicating sharing pattern for each variant
 convertMatrix <- function(snpMat, famInfo, minorAllele=NA)
 {
+    # load parallel
+    if (!require(parallel)) stop("Parallel package did not load")
+    
     mat <- snpMat@.Data
-    shareList <- sapply(colnames(mat), function(var)
+    
+    #setup parallel
+    cores <- detectCores()
+    cores_cluster <- makeCluster(cores)
+    clusterExport(cores_cluster, varlist = c("minorAllele", "mat", "famInfo"))
+    
+    shareList <- parSapply(cores_cluster, colnames(mat), function(var)
     {
         ret <- c()
         if (is.na(minorAllele))
@@ -142,6 +151,7 @@ convertMatrix <- function(snpMat, famInfo, minorAllele=NA)
 multipleVariantPValue <- function(snpMat, famInfo, sharingProbs,
 minorAllele=NA, filter=NULL, alpha=0)
 {
+    # load parallel
     if (!require(parallel)) stop("Parallel package did not load")
     
     # check inputs
@@ -173,10 +183,11 @@ minorAllele=NA, filter=NULL, alpha=0)
         ppval_cutoff <- sorted_ppvals[max(which(sorted_ppvals < cutoff))]
     }
 
+    #setup parallel
     cores <- detectCores()
     cores_cluster <- makeCluster(cores)
-    clusterExport(cores_cluster, "pot_pvals", "ppval_cutoff", "sharingProbs",
-                  "shareList", "multipleFamilyPValue")
+    clusterExport(cores_cluster, varlist = c("pot_pvals", "ppval_cutoff", "sharingProbs",
+                  "shareList", "multipleFamilyPValue"))
     
     # compute p-values
     pvals <- parSapply(cores_cluster, names(shareList), function(var)
