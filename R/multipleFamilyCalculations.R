@@ -128,7 +128,6 @@ convertMatrix <- function(snpMat, famInfo, minorAllele=NA)
         return(ret)
     }, USE.NAMES=TRUE, simplify=FALSE)
     stopCluster(cores_cluster)
-    print("sharelist matrix")
     return(shareList[!sapply(shareList, is.null)])
 }
 
@@ -199,8 +198,8 @@ minorAllele=NA, filter=NULL, alpha=0)
     }
 
     #setup parallel
-    #cores <- detectCores()
-    #cores_cluster <- makeCluster(cores)
+    cores <- detectCores()
+    cores_cluster <- makeCluster(cores)
     print("new problem")
     clusterExport(cores_cluster, varlist = c("pot_pvals", "ppval_cutoff", "sharingProbs",
                   "shareList", "multipleFamilyPValue"), envir=environment())
