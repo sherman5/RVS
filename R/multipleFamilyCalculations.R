@@ -102,7 +102,13 @@ convertMatrix <- function(snpMat, famInfo, minorAllele=NA)
     #setup parallel
     cores <- detectCores()
     cores_cluster <- makeCluster(cores)
+    
+    print(minorAllele)
+    summary(mat)
+    summary(famInfo)
+    
     clusterExport(cores_cluster, varlist = c("minorAllele", "mat", "famInfo"))
+    print("matrix export")
     
     shareList <- parSapply(cores_cluster, colnames(mat), function(var)
     {
@@ -129,6 +135,7 @@ convertMatrix <- function(snpMat, famInfo, minorAllele=NA)
         return(ret)
     }, USE.NAMES=TRUE, simplify=FALSE)
     stopCluster(cores_cluster)
+    print("sharelist")
     return(shareList[!sapply(shareList, is.null)])
 }
 
