@@ -127,6 +127,7 @@ convertMatrix <- function(snpMat, famInfo, minorAllele=NA)
         }
         return(ret)
     }, USE.NAMES=TRUE, simplify=FALSE)
+    stopCluster(cores_cluster)
     return(shareList[!sapply(shareList, is.null)])
 }
 
@@ -160,11 +161,13 @@ minorAllele=NA, filter=NULL, alpha=0)
 
     # convert matrix to list of families with each allele
     shareList <- convertMatrix(snpMat@.Data, famInfo, minorAllele)
+    print("sharelist")
 
     #setup parallel
     cores <- detectCores()
     cores_cluster <- makeCluster(cores)
     clusterExport(cores_cluster, varlist = c("sharingProbs"))
+    print("first setup")
     
     # calculate potential p-values
     pot_pvals <- parSapply(cores_cluster, shareList, function(vec)
@@ -178,7 +181,9 @@ minorAllele=NA, filter=NULL, alpha=0)
         }
         return(prob)
     }, USE.NAMES=TRUE)
-
+    stopCluster(cores_cluster)
+    print("plotvals")
+    
     # subset data if filter is requested
     ppval_cutoff <- 1
     if (!is.null(filter))
@@ -193,6 +198,7 @@ minorAllele=NA, filter=NULL, alpha=0)
     #cores_cluster <- makeCluster(cores)
     clusterExport(cores_cluster, varlist = c("pot_pvals", "ppval_cutoff", "sharingProbs",
                   "shareList", "minorAllele", "multipleFamilyPValue"))
+    print("second export")
     
     # compute p-values
     pvals <- parSapply(cores_cluster, names(shareList), function(var)
@@ -204,7 +210,8 @@ minorAllele=NA, filter=NULL, alpha=0)
     }, USE.NAMES=TRUE)
     
     stopCluster(cores_cluster)
-
+    print("pvals")
+    
     # return p-values and potential p-values
     return(list(pvalues=pvals[!is.na(pvals)], potential_pvalues=pot_pvals))
 }
