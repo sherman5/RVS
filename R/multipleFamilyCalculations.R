@@ -105,7 +105,7 @@ convertMatrix <- function(snpMat, famInfo, minorAllele=NA)
     
     print(minorAllele)
 
-    clusterExport(cores_cluster, varlist = c(minorAllele, mat, famInfo))
+    clusterExport(cores_cluster, varlist = c("minorAllele", "mat", "famInfo"), envir=environment())
     print("matrix export")
     
     shareList <- parSapply(cores_cluster, colnames(mat), function(var)
