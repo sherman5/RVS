@@ -161,8 +161,13 @@ minorAllele=NA, filter=NULL, alpha=0)
     # convert matrix to list of families with each allele
     shareList <- convertMatrix(snpMat@.Data, famInfo, minorAllele)
 
+    #setup parallel
+    cores <- detectCores()
+    cores_cluster <- makeCluster(cores)
+    clusterExport(cores_cluster, varlist = c("sharingProbs"))
+    
     # calculate potential p-values
-    pot_pvals <- sapply(shareList, function(vec)
+    pot_pvals <- parSapply(cores_cluster, shareList, function(vec)
     {
         if (!all(names(vec) %in% names(sharingProbs)))
             stop('sharingProbs is missing a value for some families')
@@ -184,10 +189,10 @@ minorAllele=NA, filter=NULL, alpha=0)
     }
 
     #setup parallel
-    cores <- detectCores()
-    cores_cluster <- makeCluster(cores)
+    #cores <- detectCores()
+    #cores_cluster <- makeCluster(cores)
     clusterExport(cores_cluster, varlist = c("pot_pvals", "ppval_cutoff", "sharingProbs",
-                  "shareList", "multipleFamilyPValue"))
+                  "shareList", "minorAllele", multipleFamilyPValue"))
     
     # compute p-values
     pvals <- parSapply(cores_cluster, names(shareList), function(var)
