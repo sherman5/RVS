@@ -98,7 +98,7 @@ convertMatrix <- function(snpMat, famInfo, minorAllele=NA)
     
     mat <- snpMat@.Data
     
-    #setup parallel
+    # setup parallel
     cores <- detectCores()
     cores_cluster <- makeCluster(cores)
     clusterExport(cores_cluster, varlist = c("minorAllele", "mat", "famInfo"), envir=environment())
@@ -160,16 +160,13 @@ minorAllele=NA, filter=NULL, alpha=0)
         stop('sharingProbs must be a named vector')
     
     # convert matrix to list of families with each allele
-    print("this is the problem")
     shareList <- convertMatrix(snpMat@.Data, famInfo, minorAllele)
-    print("sharelist")
 
     #setup parallel
     cores <- detectCores()
     cores_cluster <- makeCluster(cores)
     clusterExport(cores_cluster, varlist = c("sharingProbs"))
-    print("first setup")
-    
+
     # calculate potential p-values
     pot_pvals <- parSapply(cores_cluster, shareList, function(vec)
     {
@@ -183,28 +180,22 @@ minorAllele=NA, filter=NULL, alpha=0)
         return(prob)
     }, USE.NAMES=TRUE)
     stopCluster(cores_cluster)
-    print("plotvals")
-    
+
     # subset data if filter is requested
     ppval_cutoff <- 1
     if (!is.null(filter))
     {
         sorted_ppvals <- sort(unname(pot_pvals))
-        print("sort")
         cutoff <- alpha / (1:length(pot_pvals))
-        print("cutoff")
         ppval_cutoff <- sorted_ppvals[max(which(sorted_ppvals < cutoff))]
-        print("pval cutoff")
     }
 
     #setup parallel
     cores <- detectCores()
     cores_cluster <- makeCluster(cores)
-    print("new problem")
     clusterExport(cores_cluster, varlist = c("pot_pvals", "ppval_cutoff", "sharingProbs",
                   "shareList", "multipleFamilyPValue"), envir=environment())
-    print("second export")
-    
+
     # compute p-values
     pvals <- parSapply(cores_cluster, names(shareList), function(var)
     {
@@ -213,10 +204,8 @@ minorAllele=NA, filter=NULL, alpha=0)
         else
             NA
     }, USE.NAMES=TRUE)
-    
     stopCluster(cores_cluster)
-    print("pvals")
-    
+
     # return p-values and potential p-values
     return(list(pvalues=pvals[!is.na(pvals)], potential_pvalues=pot_pvals))
 }
