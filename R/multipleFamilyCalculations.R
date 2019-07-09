@@ -104,10 +104,8 @@ convertMatrix <- function(snpMat, famInfo, minorAllele=NA)
     cores_cluster <- makeCluster(cores)
     
     print(minorAllele)
-    summary(mat)
-    summary(famInfo)
-    
-    clusterExport(cores_cluster, varlist = c("minorAllele", "mat", "famInfo"))
+
+    clusterExport(cores_cluster, varlist = c(minorAllele, mat, famInfo))
     print("matrix export")
     
     shareList <- parSapply(cores_cluster, colnames(mat), function(var)
@@ -135,7 +133,7 @@ convertMatrix <- function(snpMat, famInfo, minorAllele=NA)
         return(ret)
     }, USE.NAMES=TRUE, simplify=FALSE)
     stopCluster(cores_cluster)
-    print("sharelist")
+    print("sharelist matrix")
     return(shareList[!sapply(shareList, is.null)])
 }
 
@@ -169,16 +167,7 @@ minorAllele=NA, filter=NULL, alpha=0)
     
     # convert matrix to list of families with each allele
     print("this is the problem")
-    if (is.na(minorAllele))
-    {
-        print("it forked")
-        shareList <- convertMatrix(snpMat@.Data, famInfo)
-    }
-    else 
-    {
-        print("it did not fork")
-        shareList <- convertMatrix(snpMat@.Data, famInfo, minorAllele)
-    }
+    shareList <- convertMatrix(snpMat@.Data, famInfo, minorAllele)
     print("sharelist")
 
     #setup parallel
