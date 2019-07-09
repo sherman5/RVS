@@ -142,6 +142,8 @@ convertMatrix <- function(snpMat, famInfo, minorAllele=NA)
 multipleVariantPValue <- function(snpMat, famInfo, sharingProbs,
 minorAllele=NA, filter=NULL, alpha=0)
 {
+    if (!require(parallel)) stop("Parallel package did not load")
+    
     # check inputs
     if (is.null(names(sharingProbs)))
         stop('sharingProbs must be a named vector')
@@ -171,14 +173,21 @@ minorAllele=NA, filter=NULL, alpha=0)
         ppval_cutoff <- sorted_ppvals[max(which(sorted_ppvals < cutoff))]
     }
 
+    cores <- detectCores()
+    cores_cluster <- makeCluster(cores)
+    clusterExport(cores_cluster, "pot_pvals", "ppval_cutoff", "sharingProbs",
+                  "shareList", "multipleFamilyPValue")
+    
     # compute p-values
-    pvals <- sapply(names(shareList), function(var)
+    pvals <- parSapply(cores_cluster, names(shareList), function(var)
     {
         if (pot_pvals[var] <= ppval_cutoff)
             multipleFamilyPValue(sharingProbs, shareList[[var]])
         else
             NA
     }, USE.NAMES=TRUE)
+    
+    stopCluster(cores_cluster)
 
     # return p-values and potential p-values
     return(list(pvalues=pvals[!is.na(pvals)], potential_pvalues=pot_pvals))
