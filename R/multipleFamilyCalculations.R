@@ -192,7 +192,7 @@ minorAllele=NA, filter=NULL, alpha=0)
     #cores <- detectCores()
     #cores_cluster <- makeCluster(cores)
     clusterExport(cores_cluster, varlist = c("pot_pvals", "ppval_cutoff", "sharingProbs",
-                  "shareList", "minorAllele", multipleFamilyPValue"))
+                  "shareList", "minorAllele", "multipleFamilyPValue"))
     
     # compute p-values
     pvals <- parSapply(cores_cluster, names(shareList), function(var)
