@@ -48,6 +48,12 @@ test_that('multipleVariantPValue',
     result_CPP <- multipleVariantPValue(snpMat$genotypes, snpMat$fam, sharingProbs, backend='cpp')
     expect_true(all(result_R$pvalues == result_CPP$pvalues))
     expect_true(all(result_R$potential_pvalues == result_CPP$potential_pvalues))
+
+    # make sure the result is named
+    expect_true(!is.null(names(result_R$pvalues)))
+    expect_true(!is.null(names(result_R$potential_pvalues)))
+    expect_true(!is.null(names(result_CPP$pvalues)))
+    expect_true(!is.null(names(result_CPP$potential_pvalues)))
 })
 
 test_that('enrichmentPValue',
