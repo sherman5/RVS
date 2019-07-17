@@ -2,6 +2,10 @@
 
 #include <map>
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
 typedef std::vector< std::vector<unsigned> > FamilyRowMap;
 
 static double leafSum(unsigned ndx, double product, const Rcpp::NumericVector &sharingProbs,
@@ -105,6 +109,7 @@ const Rcpp::NumericVector &minorAllele, const FamilyRowMap &familyRowMap)
     // calculate potential p-values
     unsigned nVariants = static_cast<unsigned>(snpMat.ncol());
     Rcpp::NumericVector ppvals(nVariants, 1.0);
+    #pragma omp parallel for num_threads(omp_get_max_threads()) schedule(static)
     for (unsigned i = 0; i < nVariants; ++i)
     {
         for (unsigned j = 0; j < sharingProbs.size(); ++j)
