@@ -4,8 +4,8 @@
 \alias{multipleVariantPValue}
 \title{generalization of multipleFamilyPValue to multiple variants}
 \usage{
-multipleVariantPValue(snpMat, famInfo, sharingProbs, minorAllele = NA,
-  filter = NULL, alpha = 0)
+multipleVariantPValue(snpMat, famInfo, sharingProbs, minorAllele = NULL,
+  filter = "none", alpha = 0, backend = "cpp")
 }
 \arguments{
 \item{snpMat}{SnpMatrix}

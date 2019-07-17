@@ -4,7 +4,8 @@
 \alias{multipleFamilyPValue}
 \title{probability of sharing of rare variants in a subset of families}
 \usage{
-multipleFamilyPValue(sharingProbs, observedSharing, minPValue = 0)
+multipleFamilyPValue(sharingProbs, observedSharing, minPValue = 0,
+  backend = "cpp")
 }
 \arguments{
 \item{sharingProbs}{named vector of sharing probabilties, where names

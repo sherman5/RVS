@@ -4,7 +4,7 @@
 \alias{convertMatrix}
 \title{convert snpMatrix to a list of vectors of sharing}
 \usage{
-convertMatrix(snpMat, famInfo, minorAllele = NA)
+convertMatrix(snpMat, famInfo, minorAllele = NULL)
 }
 \arguments{
 \item{snpMat}{SnpMatrix}
