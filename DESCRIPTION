@@ -30,6 +30,7 @@ Suggests:
     rmarkdown,
     BiocStyle,
     VariantAnnotation
+LinkingTo: Rcpp
 VignetteBuilder: knitr
 RoxygenNote: 6.1.1
 Encoding: UTF-8
@@ -38,6 +39,7 @@ Collate:
     'RVgene.R'
     'pedigree-methods.R'
     'RVsharing.R'
+    'RcppExports.R'
     'documentation.R'
     'grainNetworkHelper.R'
     'monteCarloMethods.R'

@@ -8,6 +8,7 @@
 #' @importClassesFrom snpStats SnpMatrix
 #' @import gRain
 #' @import methods
+#' @useDynLib RVS
 NULL
 
 #' list of 8 sample pedigree objects
