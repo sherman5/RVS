@@ -141,14 +141,18 @@ double findPValueCutoff(const Rcpp::NumericVector &ppvals, const std::string &fi
 
 static Rcpp::NumericVector filterVector(const Rcpp::NumericVector &vecIn, double minVal)
 {
+    Rcpp::CharacterVector vecInNames = vecIn.names();
     Rcpp::NumericVector vecOut;
+    Rcpp::CharacterVector vecOutNames;
     for (unsigned i = 0; i < vecIn.size(); ++i)
     {
         if (vecIn[i] >= minVal)
         {
             vecOut.push_back(vecIn[i]);
+            vecOutNames.push_back(vecInNames[i]);
         }
     }
+    vecOut.names() = vecOutNames;
     return vecOut;
 }
 
@@ -240,6 +244,8 @@ double alpha)
     double cutoff = findPValueCutoff(potPValues, filter, alpha);
     Rcpp::NumericVector pvalues = calculatePValues(alleles, famIds, sharingProbs,
         minorAllele, cutoff, familyRowMap, potPValues);
+    pvalues.names() = Rcpp::colnames(alleles);
+    potPValues.names() = Rcpp::colnames(alleles);
     pvalues = filterVector(pvalues, 0.0);
     return Rcpp::List::create(
         Rcpp::Named("pvalues") = pvalues,
@@ -254,8 +260,9 @@ const Rcpp::NumericVector &minorAllele, double threshold)
 {
     Rcpp::NumericVector probs;
     Rcpp::LogicalVector pattern;
+    unsigned nVariants = static_cast<unsigned>(snpMat.ncol());
     FamilyRowMap familyRowMap(getFamilyRowMap(sharingProbs, famIds));
-    for (unsigned i = 0; i < snpMat.ncol(); ++i)
+    for (unsigned i = 0; i < nVariants; ++i)
     {
         for (unsigned j = 0; j < sharingProbs.size(); ++j)
         {
