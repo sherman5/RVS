@@ -8,9 +8,6 @@
 
 typedef std::vector< std::vector<unsigned> > FamilyRowMap;
 
-static double leafSum(unsigned ndx, double product, const Rcpp::NumericVector &sharingProbs,
-const double observedPValue);
-
 static double sumBranches(unsigned ndx, double product, const Rcpp::NumericVector &sharingProbs,
 const double observedPValue);
 
@@ -156,14 +153,6 @@ static Rcpp::NumericVector filterVector(const Rcpp::NumericVector &vecIn, double
     return vecOut;
 }
 
-static double leafSum(unsigned ndx, double product, const Rcpp::NumericVector &sharingProbs,
-const double observedPValue)
-{
-    return (product < observedPValue + 0.001)
-        ? product
-        : sumBranches(ndx + 1, product, sharingProbs, observedPValue);
-}
-
 static double sumBranches(unsigned ndx, double product, const Rcpp::NumericVector &sharingProbs,
 const double observedPValue)
 {
@@ -173,8 +162,13 @@ const double observedPValue)
     }
     double leftProduct = sharingProbs[ndx] * product;
     double rightProduct = (1 - sharingProbs[ndx]) * product;
-    return leafSum(ndx, leftProduct, sharingProbs, observedPValue)
-        + leafSum(ndx, rightProduct, sharingProbs, observedPValue);
+    double leftSum = (leftProduct < observedPValue + 0.001)
+        ? leftProduct
+        : sumBranches(ndx + 1, leftProduct, sharingProbs, observedPValue);
+    double rightSum = (rightProduct < observedPValue + 0.001)
+        ? rightProduct
+        : sumBranches(ndx + 1, rightProduct, sharingProbs, observedPValue);
+    return leftSum + rightSum;
 }
 
 // [[Rcpp::export]]
