@@ -1,8 +1,4 @@
 library(RVS)
-library(snpStats)
-library(hexbin)
-data(for.exercise)
-data(samplePedigrees)
 
 timeToSeconds <- function(time)
 {
@@ -12,7 +8,7 @@ timeToSeconds <- function(time)
 benchmarkEnrichmentPValue <- function(snpMat, famInfo, sharingProbs, backend)
 {
     start_time <- timeToSeconds(as.POSIXlt(Sys.time()))
-    result <- RVS::enrichmentPValue(snpMat=snpMat,
+    result <- enrichmentPValue(snpMat=snpMat,
                                     famInfo=famInfo,
                                     sharingProbs=sharingProbs,
                                     backend=backend)
@@ -30,7 +26,7 @@ benchmarkFamilyPValue <- function(sharingProbs, backend='r')
     {
         pattern <- sample(c(TRUE, FALSE), length(sharingProbs), replace=TRUE)
         names(pattern) <- names(sharingProbs)
-        result <- c(result, RVS::multipleFamilyPValue(sharingProbs=sharingProbs,
+        result <- c(result, multipleFamilyPValue(sharingProbs=sharingProbs,
                                             observedSharing=pattern,
                                             backend=backend))
     }
@@ -42,7 +38,7 @@ benchmarkFamilyPValue <- function(sharingProbs, backend='r')
 benchmarkVariantPValue <- function(snpMat, famInfo, sharingProbs, filter=NULL, alpha=0, backend='R')
 {
     start_time <- timeToSeconds(as.POSIXlt(Sys.time()))
-    result <- RVS::multipleVariantPValue(snpMat=snpMat,
+    result <- multipleVariantPValue(snpMat=snpMat,
                                     famInfo=famInfo,
                                     sharingProbs=sharingProbs,
                                     filter=filter,
@@ -55,7 +51,9 @@ benchmarkVariantPValue <- function(snpMat, famInfo, sharingProbs, filter=NULL, a
     print(summary(result$potential_pvalues))
 }
 
-message("Creating Families")
+data(samplePedigrees)
+library(snpStats)
+data(for.exercise)
 A_fams <- lapply(1:3, function(i) samplePedigrees$firstCousinPair)
 B_fams <- lapply(1:3, function(i) samplePedigrees$secondCousinPair)
 C_fams <- lapply(1:3, function(i) samplePedigrees$firstCousinTriple)
@@ -67,8 +65,8 @@ for (i in 1:12)
 {
     fams[[i]]$famid <- rep(famids[i], length(fams[[i]]$id))
 }
-sample <- snps.10[1:12,]
-famInfo <- data.frame(pedigree=famids, affected=rep(2, 12))
+snpMat <- snps.10[1:12,]
+famInfo <- data.frame(pedigree=famids, affected=rep(2, length(famids)))
 sharingProbs <- suppressMessages(RVsharing(fams))
 
 #message("Benchmarking multipleFamilyPValue, R Version")
@@ -87,7 +85,7 @@ sharingProbs <- suppressMessages(RVsharing(fams))
 #benchmarkVariantPValue(sample, famInfo, sharingProbs, backend='r')
 
 message("Benchmarking multipleVariantPValue with default parameters, C++ Version")
-benchmarkVariantPValue(sample, famInfo, sharingProbs, backend='cpp')
+benchmarkVariantPValue(snpMat, famInfo, sharingProbs, backend='cpp')
 
 #message("Benchmarking multipleVariantPValue with bonferroni cutoff of alpha=0.05, R version")
 #benchmarkVariantPValue(sample, famInfo, sharingProbs, "bonferroni", 0.05, 'r')
