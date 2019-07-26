@@ -5,8 +5,8 @@ multipleFamilyPValue_cpp <- function(sharingProbs, observedSharing, minPValue = 
     .Call('_RVS_multipleFamilyPValue_cpp', PACKAGE = 'RVS', sharingProbs, observedSharing, minPValue)
 }
 
-multipleVariantPValue_cpp <- function(alleles, variants, famIds, sharingProbs, rfilter, minorAllele, alpha) {
-    .Call('_RVS_multipleVariantPValue_cpp', PACKAGE = 'RVS', alleles, variants, famIds, sharingProbs, rfilter, minorAllele, alpha)
+multipleVariantPValue_cpp <- function(snpMat, variants, famIds, sharingProbs, rfilter, minorAlleleInput, alpha) {
+    .Call('_RVS_multipleVariantPValue_cpp', PACKAGE = 'RVS', snpMat, variants, famIds, sharingProbs, rfilter, minorAlleleInput, alpha)
 }
 
 enrichmentPValue_cpp <- function(snpMat, famIds, sharingProbs, minorAllele, threshold) {

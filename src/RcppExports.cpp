@@ -19,24 +19,24 @@ BEGIN_RCPP
 END_RCPP
 }
 // multipleVariantPValue_cpp
-Rcpp::List multipleVariantPValue_cpp(const Rcpp::IntegerMatrix& alleles, const Rcpp::CharacterVector& variants, const Rcpp::CharacterVector& famIds, const Rcpp::NumericVector& sharingProbs, const Rcpp::Nullable<Rcpp::CharacterVector>& rfilter, const Rcpp::NumericVector& minorAllele, double alpha);
-RcppExport SEXP _RVS_multipleVariantPValue_cpp(SEXP allelesSEXP, SEXP variantsSEXP, SEXP famIdsSEXP, SEXP sharingProbsSEXP, SEXP rfilterSEXP, SEXP minorAlleleSEXP, SEXP alphaSEXP) {
+Rcpp::List multipleVariantPValue_cpp(const Rcpp::IntegerMatrix& snpMat, const Rcpp::CharacterVector& variants, const Rcpp::CharacterVector& famIds, const Rcpp::NumericVector& sharingProbs, const Rcpp::Nullable<Rcpp::CharacterVector>& rfilter, const Rcpp::Nullable<Rcpp::IntegerVector>& minorAlleleInput, double alpha);
+RcppExport SEXP _RVS_multipleVariantPValue_cpp(SEXP snpMatSEXP, SEXP variantsSEXP, SEXP famIdsSEXP, SEXP sharingProbsSEXP, SEXP rfilterSEXP, SEXP minorAlleleInputSEXP, SEXP alphaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::IntegerMatrix& >::type alleles(allelesSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::IntegerMatrix& >::type snpMat(snpMatSEXP);
     Rcpp::traits::input_parameter< const Rcpp::CharacterVector& >::type variants(variantsSEXP);
     Rcpp::traits::input_parameter< const Rcpp::CharacterVector& >::type famIds(famIdsSEXP);
     Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type sharingProbs(sharingProbsSEXP);
     Rcpp::traits::input_parameter< const Rcpp::Nullable<Rcpp::CharacterVector>& >::type rfilter(rfilterSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type minorAllele(minorAlleleSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::Nullable<Rcpp::IntegerVector>& >::type minorAlleleInput(minorAlleleInputSEXP);
     Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
-    rcpp_result_gen = Rcpp::wrap(multipleVariantPValue_cpp(alleles, variants, famIds, sharingProbs, rfilter, minorAllele, alpha));
+    rcpp_result_gen = Rcpp::wrap(multipleVariantPValue_cpp(snpMat, variants, famIds, sharingProbs, rfilter, minorAlleleInput, alpha));
     return rcpp_result_gen;
 END_RCPP
 }
 // enrichmentPValue_cpp
-double enrichmentPValue_cpp(const Rcpp::IntegerMatrix& snpMat, const Rcpp::CharacterVector& famIds, const Rcpp::NumericVector& sharingProbs, const Rcpp::NumericVector& minorAllele, double threshold);
+double enrichmentPValue_cpp(const Rcpp::IntegerMatrix& snpMat, const Rcpp::CharacterVector& famIds, const Rcpp::NumericVector& sharingProbs, const Rcpp::IntegerVector& minorAllele, double threshold);
 RcppExport SEXP _RVS_enrichmentPValue_cpp(SEXP snpMatSEXP, SEXP famIdsSEXP, SEXP sharingProbsSEXP, SEXP minorAlleleSEXP, SEXP thresholdSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -44,7 +44,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const Rcpp::IntegerMatrix& >::type snpMat(snpMatSEXP);
     Rcpp::traits::input_parameter< const Rcpp::CharacterVector& >::type famIds(famIdsSEXP);
     Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type sharingProbs(sharingProbsSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type minorAllele(minorAlleleSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::IntegerVector& >::type minorAllele(minorAlleleSEXP);
     Rcpp::traits::input_parameter< double >::type threshold(thresholdSEXP);
     rcpp_result_gen = Rcpp::wrap(enrichmentPValue_cpp(snpMat, famIds, sharingProbs, minorAllele, threshold));
     return rcpp_result_gen;
