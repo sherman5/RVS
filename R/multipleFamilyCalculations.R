@@ -76,30 +76,15 @@ multipleFamilyPValue <- function(sharingProbs, observedSharing, minPValue=0, bac
 multipleVariantPValue <- function(snpMat, famInfo, sharingProbs,
 minorAllele=NULL, filter=NULL, alpha=0, backend="cpp")
 {
-    if (is.null(minorAllele))
-    {
-        minorAllele <- sapply(colnames(snpMat), function(var)
-        {
-            ifelse(sum(snpMat[,var] == 1) < sum(snpMat[,var] == 3), 1, 3)
-        })
-    }
-    if (length(minorAllele) != ncol(snpMat))
-    {
-        stop("Mismatch between number of minor alleles and size of the SnpMatrix")
-    }
-    validVariants <- sapply(colnames(snpMat), function(var)
-    {
-        sum(snpMat[,var] == minorAllele[var] | snpMat[,var] == 2) > 0
-    })
-    message(paste0("Ignoring ", sum(!validVariants), " variants not present in any subject"))
-    snpMat <- snpMat[,validVariants]
-    minorAllele <- minorAllele[validVariants]
-
     # subset snpMat to only affected subjects
     if (nrow(snpMat) != length(famInfo$affected))
         stop("dimension mismatch: snpMat and famInfo")
     snpMat <- snpMat[famInfo$affected == 2,]
-
+    # check inputs
+    if (!is.null(minorAllele) & length(minorAllele) != ncol(snpMat))
+    {
+        stop("Mismatch between number of minor alleles and size of the SnpMatrix")
+    }
     if (backend == "cpp")
     {
         multipleVariantPValue_cpp(snpMat@.Data, colnames(snpMat),
@@ -249,6 +234,21 @@ minorAllele, filter=NULL, alpha=0)
     # check inputs
     if (is.null(names(sharingProbs)))
         stop('sharingProbs must be a named vector')
+
+    if (is.null(minorAllele))
+    {
+        minorAllele <- sapply(colnames(snpMat), function(var)
+        {
+            ifelse(sum(snpMat[,var] == 1) < sum(snpMat[,var] == 3), 1, 3)
+        })
+    }
+    validVariants <- sapply(colnames(snpMat), function(var)
+    {
+        sum(snpMat[,var] == minorAllele[var] | snpMat[,var] == 2) > 0
+    })
+    message(paste0("Ignoring ", sum(!validVariants), " variants not present in any subject"))
+    snpMat <- snpMat[,validVariants]
+    minorAllele <- minorAllele[validVariants]
 
     # convert matrix to list of families with each allele
     shareList <- convertMatrix(snpMat@.Data, famIds, minorAllele)

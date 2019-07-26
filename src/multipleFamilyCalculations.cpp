@@ -1,5 +1,6 @@
 #include <Rcpp.h>
 
+#include <iostream>
 #include <map>
 
 #ifdef _OPENMP
@@ -26,7 +27,7 @@ bool contains(const Rcpp::CharacterVector &vec, const std::string &str)
 void checkInputs(const Rcpp::IntegerMatrix &alleles,
 const Rcpp::CharacterVector &variants, const Rcpp::CharacterVector &famIds,
 const Rcpp::NumericVector &sharingProbs, const std::string &filter,
-const Rcpp::NumericVector &minorAllele, double alpha)
+const Rcpp::IntegerVector &minorAllele, double alpha)
 {
     if (variants.size() != alleles.ncol())
     {
@@ -101,17 +102,19 @@ const std::vector<unsigned> &rowNdx, unsigned colNdx)
 
 Rcpp::NumericVector calculatePotentialPValues(const Rcpp::IntegerMatrix &snpMat,
 const Rcpp::CharacterVector &famIds, const Rcpp::NumericVector &sharingProbs,
-const Rcpp::NumericVector &minorAllele, const FamilyRowMap &familyRowMap)
+const Rcpp::IntegerVector &minorAllele, const FamilyRowMap &familyRowMap,
+const std::vector<unsigned> &validVariants)
 {
     // calculate potential p-values
-    unsigned nVariants = static_cast<unsigned>(snpMat.ncol());
+    unsigned nVariants = static_cast<unsigned>(validVariants.size());
     Rcpp::NumericVector ppvals(nVariants, 1.0);
     #pragma omp parallel for num_threads(omp_get_max_threads()) schedule(static)
     for (unsigned i = 0; i < nVariants; ++i)
     {
+        unsigned varNdx = validVariants[i];
         for (unsigned j = 0; j < sharingProbs.size(); ++j)
         {
-            if (minorAllelePresent(snpMat, minorAllele[i], familyRowMap[j], i))
+            if (minorAllelePresent(snpMat, minorAllele[varNdx], familyRowMap[j], varNdx))
             {
                 ppvals[i] *= sharingProbs[j];
             }
@@ -197,23 +200,25 @@ const Rcpp::LogicalVector &observedSharing, double minPValue=0.0)
 
 Rcpp::NumericVector calculatePValues(const Rcpp::IntegerMatrix &snpMat,
 const Rcpp::CharacterVector &famIds, 
-const Rcpp::NumericVector &sharingProbs, const Rcpp::NumericVector &minorAllele,
-double cutoff, const FamilyRowMap &familyRowMap, const Rcpp::NumericVector &ppvals)
+const Rcpp::NumericVector &sharingProbs, const Rcpp::IntegerVector &minorAllele,
+double cutoff, const FamilyRowMap &familyRowMap, const Rcpp::NumericVector &ppvals,
+const std::vector<unsigned> &validVariants)
 {
-    unsigned nVariants = static_cast<unsigned>(snpMat.ncol());
+    unsigned nVariants = static_cast<unsigned>(validVariants.size());
     Rcpp::NumericVector pvals(nVariants, -1.0);
     for (unsigned i = 0; i < nVariants; ++i)
     {
+        unsigned varNdx = validVariants[i];
         if (ppvals[i] <= cutoff)
         {
             Rcpp::NumericVector probs;
             Rcpp::LogicalVector pattern;
             for (unsigned j = 0; j < familyRowMap.size(); ++j)
             {
-                if (minorAllelePresent(snpMat, minorAllele[i], familyRowMap[j], i))
+                if (minorAllelePresent(snpMat, minorAllele[varNdx], familyRowMap[j], varNdx))
                 {
                     probs.push_back(sharingProbs[j]);
-                    pattern.push_back(minorAlleleShared(snpMat, minorAllele[i], familyRowMap[j], i));
+                    pattern.push_back(minorAlleleShared(snpMat, minorAllele[varNdx], familyRowMap[j], varNdx));
                 }
             }
             pvals[i] = multipleFamilyPValue_cpp(probs, pattern);
@@ -222,24 +227,83 @@ double cutoff, const FamilyRowMap &familyRowMap, const Rcpp::NumericVector &ppva
     return pvals;
 }
 
+static Rcpp::IntegerVector determineMinorAlleles(const Rcpp::IntegerMatrix &snpMat)
+{
+    Rcpp::IntegerVector minorAllele;
+    for (int j = 0; j < snpMat.ncol(); ++j)
+    {
+        int count = 0;
+        for (int i = 0; i < snpMat.nrow(); ++i)
+        {
+            if (snpMat(i,j) == 1)
+                ++count;
+            else if (snpMat(i,j) == 3)
+                --count;
+        }
+        int minorAlleleCandidate = (count > 0) ? 3 : 1;
+        minorAllele.push_back(0);
+        for (int i = 0; i < snpMat.nrow(); ++i)
+        {
+            if (snpMat(i,j) == minorAlleleCandidate || snpMat(i,j) == 2)
+            {
+                minorAllele[j] = minorAlleleCandidate;
+            }
+        }
+    }
+    return minorAllele;
+}
+
+static std::vector<unsigned> findValidVariants(const Rcpp::IntegerVector &minorAllele)
+{
+    std::vector<unsigned> validNdx;
+    for (unsigned j = 0; j < minorAllele.size(); ++j)
+    {
+        if (minorAllele[j] != 0)
+        {
+            validNdx.push_back(j);
+        }
+    }
+    return validNdx;
+}
+
+static Rcpp::CharacterVector getValidVariantnames(const std::vector<unsigned> &validVariants,
+const Rcpp::CharacterVector &allVariantNames)
+{
+    Rcpp::CharacterVector validNames;
+    for (unsigned i = 0; i < validVariants.size(); ++i)
+    {
+        validNames.push_back(allVariantNames[validVariants[i]]);
+    }
+    return validNames;
+}
+
 // [[Rcpp::export]]
-Rcpp::List multipleVariantPValue_cpp(const Rcpp::IntegerMatrix &alleles,
+Rcpp::List multipleVariantPValue_cpp(const Rcpp::IntegerMatrix &snpMat,
 const Rcpp::CharacterVector &variants, const Rcpp::CharacterVector &famIds,
 const Rcpp::NumericVector &sharingProbs,
 const Rcpp::Nullable<Rcpp::CharacterVector> &rfilter,
-const Rcpp::NumericVector &minorAllele,
+const Rcpp::Nullable<Rcpp::IntegerVector> &minorAlleleInput,
 double alpha)
 {
+#ifdef _OPENMP
+    std::cout << "Running on " << omp_get_max_threads() << " threads\n";
+#endif
+    Rcpp::IntegerVector minorAllele = minorAlleleInput.isNull()
+        ? determineMinorAlleles(snpMat)
+        : Rcpp::IntegerVector(minorAlleleInput);
+    std::vector<unsigned> validVariants = findValidVariants(minorAllele);
+    std::cout << "Ignoring " << snpMat.ncol() - validVariants.size() << " variants not present in any subject\n";
     std::string filter = (rfilter.isNull()) ? "" : Rcpp::as<std::string>(rfilter);
-    checkInputs(alleles, variants, famIds, sharingProbs, filter, minorAllele, alpha);
+    checkInputs(snpMat, variants, famIds, sharingProbs, filter, minorAllele, alpha);
     FamilyRowMap familyRowMap(getFamilyRowMap(sharingProbs, famIds));
-    Rcpp::NumericVector potPValues = calculatePotentialPValues(alleles, famIds,
-        sharingProbs, minorAllele, familyRowMap);
+    Rcpp::NumericVector potPValues = calculatePotentialPValues(snpMat, famIds,
+        sharingProbs, minorAllele, familyRowMap, validVariants);
     double cutoff = findPValueCutoff(potPValues, filter, alpha);
-    Rcpp::NumericVector pvalues = calculatePValues(alleles, famIds, sharingProbs,
-        minorAllele, cutoff, familyRowMap, potPValues);
-    pvalues.names() = Rcpp::colnames(alleles);
-    potPValues.names() = Rcpp::colnames(alleles);
+    Rcpp::NumericVector pvalues = calculatePValues(snpMat, famIds, sharingProbs,
+        minorAllele, cutoff, familyRowMap, potPValues, validVariants);
+    Rcpp::CharacterVector validNames = getValidVariantnames(validVariants, Rcpp::colnames(snpMat));
+    pvalues.names() = validNames;
+    potPValues.names() = validNames;
     pvalues = filterVector(pvalues, 0.0);
     return Rcpp::List::create(
         Rcpp::Named("pvalues") = pvalues,
@@ -250,7 +314,7 @@ double alpha)
 // [[Rcpp::export]]
 double enrichmentPValue_cpp(const Rcpp::IntegerMatrix &snpMat,
 const Rcpp::CharacterVector &famIds, const Rcpp::NumericVector &sharingProbs,
-const Rcpp::NumericVector &minorAllele, double threshold)
+const Rcpp::IntegerVector &minorAllele, double threshold)
 {
     Rcpp::NumericVector probs;
     Rcpp::LogicalVector pattern;
