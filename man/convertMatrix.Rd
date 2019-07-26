@@ -4,13 +4,10 @@
 \alias{convertMatrix}
 \title{convert snpMatrix to a list of vectors of sharing}
 \usage{
-convertMatrix(snpMat, famInfo, minorAllele = NULL)
+convertMatrix(snpMat, famIds, minorAllele)
 }
 \arguments{
 \item{snpMat}{SnpMatrix}
-
-\item{famInfo}{data frame containing pedigree, member, father, mother,
-sex, affected fields for each sequenced subject}
 
 \item{minorAllele}{vector specifying the minor allele of each variant}
 }

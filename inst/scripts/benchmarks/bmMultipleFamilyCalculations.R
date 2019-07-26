@@ -82,7 +82,7 @@ sharingProbs <- suppressMessages(RVsharing(fams))
 #benchmarkEnrichmentPValue(sample, famInfo, sharingProbs, 'cpp')
 
 #message("Benchmarking multipleVariantPValue with default parameters, R Version")
-#benchmarkVariantPValue(sample, famInfo, sharingProbs, backend='r')
+#benchmarkVariantPValue(snpMat, famInfo, sharingProbs, backend='r')
 
 message("Benchmarking multipleVariantPValue with default parameters, C++ Version")
 benchmarkVariantPValue(snpMat, famInfo, sharingProbs, backend='cpp')
