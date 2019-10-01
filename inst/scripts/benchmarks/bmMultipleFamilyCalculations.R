@@ -51,9 +51,8 @@ benchmarkVariantPValue <- function(snpMat, famInfo, sharingProbs, filter=NULL, a
     print(summary(result$potential_pvalues))
 }
 
+# create family data and calculate sharing probs
 data(samplePedigrees)
-library(snpStats)
-data(for.exercise)
 A_fams <- lapply(1:3, function(i) samplePedigrees$firstCousinPair)
 B_fams <- lapply(1:3, function(i) samplePedigrees$secondCousinPair)
 C_fams <- lapply(1:3, function(i) samplePedigrees$firstCousinTriple)
@@ -61,13 +60,26 @@ D_fams <- lapply(1:3, function(i) samplePedigrees$secondCousinTriple)
 fams <- c(A_fams, B_fams, C_fams, D_fams)
 fam_names <- paste("fam", c('A', 'B', 'C', 'D'), sep="_")
 famids <- apply(expand.grid(fam_names, 1:3), 1, function(row) paste0(row[1], row[2]))
+famInfo <- data.frame()
 for (i in 1:12)
 {
     fams[[i]]$famid <- rep(famids[i], length(fams[[i]]$id))
+    famInfo <- rbind(famInfo, data.frame(
+        pedigree=fams[[i]]$famid,
+        affected=fams[[i]]$affected
+    ))
 }
-snpMat <- snps.10[1:12,]
-famInfo <- data.frame(pedigree=famids, affected=rep(2, length(famids)))
+famInfo <- famInfo[famInfo$affected==1,]
 sharingProbs <- suppressMessages(RVsharing(fams))
+
+library(snpStats)
+data(for.exercise)
+#snpMat <- snps.10[1:nrow(famInfo),4]
+snpMat <- snps.10[1:nrow(famInfo),1:1000]
+
+#pedfile <- system.file("extdata/sample.ped.gz", package="RVS")
+#sample <- snpStats::read.pedfile(pedfile, snps=paste('variant', LETTERS[1:20], sep='_'))
+#snpMat <- sample$genotypes[1:nrow(famInfo),]
 
 #message("Benchmarking multipleFamilyPValue, R Version")
 #benchmarkFamilyPValue(sharingProbs, 'r')
@@ -81,15 +93,25 @@ sharingProbs <- suppressMessages(RVsharing(fams))
 #message("Benchmarking enrichmentPValue, C++ Version")
 #benchmarkEnrichmentPValue(sample, famInfo, sharingProbs, 'cpp')
 
-#message("Benchmarking multipleVariantPValue with default parameters, R Version")
-#benchmarkVariantPValue(snpMat, famInfo, sharingProbs, backend='r')
+message("Benchmarking multipleVariantPValue with default parameters, R Version")
+benchmarkVariantPValue(snpMat, famInfo, sharingProbs, backend='r')
 
 message("Benchmarking multipleVariantPValue with default parameters, C++ Version")
 benchmarkVariantPValue(snpMat, famInfo, sharingProbs, backend='cpp')
+
+result_R <- multipleVariantPValue(snpMat=snpMat, famInfo=famInfo, sharingProbs=sharingProbs,
+                                  filter=NULL, alpha=0, backend='r')
+
+result_CPP <- multipleVariantPValue(snpMat=snpMat, famInfo=famInfo, sharingProbs=sharingProbs,
+                                    filter=NULL, alpha=0, backend='cpp')
+
+#print(result_R)
+#print(result_CPP)
+print(all.equal(unname(result_R$pvalues), unname(result_CPP$pvalues)))
 
 #message("Benchmarking multipleVariantPValue with bonferroni cutoff of alpha=0.05, R version")
 #benchmarkVariantPValue(sample, famInfo, sharingProbs, "bonferroni", 0.05, 'r')
 
 #message("Benchmarking multipleVariantPValue with bonferroni cutoff of alpha=0.05, C++ version")
-#benchmarkVariantPValue(sample, famInfo, sharingProbs, "bonferroni", 0.05, 'cpp')
+#benchmarkVariantPValue(snpMat, famInfo, sharingProbs, "bonferroni", 0.05, 'cpp')
 

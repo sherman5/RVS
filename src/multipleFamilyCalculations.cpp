@@ -12,7 +12,7 @@ typedef std::vector< std::vector<unsigned> > FamilyRowMap;
 static double sumBranches(unsigned ndx, double product, const Rcpp::NumericVector &sharingProbs,
 const double observedPValue);
 
-bool contains(const Rcpp::CharacterVector &vec, const std::string &str)
+static bool contains(const Rcpp::CharacterVector &vec, const std::string &str)
 {
     for (unsigned i = 0; i < vec.size(); ++i)
     {
@@ -24,7 +24,7 @@ bool contains(const Rcpp::CharacterVector &vec, const std::string &str)
     return false;
 }
 
-void checkInputs(const Rcpp::IntegerMatrix &alleles,
+static void checkInputs(const Rcpp::IntegerMatrix &alleles,
 const Rcpp::CharacterVector &variants, const Rcpp::CharacterVector &famIds,
 const Rcpp::NumericVector &sharingProbs, const std::string &filter,
 const Rcpp::IntegerVector &minorAllele, double alpha)
@@ -54,7 +54,7 @@ const Rcpp::IntegerVector &minorAllele, double alpha)
 // subject of that family id. The map is indexed based on the sharingProbs vector,
 // i.e. if you want to find the rows corresponding to the subjects in sharingProbs[i] you
 // can use familyRowMap[i]
-FamilyRowMap getFamilyRowMap(const Rcpp::NumericVector &sharingProbs,
+static FamilyRowMap getFamilyRowMap(const Rcpp::NumericVector &sharingProbs,
 const Rcpp::CharacterVector &famIds)
 {
     FamilyRowMap familyRowMap;
@@ -100,7 +100,7 @@ const std::vector<unsigned> &rowNdx, unsigned colNdx)
     return true;
 }
 
-Rcpp::NumericVector calculatePotentialPValues(const Rcpp::IntegerMatrix &snpMat,
+static Rcpp::NumericVector calculatePotentialPValues(const Rcpp::IntegerMatrix &snpMat,
 const Rcpp::CharacterVector &famIds, const Rcpp::NumericVector &sharingProbs,
 const Rcpp::IntegerVector &minorAllele, const FamilyRowMap &familyRowMap,
 const std::vector<unsigned> &validVariants)
@@ -123,7 +123,7 @@ const std::vector<unsigned> &validVariants)
     return ppvals;
 }
 
-double findPValueCutoff(const Rcpp::NumericVector &ppvals, const std::string &filter, double alpha)
+static double findPValueCutoff(const Rcpp::NumericVector &ppvals, const std::string &filter, double alpha)
 {
     if (filter.empty())
     {
@@ -141,19 +141,99 @@ double findPValueCutoff(const Rcpp::NumericVector &ppvals, const std::string &fi
 
 static Rcpp::NumericVector filterVector(const Rcpp::NumericVector &vecIn, double minVal)
 {
-    Rcpp::CharacterVector vecInNames = vecIn.names();
     Rcpp::NumericVector vecOut;
-    Rcpp::CharacterVector vecOutNames;
     for (unsigned i = 0; i < vecIn.size(); ++i)
     {
         if (vecIn[i] >= minVal)
         {
             vecOut.push_back(vecIn[i]);
-            vecOutNames.push_back(vecInNames[i]);
         }
     }
-    vecOut.names() = vecOutNames;
     return vecOut;
+}
+
+struct ProductIndexPair
+{
+    double product;
+    unsigned index;
+    ProductIndexPair(double p, unsigned n) : product(p), index(n) {}
+};
+
+static double sumBranches_nr(unsigned ndx, double product, const Rcpp::NumericVector &sharingProbs,
+const double observedPValue)
+{
+    double pvalue = 0.0;
+    std::vector<ProductIndexPair> stack;
+    std::vector<double> signifProbs;
+    stack.push_back(ProductIndexPair(product, ndx));
+    while (!stack.empty())
+    {
+        ProductIndexPair current = stack.back();
+        stack.pop_back();
+        if (current.index < sharingProbs.size())
+        {
+            double leftProduct = sharingProbs[current.index] * current.product;
+            double rightProduct = (1.0 - sharingProbs[current.index]) * current.product;
+            if (leftProduct <= observedPValue)
+            {
+                signifProbs.push_back(leftProduct);
+                pvalue += leftProduct;
+            }
+            else
+            {
+                stack.push_back(ProductIndexPair(leftProduct, current.index + 1));
+            }
+            if (rightProduct <= observedPValue)
+            {
+                signifProbs.push_back(rightProduct);
+                pvalue += rightProduct;
+            }
+            else
+            {
+                stack.push_back(ProductIndexPair(rightProduct, current.index + 1));
+            }
+        }
+    }
+    double pval2 = 0.0;
+    for (unsigned i = 0; i < signifProbs.size(); ++i)
+    {
+        //printf("%.12f, ", signifProbs[i]);
+        pval2 += signifProbs[i];
+    }
+    //printf("\n");
+    //if (sharingProbs.size() > 1)
+    //{
+    //    unsigned whichMaxSharingProb = 0;
+    //    double maxSharingProb = sharingProbs[0];
+    //    for (unsigned i = 0; i < sharingProbs.size(); ++i)
+    //    {
+    //        if (sharingProbs[i] > maxSharingProb)
+    //        {
+    //            maxSharingProb = sharingProbs[i];
+    //            whichMaxSharingProb = i;
+    //        }
+    //    }
+    //    double oneFalse = 1.0;
+    //    for (unsigned i = 0; i < sharingProbs.size(); ++i)
+    //    {
+    //        if (i != whichMaxSharingProb)
+    //        {
+    //            oneFalse *= sharingProbs[i];
+    //        }
+    //        else
+    //        {
+    //            //oneFalse *= (1.0 - sharingProbs[i]);
+    //            oneFalse *= sharingProbs[i];
+    //        }
+    //    }
+    //    //std::cout << sharingProbs.size() << " Observed: " << observedPValue
+    //    //    << ", One False: " << oneFalse << '\n';
+    //}
+    //if (signifProbs.size() > 1)
+    //{
+    //    //std::cout << "nValues: " << signifProbs.size() << ", pval1: " << pvalue << ", pval2: " << pval2 << '\n';
+    //}
+    return pvalue;
 }
 
 static double sumBranches(unsigned ndx, double product, const Rcpp::NumericVector &sharingProbs,
@@ -164,11 +244,11 @@ const double observedPValue)
         return 0;
     }
     double leftProduct = sharingProbs[ndx] * product;
-    double rightProduct = (1 - sharingProbs[ndx]) * product;
-    double leftSum = (leftProduct < observedPValue + 0.001)
+    double rightProduct = (1.0 - sharingProbs[ndx]) * product;
+    double leftSum = (leftProduct <= observedPValue + 0.001)
         ? leftProduct
         : sumBranches(ndx + 1, leftProduct, sharingProbs, observedPValue);
-    double rightSum = (rightProduct < observedPValue + 0.001)
+    double rightSum = (rightProduct <= observedPValue + 0.001)
         ? rightProduct
         : sumBranches(ndx + 1, rightProduct, sharingProbs, observedPValue);
     return leftSum + rightSum;
@@ -187,18 +267,17 @@ const Rcpp::LogicalVector &observedSharing, double minPValue=0.0)
     {
         return 0.0;
     }
-    
     double pvalue = 1.0;
-    double burnInObservedPValue = 1.0;
+    double burnInObservedPValue = (minPValue > 0.0) ? 1.0 : observedPValue * 2.0;
     while (pvalue > minPValue && burnInObservedPValue > observedPValue)
     {
         burnInObservedPValue = std::max(burnInObservedPValue / 10.0, observedPValue);
-        pvalue = sumBranches(0, 1, sharingProbs, burnInObservedPValue);
+        pvalue = sumBranches_nr(0, 1, sharingProbs, burnInObservedPValue);
     }
     return pvalue;
 }
 
-Rcpp::NumericVector calculatePValues(const Rcpp::IntegerMatrix &snpMat,
+static Rcpp::NumericVector calculatePValues(const Rcpp::IntegerMatrix &snpMat,
 const Rcpp::CharacterVector &famIds, 
 const Rcpp::NumericVector &sharingProbs, const Rcpp::IntegerVector &minorAllele,
 double cutoff, const FamilyRowMap &familyRowMap, const Rcpp::NumericVector &ppvals,
@@ -288,26 +367,34 @@ double alpha)
 #ifdef _OPENMP
     std::cout << "Running on " << omp_get_max_threads() << " threads\n";
 #endif
+    // determine minor allele value for each variant
     Rcpp::IntegerVector minorAllele = minorAlleleInput.isNull()
         ? determineMinorAlleles(snpMat)
         : Rcpp::IntegerVector(minorAlleleInput);
     std::vector<unsigned> validVariants = findValidVariants(minorAllele);
-    std::cout << "Ignoring " << snpMat.ncol() - validVariants.size() << " variants not present in any subject\n";
+    unsigned nIgnoredVariants = snpMat.ncol() - validVariants.size();
+    if (nIgnoredVariants > 0)
+    {
+        std::cout << "Ignoring " << nIgnoredVariants << " variants not present in any subject\n";
+    }
+
+    // parse arguments from R and check validity of parameters
     std::string filter = (rfilter.isNull()) ? "" : Rcpp::as<std::string>(rfilter);
     checkInputs(snpMat, variants, famIds, sharingProbs, filter, minorAllele, alpha);
+
+    // calculate p-values for each variant
     FamilyRowMap familyRowMap(getFamilyRowMap(sharingProbs, famIds));
     Rcpp::NumericVector potPValues = calculatePotentialPValues(snpMat, famIds,
         sharingProbs, minorAllele, familyRowMap, validVariants);
     double cutoff = findPValueCutoff(potPValues, filter, alpha);
     Rcpp::NumericVector pvalues = calculatePValues(snpMat, famIds, sharingProbs,
         minorAllele, cutoff, familyRowMap, potPValues, validVariants);
-    Rcpp::CharacterVector validNames = getValidVariantnames(validVariants, Rcpp::colnames(snpMat));
-    pvalues.names() = validNames;
-    potPValues.names() = validNames;
-    pvalues = filterVector(pvalues, 0.0);
+    
+    // return p-values along with indices of variants used
     return Rcpp::List::create(
         Rcpp::Named("pvalues") = pvalues,
-        Rcpp::Named("potential_pvalues") = potPValues
+        Rcpp::Named("potential_pvalues") = potPValues,
+        Rcpp::Named("valid_variants") = Rcpp::wrap(validVariants)
     );
 }
 

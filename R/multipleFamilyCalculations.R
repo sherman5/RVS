@@ -20,6 +20,8 @@
 #' determined to be less than this, the computation stops and minPValue is
 #' returned - this prevents extremely long computations for extremely small
 #' p-values
+#' @param backend either 'cpp' or 'r', determines which back-end is used. This parameter
+#' is intended for use by developers of the RVS package
 #' @return P-value of the exact rare variant sharing test requiring
 #' sharing by all affected subjects
 #' @examples
@@ -42,17 +44,19 @@ multipleFamilyPValue <- function(sharingProbs, observedSharing, minPValue=0, bac
         stop('sharingProbs and observedSharing must be named vectors')
     if (!all(names(observedSharing) %in% names(sharingProbs)))
         stop('missing some pedigrees in sharingProbs argument')
-
     # line up and subset vectors
     sharingProbs <- sharingProbs[names(observedSharing)]
     sharingProbs <- unname(sharingProbs)
     observedSharing <- unname(observedSharing)
-
     # calculate p-value with appropiate backend
     if (backend == 'cpp')
+    {
         multipleFamilyPValue_cpp(sharingProbs, observedSharing, minPValue)
+    }
     else
-        multipleFamilyPValue_R(sharingProbs, observedSharing, minPValue)    
+    {
+        multipleFamilyPValue_R_Backend(sharingProbs, observedSharing, minPValue)
+    }
 }
 
 #' generalization of multipleFamilyPValue to multiple variants
@@ -79,7 +83,8 @@ minorAllele=NULL, filter=NULL, alpha=0, backend="cpp")
     # subset snpMat to only affected subjects
     if (nrow(snpMat) != length(famInfo$affected))
         stop("dimension mismatch: snpMat and famInfo")
-    snpMat <- snpMat[famInfo$affected == 2,]
+    #snpMat <- snpMat[famInfo$affected == 2,]
+    #famInfo <- famInfo[famInfo$affected == 2,]
     # check inputs
     if (!is.null(minorAllele) & length(minorAllele) != ncol(snpMat))
     {
@@ -92,7 +97,7 @@ minorAllele=NULL, filter=NULL, alpha=0, backend="cpp")
     }
     else
     {
-        multipleVariantPValue_R(snpMat, as.character(famInfo$pedigree), sharingProbs,
+        multipleVariantPValue_R_Backend(snpMat, as.character(famInfo$pedigree), sharingProbs,
             minorAllele, filter, alpha)
     }
 }
@@ -139,7 +144,7 @@ enrichmentPValue <- function(snpMat, famInfo, sharingProbs, threshold=0, backend
     }
     else
     {
-        enrichmentPValue_R(snpMat@.Data, as.character(famInfo$pedigree), sharingProbs,
+        enrichmentPValue_R_Backend(snpMat@.Data, as.character(famInfo$pedigree), sharingProbs,
             minorAllele, threshold)
     }
 }
@@ -176,164 +181,4 @@ get.psubset <- function(vec, not, pshare.data)
     shared <- !(probNames %in% not)
     names(probs) <- names(shared) <- probNames
     return(multipleFamilyPValue(probs, shared))
-}
-
-#' R backend for multipleFamilyPValue calculation
-#' @inheritParams multipleFamilyPValue
-#' @return p-value
-multipleFamilyPValue_R <- function(sharingProbs, observedSharing, minPValue=0)
-{
-    # probability of observed data
-    true_pObserved <- prod(sharingProbs[observedSharing]) * 
-        prod(1 - sharingProbs[!observedSharing])
-    if (true_pObserved == 0)
-        return(0)
-
-    # sum probabilities of both branches of the tree
-    sumBranches <- function(ndx, prod)
-    {
-        # get sum of probs starting at leaf of this node
-        leafSum <- function(p)
-        {
-            # TODO account for equal sequences exactly, then check less than
-            if (p < pObserved + 1e-3) return(p)
-            else                return(sumBranches(ndx + 1, p))
-        }
-    
-        # base case at end of tree == this path not extreme
-        if (ndx > length(sharingProbs)) return(0)
-        
-        # multiply cumulative prob by each marginal prob
-        prodLeft <- sharingProbs[ndx] * prod
-        prodRight <- (1 - sharingProbs[ndx]) * prod
-
-        # return sum of both directions
-        return(leafSum(prodLeft) + leafSum(prodRight))
-    }
-
-    # test higher observed values to see if under min p value
-    pvalue <- 1
-    pObserved <- 1
-    while (pvalue > minPValue & pObserved > true_pObserved)
-    {
-        pObserved <- max(pObserved / 10, true_pObserved)
-        pvalue <- sumBranches(1, 1)
-    }
-
-    if (pObserved < true_pObserved)
-        stop('binary tree burn in failed')
-    return(pvalue)
-}
-
-#' R backend for multipleVariantPValue calculation
-#' @inheritParams multipleVariantPValue
-#' @return list of p-values and potential p-values
-multipleVariantPValue_R <- function(snpMat, famIds, sharingProbs,
-minorAllele, filter=NULL, alpha=0)
-{
-    # check inputs
-    if (is.null(names(sharingProbs)))
-        stop('sharingProbs must be a named vector')
-
-    if (is.null(minorAllele))
-    {
-        minorAllele <- sapply(colnames(snpMat), function(var)
-        {
-            ifelse(sum(snpMat[,var] == 1) < sum(snpMat[,var] == 3), 1, 3)
-        })
-    }
-    validVariants <- sapply(colnames(snpMat), function(var)
-    {
-        sum(snpMat[,var] == minorAllele[var] | snpMat[,var] == 2) > 0
-    })
-    message(paste0("Ignoring ", sum(!validVariants), " variants not present in any subject"))
-    snpMat <- snpMat[,validVariants]
-    minorAllele <- minorAllele[validVariants]
-
-    # convert matrix to list of families with each allele
-    shareList <- convertMatrix(snpMat@.Data, famIds, minorAllele)
-
-    # calculate potential p-values
-    pot_pvals <- sapply(shareList, function(vec)
-    {
-        if (!all(names(vec) %in% names(sharingProbs)))
-            stop('sharingProbs is missing a value for some families')
-        prob <- 1
-        for (fid in names(vec))
-        {
-            prob <- prob * unname(sharingProbs[fid])
-        }
-        return(prob)
-    }, USE.NAMES=TRUE)
-
-    # subset data if filter is requested
-    ppval_cutoff <- 1
-    if (!is.null(filter))
-    {
-        sorted_ppvals <- sort(unname(pot_pvals))
-        cutoff <- alpha / (1:length(pot_pvals))
-        ppval_cutoff <- sorted_ppvals[max(which(sorted_ppvals < cutoff))]
-    }
-
-    # compute p-values
-    pvals <- sapply(names(shareList), function(var)
-    {
-        if (pot_pvals[var] <= ppval_cutoff)
-            multipleFamilyPValue(sharingProbs, shareList[[var]])
-        else
-            NA
-    }, USE.NAMES=TRUE)
-
-    # return p-values and potential p-values
-    return(list(pvalues=pvals[!is.na(pvals)], potential_pvalues=pot_pvals))
-}
-
-#' R backend for enrichmentPValue calculation
-#' @inheritParams enrichmentPValue
-#' @return p-value
-enrichmentPValue_R <- function(snpMat, famIds, sharingProbs, minorAllele, threshold=0)
-{
-    # convert matrix to list of families with each allele
-    shareList <- convertMatrix(snpMat@.Data, famIds, minorAllele)
-
-    # make sharing events unique for each variant by renaming
-    probs <- pattern <- c()
-    for (var in names(shareList))
-    {
-        temp_probs <- sharingProbs[names(shareList[[var]])]
-        temp_pattern <- shareList[[var]]
-        names(temp_pattern) <- paste(var, names(temp_pattern), sep='_')
-        names(temp_probs) <- paste(var, names(temp_probs), sep='_')
-        probs <- c(probs, temp_probs)
-        pattern <- c(pattern, temp_pattern)
-    }
-
-    # return p-value (or threshold if p-value is smaller)
-    pval <- multipleFamilyPValue(probs, pattern, threshold)
-    return(ifelse(pval <= threshold, threshold, pval))
-}
-
-#' convert snpMatrix to a list of vectors of sharing
-#' @inheritParams multipleVariantPValue
-#' @return list of boolean vectors indicating sharing pattern for each variant
-convertMatrix <- function(snpMat, famIds, minorAllele)
-{
-    shareList <- sapply(colnames(snpMat), function(var)
-    {
-        ret <- c()
-        for (fid in unique(famIds))
-        {
-            famRows <- which(famIds == fid)
-            famAlleles <- snpMat[famRows, var]
-            if (!all(famAlleles != minorAllele[var] & famAlleles != 2))
-            {
-                ret <- c(ret, all(famAlleles == minorAllele[var] | famAlleles == 2))
-                names(ret)[length(ret)] <- fid
-            }
-        }
-        if (length(ret) == 0)
-            stop("found a variant not seen in any subject")
-        return(ret)
-    }, USE.NAMES=TRUE, simplify=FALSE)
-    return(shareList[!sapply(shareList, is.null)])
 }
