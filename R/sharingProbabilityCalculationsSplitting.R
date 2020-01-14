@@ -5,15 +5,21 @@
 #' the pedigree. Condition on each founder and sum over all resulting
 #' probabilities. 
 #' @param procPed pedigree that has been through processPedigree()
+#' @param useFounderCouples a logical value indicating whether to exploit the interchangeability of the mother and father from founder couples to save computations. Warning! This works only when all founders have only one spouse. Set to FALSE if at least one founder has two or more spouses.
 #' @return sharing probability
-oneFounderSharingProbSplitting <- function(procPed)
+oneFounderSharingProbSplitting <- function(procPed, useFounderCouples=TRUE)
 {
 	nf = length(procPed$founders)
-	# Identifying founder couples
-	fci = apply(procPed$parents,2,function(vec,founder.vec) all(vec %in% founder.vec), founder.vec = procPed$founders)
-	founder.couples = unique(t(as.matrix(procPed$parents[,fci])))
-	other.founders = procPed$founders[!(procPed$founders%in%founder.couples)]
-	
+	if (useFounderCouples)
+	{
+		# Identifying founder couples
+		fci = apply(procPed$parents,2,function(vec,founder.vec) all(vec %in% founder.vec), founder.vec = procPed$founders)
+		founder.couples = unique(t(as.matrix(procPed$parents[,fci])))
+		other.founders = procPed$founders[!(procPed$founders%in%founder.couples)]
+		f.vec = c(founder.couples[,1],other.founders)
+	}
+	else f.vec = procPed$founders
+		
 	# Creating genealogy with procPed
 	peddat = data.frame(procPed$id,t(procPed$parents),as.numeric(procPed$ped$sex))
 	colnames(peddat) = c("ind","father","mother","sex")
@@ -30,7 +36,7 @@ oneFounderSharingProbSplitting <- function(procPed)
     carrier.numer <- rep(0,length(carrier.sets))
     carrier.noRV <- 0
     # First loop over the founder couples, using the father as index, then the other founders
-    for (f in c(founder.couples[,1],other.founders)) 
+    for (f in f.vec) 
     {
     	# Extract subpedigree 
     	subaffected = procPed$affected[affByFounder[rownames(affByFounder)==as.character(f),]>0]
@@ -64,11 +70,19 @@ oneFounderSharingProbSplitting <- function(procPed)
 	    if (class(net)[1]=="try-error") stop("Setting founder genotypes of subpedigree below founder ",procPed$origID[f]," failed.")
 		
         # compute probabilities
-        if (f %in% founder.couples[,1])
+        if (useFounderCouples)
         {
-        	# Multiply probabilities by 2 to account for the mother contribution
-        	carrier.noRV <- carrier.noRV + 2*(1 - denomProb(net,subprocPed))
-        	carrier.numer <- carrier.numer + 2*sapply(carrier.sets,numerProbSet,net=net, procPed=subprocPed)
+        	if (f %in% founder.couples[,1])
+        	{
+        		# Multiply probabilities by 2 to account for the mother contribution
+        		carrier.noRV <- carrier.noRV + 2*(1 - denomProb(net,subprocPed))
+        		carrier.numer <- carrier.numer + 2*sapply(carrier.sets,numerProbSet,net=net, procPed=subprocPed)
+        	}
+        	else
+        	{
+        		carrier.noRV <- carrier.noRV + 1 - denomProb(net,subprocPed)
+        		carrier.numer <- carrier.numer + sapply(carrier.sets,numerProbSet,net=net, procPed=subprocPed)
+        	}
         }
         else
         {
