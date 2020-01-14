@@ -9,7 +9,7 @@ runMonteCarlo(procPed, founderDist, nSim)
 \arguments{
 \item{procPed}{pedigree that has been through \code{processPedigree}}
 
-\item{founderDist}{custom distribution among founders - only used
+\item{founderDist}{custom distribution among founders. Only used
 when simulating probability with nSim}
 
 \item{nSim}{number of simulations used in monte carlo calculation}

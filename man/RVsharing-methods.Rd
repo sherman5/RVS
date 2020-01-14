@@ -9,14 +9,17 @@
 \usage{
 RVsharing(ped, carriers = NULL, alleleFreq = NA, kinshipCoeff = NA,
   nSim = NA, founderDist = NULL, useAffected = FALSE,
-  kinshipOrder = 5, ...)
+  kinshipOrder = 5, splitPed = FALSE, useFounderCouples = TRUE, ...)
 
-\S4method{RVsharing}{pedigree}(ped, carriers, alleleFreq, kinshipCoeff,
-  nSim, founderDist, useAffected, kinshipOrder, splitPed = FALSE, ...)
+\S4method{RVsharing}{pedigree}(ped, carriers = NULL, alleleFreq = NA,
+  kinshipCoeff = NA, nSim = NA, founderDist = NULL,
+  useAffected = FALSE, kinshipOrder = 5, splitPed = FALSE,
+  useFounderCouples = TRUE, ...)
 
 \S4method{RVsharing}{list}(ped, carriers = NULL, alleleFreq = NA,
   kinshipCoeff = NA, nSim = NA, founderDist = NULL,
-  useAffected = FALSE, kinshipOrder = 5, ...)
+  useAffected = FALSE, kinshipOrder = 5, splitPed = FALSE,
+  useFounderCouples = TRUE, ...)
 }
 \arguments{
 \item{ped}{S3 pedigree object or a list of pedigree objects}
@@ -31,7 +34,7 @@ the carriers in each pedigree}
 
 \item{nSim}{number of simulations used in monte carlo calculation}
 
-\item{founderDist}{custom distribution among founders - only used
+\item{founderDist}{custom distribution among founders. Only used
 when simulating probability with nSim}
 
 \item{useAffected}{a logical value indicating whether to condition on seeing the variant
@@ -41,9 +44,11 @@ among the affected subjects instead of the final descendants}
 of the number of distinct alleles in the founders (d in Bureau et al.).
 Must be <= 5}
 
-\item{...}{allows for arguments in the style of v1.7}
-
 \item{splitPed}{a logical value indicating whether to split the pedigree in subpedigrees below each founder to enable computations in pedigrees too large to be stored in a single Bayesian network}
+
+\item{useFounderCouples}{a logical value indicating whether to exploit the interchangeability of the mother and father from founder couples to save computations. Warning! This works only when all founders have only one spouse. Set to FALSE if at least one founder has two or more spouses. Only used when splitPed = TRUE}
+
+\item{...}{allows for additional arguments}
 }
 \value{
 sharing probability between all carriers in pedigree, or if splitPed = TRUE, a vector of sharing probabilities for all subsets of the carriers

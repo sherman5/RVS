@@ -4,10 +4,12 @@
 \alias{oneFounderSharingProbSplitting}
 \title{calculate sharing probability in basic case}
 \usage{
-oneFounderSharingProbSplitting(procPed)
+oneFounderSharingProbSplitting(procPed, useFounderCouples = TRUE)
 }
 \arguments{
 \item{procPed}{pedigree that has been through processPedigree()}
+
+\item{useFounderCouples}{a logical value indicating whether to exploit the interchangeability of the mother and father from founder couples to save computations. Warning! This works only when all founders have only one spouse. Set to FALSE if at least one founder has two or more spouses.}
 }
 \value{
 sharing probability

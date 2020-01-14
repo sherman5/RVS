@@ -13,7 +13,7 @@ checkArgs(alleleFreq, kinshipCoeff, nSim, founderDist)
 
 \item{nSim}{number of simulations used in monte carlo calculation}
 
-\item{founderDist}{custom distribution among founders - only used
+\item{founderDist}{custom distribution among founders. Only used
 when simulating probability with nSim}
 }
 \value{
