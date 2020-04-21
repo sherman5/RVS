@@ -2,10 +2,10 @@ Package: RVS
 Type: Package
 Title: Computes estimates of the probability of related individuals sharing a
     rare variant
-Version: 1.5.5
-Date: 2020-01-13
+Version: 1.9.0
+Date: 2019-01-30
 Author: Alexandre Bureau, Ingo Ruczinski, Samuel Younkin, Thomas Sherman
-Maintainer: Thomas Sherman <tsherma4@jhu.edu>
+Maintainer: Thomas Sherman <tomsherman159@gmail.com>
 Description: Rare Variant Sharing (RVS) implements tests of association
     and linkage between rare genetic variant genotypes and a dichotomous
     phenotype, e.g. a disease status, in family samples. The tests are
