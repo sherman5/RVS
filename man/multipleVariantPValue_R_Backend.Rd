@@ -4,11 +4,19 @@
 \alias{multipleVariantPValue_R_Backend}
 \title{R backend for multipleVariantPValue calculation}
 \usage{
-multipleVariantPValue_R_Backend(snpMat, famIds, sharingProbs, minorAllele,
-  filter = NULL, alpha = 0)
+multipleVariantPValue_R_Backend(
+  snpMat,
+  famIds,
+  sharingProbs,
+  minorAllele,
+  filter = NULL,
+  alpha = 0
+)
 }
 \arguments{
 \item{snpMat}{SnpMatrix}
+
+\item{famIds}{family ids corresponding to rows of the snpMap}
 
 \item{sharingProbs}{vector of sharing probabilites, must be a named vector
 with famid's for each probability}

@@ -103,14 +103,16 @@ multipleFamilyPValue_R_Backend<- function(sharingProbs, observedSharing, minPVal
 
 #' R backend for multipleVariantPValue calculation
 #' @inheritParams multipleVariantPValue
+#' @param famIds family ids corresponding to rows of the snpMap
 #' @return list of p-values and potential p-values
 multipleVariantPValue_R_Backend <- function(snpMat, famIds, sharingProbs,
 minorAllele, filter=NULL, alpha=0)
 {
     # check inputs
     if (is.null(names(sharingProbs)))
+    {
         stop('sharingProbs must be a named vector')
-
+    }
     if (is.null(minorAllele))
     {
         minorAllele <- sapply(colnames(snpMat), function(var)
@@ -125,15 +127,15 @@ minorAllele, filter=NULL, alpha=0)
     message(paste0("Ignoring ", sum(!validVariants), " variants not present in any subject"))
     snpMat <- snpMat[,validVariants]
     minorAllele <- minorAllele[validVariants]
-
     # convert matrix to list of families with each allele
     shareList <- convertMatrix(snpMat@.Data, famIds, minorAllele)
-
     # calculate potential p-values
     pot_pvals <- sapply(shareList, function(vec)
     {
         if (!all(names(vec) %in% names(sharingProbs)))
+        {
             stop('sharingProbs is missing a value for some families')
+        }
         prob <- 1
         for (fid in names(vec))
         {
@@ -141,7 +143,6 @@ minorAllele, filter=NULL, alpha=0)
         }
         return(prob)
     }, USE.NAMES=TRUE)
-
     # subset data if filter is requested
     ppval_cutoff <- 1
     if (!is.null(filter))
@@ -150,28 +151,31 @@ minorAllele, filter=NULL, alpha=0)
         cutoff <- alpha / (1:length(pot_pvals))
         ppval_cutoff <- sorted_ppvals[max(which(sorted_ppvals < cutoff))]
     }
-
     # compute p-values
     pvals <- sapply(names(shareList), function(var)
     {
         if (pot_pvals[var] <= ppval_cutoff)
-            multipleFamilyPValue(sharingProbs, shareList[[var]], backend='r')
+        {
+            multipleFamilyPValue(sharingProbs, shareList[[var]])
+        }
         else
+        {
             NA
+        }
     }, USE.NAMES=TRUE)
-
     # return p-values and potential p-values
     return(list(pvalues=pvals[!is.na(pvals)], potential_pvalues=pot_pvals))
 }
 
 #' R backend for enrichmentPValue calculation
 #' @inheritParams enrichmentPValue
+#' @param minorAllele which variant value to count as the minor allele
+#' @param famIds family ids corresponding to rows of the snpMap
 #' @return p-value
-enrichmentPValue_R <- function(snpMat, famIds, sharingProbs, minorAllele, threshold=0)
+enrichmentPValue_R_Backend <- function(snpMat, famIds, sharingProbs, minorAllele, threshold=0)
 {
     # convert matrix to list of families with each allele
     shareList <- convertMatrix(snpMat@.Data, famIds, minorAllele)
-
     # make sharing events unique for each variant by renaming
     probs <- pattern <- c()
     for (var in names(shareList))
@@ -183,14 +187,14 @@ enrichmentPValue_R <- function(snpMat, famIds, sharingProbs, minorAllele, thresh
         probs <- c(probs, temp_probs)
         pattern <- c(pattern, temp_pattern)
     }
-
     # return p-value (or threshold if p-value is smaller)
-    pval <- multipleFamilyPValue(probs, pattern, threshold, backend='r')
+    pval <- multipleFamilyPValue(probs, pattern, threshold)
     return(ifelse(pval <= threshold, threshold, pval))
 }
 
 #' convert snpMatrix to a list of vectors of sharing
 #' @inheritParams multipleVariantPValue
+#' @param famIds family ids corresponding to rows of the snpMap
 #' @return list of boolean vectors indicating sharing pattern for each variant
 convertMatrix <- function(snpMat, famIds, minorAllele)
 {
@@ -208,7 +212,9 @@ convertMatrix <- function(snpMat, famIds, minorAllele)
             }
         }
         if (length(ret) == 0)
+        {
             stop("found a variant not seen in any subject")
+        }
         return(ret)
     }, USE.NAMES=TRUE, simplify=FALSE)
     return(shareList[!sapply(shareList, is.null)])

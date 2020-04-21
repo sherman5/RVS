@@ -4,8 +4,7 @@
 \alias{multipleFamilyPValue}
 \title{probability of sharing of rare variants in a subset of families}
 \usage{
-multipleFamilyPValue(sharingProbs, observedSharing, minPValue = 0,
-  backend = "cpp")
+multipleFamilyPValue(sharingProbs, observedSharing, minPValue = 0)
 }
 \arguments{
 \item{sharingProbs}{named vector of sharing probabilties, where names
@@ -18,9 +17,6 @@ in the family share the variant (TRUE if all share)}
 determined to be less than this, the computation stops and minPValue is
 returned - this prevents extremely long computations for extremely small
 p-values}
-
-\item{backend}{either 'cpp' or 'r', determines which back-end is used. This parameter
-is intended for use by developers of the RVS package}
 }
 \value{
 P-value of the exact rare variant sharing test requiring

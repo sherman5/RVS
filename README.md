@@ -1,4 +1,4 @@
-# RVS - Rare Variant Sharing R Package
+# RVS 
 
 [![Bioc](https://bioconductor.org/images/logo_bioconductor.gif)](https://bioconductor.org/packages/RVS)
 [![downloads](https://bioconductor.org/shields/downloads/release/RVS.svg)](http://bioconductor.org/packages/stats/bioc/RVS/)

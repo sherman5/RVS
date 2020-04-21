@@ -6,13 +6,7 @@ Version: 1.9.0
 Date: 2019-01-30
 Author: Alexandre Bureau, Ingo Ruczinski, Samuel Younkin, Thomas Sherman
 Maintainer: Thomas Sherman <tomsherman159@gmail.com>
-Description: Rare Variant Sharing (RVS) implements tests of association
-    and linkage between rare genetic variant genotypes and a dichotomous
-    phenotype, e.g. a disease status, in family samples. The tests are
-    based on probabilities of rare variant sharing by relatives under
-    the null hypothesis of absence of linkage and association between
-    the rare variants and the phenotype and apply to single variants or
-    multiple variants in a region (e.g. gene-based test).
+Description: Rare Variant Sharing (RVS) implements tests of association and linkage between rare genetic variant genotypes and a dichotomous phenotype, e.g. a disease status, in family samples. The tests are based on probabilities of rare variant sharing by relatives under the null hypothesis of absence of linkage and association between the rare variants and the phenotype and apply to single variants or multiple variants in a region (e.g. gene-based test).
 License: GPL-2
 Depends:
     R (>= 3.5.0)
@@ -30,17 +24,15 @@ Suggests:
     rmarkdown,
     BiocStyle,
     VariantAnnotation
-LinkingTo: Rcpp
 VignetteBuilder: knitr
 LazyData: true
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.0
 Encoding: UTF-8
 biocViews: ImmunoOncology, Genetics, GenomeWideAssociation, VariantDetection, ExomeSeq, WholeGenome
 Collate:
     'RVgene.R'
     'pedigree-methods.R'
     'RVsharing.R'
-    'RcppExports.R'
     'documentation.R'
     'grainNetworkHelper.R'
     'monteCarloMethods.R'

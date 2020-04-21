@@ -9,6 +9,8 @@ convertMatrix(snpMat, famIds, minorAllele)
 \arguments{
 \item{snpMat}{SnpMatrix}
 
+\item{famIds}{family ids corresponding to rows of the snpMap}
+
 \item{minorAllele}{vector specifying the minor allele of each variant}
 }
 \value{

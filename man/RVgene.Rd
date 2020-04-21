@@ -4,10 +4,21 @@
 \alias{RVgene}
 \title{Probability of sharing of rare variants in a family sample within a gene}
 \usage{
-RVgene(data, ped.listfams, sites, fams, pattern.prob.list, nequiv.list,
-  N.list, type = "alleles", minor.allele.vec,
-  precomputed.prob = list(0), maxdim = 1e+09, partial.sharing = TRUE,
-  ...)
+RVgene(
+  data,
+  ped.listfams,
+  sites,
+  fams,
+  pattern.prob.list,
+  nequiv.list,
+  N.list,
+  type = "alleles",
+  minor.allele.vec,
+  precomputed.prob = list(0),
+  maxdim = 1e+09,
+  partial.sharing = TRUE,
+  ...
+)
 }
 \arguments{
 \item{data}{A list of \code{SnpMatrix} objects corresponding to each pedigree

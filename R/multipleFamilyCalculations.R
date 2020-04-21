@@ -20,8 +20,6 @@
 #' determined to be less than this, the computation stops and minPValue is
 #' returned - this prevents extremely long computations for extremely small
 #' p-values
-#' @param backend either 'cpp' or 'r', determines which back-end is used. This parameter
-#' is intended for use by developers of the RVS package
 #' @return P-value of the exact rare variant sharing test requiring
 #' sharing by all affected subjects
 #' @examples
@@ -37,7 +35,7 @@
 #' and Ruczinski, I. (2014) Inferring rare disease risk variants based on
 #' exact probabilities of sharing by multiple affected relatives.
 #' Bioinformatics, 30(15): 2189-96, doi:10.1093/bioinformatics/btu198.
-multipleFamilyPValue <- function(sharingProbs, observedSharing, minPValue=0, backend='cpp')
+multipleFamilyPValue <- function(sharingProbs, observedSharing, minPValue=0)
 {
     # check all pedigrees are given
     if (length(names(observedSharing)) == 0 | length(names(sharingProbs)) == 0)
@@ -49,14 +47,7 @@ multipleFamilyPValue <- function(sharingProbs, observedSharing, minPValue=0, bac
     sharingProbs <- unname(sharingProbs)
     observedSharing <- unname(observedSharing)
     # calculate p-value with appropiate backend
-    if (backend == 'cpp')
-    {
-        multipleFamilyPValue_cpp(sharingProbs, observedSharing, minPValue)
-    }
-    else
-    {
-        multipleFamilyPValue_R_Backend(sharingProbs, observedSharing, minPValue)
-    }
+    multipleFamilyPValue_R_Backend(sharingProbs, observedSharing, minPValue)
 }
 
 #' generalization of multipleFamilyPValue to multiple variants
@@ -78,7 +69,7 @@ multipleFamilyPValue <- function(sharingProbs, observedSharing, minPValue=0, bac
 #' @param alpha parameter for filter
 #' @return list containing p-values and potential p-values for each variant
 multipleVariantPValue <- function(snpMat, famInfo, sharingProbs,
-minorAllele=NULL, filter=NULL, alpha=0, backend="cpp")
+minorAllele=NULL, filter=NULL, alpha=0)
 {
     # subset snpMat to only affected subjects
     if (nrow(snpMat) != length(famInfo$affected))
@@ -90,16 +81,8 @@ minorAllele=NULL, filter=NULL, alpha=0, backend="cpp")
     {
         stop("Mismatch between number of minor alleles and size of the SnpMatrix")
     }
-    if (backend == "cpp")
-    {
-        multipleVariantPValue_cpp(snpMat@.Data, colnames(snpMat),
-            as.character(famInfo$pedigree), sharingProbs, filter, minorAllele, alpha)
-    }
-    else
-    {
-        multipleVariantPValue_R_Backend(snpMat, as.character(famInfo$pedigree), sharingProbs,
-            minorAllele, filter, alpha)
-    }
+    multipleVariantPValue_R_Backend(snpMat, as.character(famInfo$pedigree), sharingProbs,
+        minorAllele, filter, alpha)
 }
 
 #' enrichment p-value across multiple families and variants
@@ -117,7 +100,7 @@ minorAllele=NULL, filter=NULL, alpha=0, backend="cpp")
 #' Bailey-Wilson, J.E., Marazita, M.L., et al. 2017. Whole Exome Association of
 #' Rare Deletions in Multiplex Oral Cleft Families. Genetic Epidemiology 41
 #' (1): 61–69. doi:10.1002/gepi.22010.
-enrichmentPValue <- function(snpMat, famInfo, sharingProbs, threshold=0, backend='cpp')
+enrichmentPValue <- function(snpMat, famInfo, sharingProbs, threshold=0)
 {
     # determine the minor allele for each variant
     minorAllele <- sapply(colnames(snpMat), function(var)
@@ -137,16 +120,8 @@ enrichmentPValue <- function(snpMat, famInfo, sharingProbs, threshold=0, backend
         stop("dimension mismatch: snpMat and famInfo")
     snpMat <- snpMat[famInfo$affected == 2,]
 
-    if (backend == 'cpp')
-    {
-        enrichmentPValue_cpp(snpMat@.Data, as.character(famInfo$pedigree), sharingProbs,
-            minorAllele, threshold)
-    }
-    else
-    {
-        enrichmentPValue_R_Backend(snpMat@.Data, as.character(famInfo$pedigree), sharingProbs,
-            minorAllele, threshold)
-    }
+    enrichmentPValue_R_Backend(snpMat@.Data, as.character(famInfo$pedigree), sharingProbs,
+        minorAllele, threshold)
 }
 
 #' deprecated function

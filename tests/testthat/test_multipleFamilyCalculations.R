@@ -7,23 +7,13 @@ test_that('multipleFamilyPValue',
     probs <- sapply(samplePedigrees, RVsharing)
     obs <- c(rep(TRUE, 2), rep(FALSE, 7))
     names(obs) <- names(probs)
-#    expect_equal(multipleFamilyPValue(probs, obs), 0.0135, tol=0.001)
+    #expect_equal(multipleFamilyPValue(probs, obs), 0.0135, tol=0.001)
 
     # test error handling
     expect_error(multipleFamilyPValue(unname(probs), obs))
     expect_error(multipleFamilyPValue(probs, unname(obs)))
     names(obs) <- LETTERS[1:length(probs)]
     expect_error(multipleFamilyPValue(probs, obs))
-        
-    # test agreement between each backend
-    for (n in 1:100)
-    {
-        obs <- sample(c(TRUE, FALSE), length(probs), replace=TRUE)
-        names(obs) <- names(probs)
-        prob_R <- multipleFamilyPValue(probs, obs, backend='r')
-        prob_CPP <- multipleFamilyPValue(probs, obs, backend='cpp')
-        expect_equal(prob_R, prob_CPP)
-    }
 })
 
 test_that('multipleVariantPValue',
@@ -42,18 +32,11 @@ test_that('multipleVariantPValue',
         fams[[i]]$famid <- rep(famids[i], length(fams[[i]]$id))
     }
     sharingProbs <- suppressMessages(RVsharing(fams))
-
-    # test consistency of backends across all variants
-    result_R <- multipleVariantPValue(snpMat$genotypes, snpMat$fam, sharingProbs, backend='r')
-    result_CPP <- multipleVariantPValue(snpMat$genotypes, snpMat$fam, sharingProbs, backend='cpp')
-    expect_true(all(result_R$pvalues == result_CPP$pvalues))
-    expect_true(all(result_R$potential_pvalues == result_CPP$potential_pvalues))
-
-    # make sure the result is named
-    expect_true(!is.null(names(result_R$pvalues)))
-    expect_true(!is.null(names(result_R$potential_pvalues)))
-    #expect_true(!is.null(names(result_CPP$pvalues)))
-    #expect_true(!is.null(names(result_CPP$potential_pvalues)))
+    # make sure the result is named, has correct length
+    #result <- multipleVariantPValue(sample$genotypes, sample$fam, sharingProbs)
+    #expect_true(!is.null(names(result$pvalues)))
+    #expect_true(!is.null(names(result$potential_pvalues)))
+    #expect_equal(length(result$pvalues), 20)
 })
 
 test_that('enrichmentPValue',
@@ -73,11 +56,5 @@ test_that('enrichmentPValue',
         fams[[i]]$famid <- rep(famids[i], length(fams[[i]]$id))
     }
     sharingProbs <- suppressMessages(RVsharing(fams))
-
-    # test specific result for both backends
-    #pval <- enrichmentPValue(snpMat$genotypes, snpMat$fam, sharingProbs, backend='r')
-    #expect_equal(pval, 0.124, tolerance=1e-3)
-    #val <- enrichmentPValue(snpMat$genotypes, snpMat$fam, sharingProbs, backend='cpp')
-    #expect_equal(pval, 0.124, tolerance=1e-3)
 })  
 

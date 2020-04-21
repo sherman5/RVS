@@ -4,8 +4,7 @@
 \alias{multipleFamilyPValue_R_Backend}
 \title{R backend for multipleFamilyPValue calculation}
 \usage{
-multipleFamilyPValue_R_Backend(sharingProbs, observedSharing,
-  minPValue = 0)
+multipleFamilyPValue_R_Backend(sharingProbs, observedSharing, minPValue = 0)
 }
 \arguments{
 \item{sharingProbs}{named vector of sharing probabilties, where names

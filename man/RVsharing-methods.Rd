@@ -7,19 +7,47 @@
 \alias{RVsharing,list-method}
 \title{probability of sharing a rare variant among relatives}
 \usage{
-RVsharing(ped, carriers = NULL, alleleFreq = NA, kinshipCoeff = NA,
-  nSim = NA, founderDist = NULL, useAffected = FALSE,
-  kinshipOrder = 5, splitPed = FALSE, useFounderCouples = TRUE, ...)
+RVsharing(
+  ped,
+  carriers = NULL,
+  alleleFreq = NA,
+  kinshipCoeff = NA,
+  nSim = NA,
+  founderDist = NULL,
+  useAffected = FALSE,
+  kinshipOrder = 5,
+  splitPed = FALSE,
+  useFounderCouples = TRUE,
+  ...
+)
 
-\S4method{RVsharing}{pedigree}(ped, carriers = NULL, alleleFreq = NA,
-  kinshipCoeff = NA, nSim = NA, founderDist = NULL,
-  useAffected = FALSE, kinshipOrder = 5, splitPed = FALSE,
-  useFounderCouples = TRUE, ...)
+\S4method{RVsharing}{pedigree}(
+  ped,
+  carriers = NULL,
+  alleleFreq = NA,
+  kinshipCoeff = NA,
+  nSim = NA,
+  founderDist = NULL,
+  useAffected = FALSE,
+  kinshipOrder = 5,
+  splitPed = FALSE,
+  useFounderCouples = TRUE,
+  ...
+)
 
-\S4method{RVsharing}{list}(ped, carriers = NULL, alleleFreq = NA,
-  kinshipCoeff = NA, nSim = NA, founderDist = NULL,
-  useAffected = FALSE, kinshipOrder = 5, splitPed = FALSE,
-  useFounderCouples = TRUE, ...)
+\S4method{RVsharing}{list}(
+  ped,
+  carriers = NULL,
+  alleleFreq = NA,
+  kinshipCoeff = NA,
+  nSim = NA,
+  founderDist = NULL,
+  useAffected = FALSE,
+  kinshipOrder = 5,
+  splitPed = FALSE,
+  useFounderCouples = TRUE,
+  ...
+)
 }
 \arguments{
 \item{ped}{S3 pedigree object or a list of pedigree objects}

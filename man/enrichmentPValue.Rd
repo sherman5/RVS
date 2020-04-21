@@ -4,8 +4,7 @@
 \alias{enrichmentPValue}
 \title{enrichment p-value across multiple families and variants}
 \usage{
-enrichmentPValue(snpMat, famInfo, sharingProbs, threshold = 0,
-  backend = "cpp")
+enrichmentPValue(snpMat, famInfo, sharingProbs, threshold = 0)
 }
 \arguments{
 \item{snpMat}{SnpMatrix}
