@@ -10,4 +10,4 @@ before_install:
 
 # use bioconductor
 bioc_required: true
-bioc_use_devel: false
+bioc_use_devel: true
