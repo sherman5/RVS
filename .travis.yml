@@ -1,13 +1,54 @@
-# necessary yml
-language: r
-cache: packages
-sudo: required
+jobs:
+  fast_finish: true
+  allow_failures:
+    - name: Bioconductor Devel Testing - Linux
+    - name: Bioconductor Devel Testing - OSX
+  include:
+    - name: "Bioconductor Release Testing - Linux"
+      os: Linux
+      if: tag IS NOT present
+      language: r
+      r: bioc-release
+      repos:
+        CRAN: http://cran.rstudio.com/
+      sudo: required
+      before_install:
+        - sudo apt-get update
+        - sudo apt-get install -y libxml2-dev libssl-dev libcurl4-openssl-dev
 
-# dependencies
-before_install:
-  - sudo apt-get update
-  - sudo apt-get install -y libxml2-dev libssl-dev libcurl4-openssl-dev
+    - name: "Bioconductor Devel Testing - Linux"
+      os: linux
+      if: tag IS NOT present
+      language: r
+      r: bioc-devel
+      repos:
+        CRAN: http://cran.rstudio.com/ 
+      sudo: required
+      before_install:
+        - sudo apt-get update
+        - sudo apt-get install -y libxml2-dev libssl-dev libcurl4-openssl-dev
 
-# use bioconductor
-bioc_required: true
-bioc_use_devel: true
+    - name: "Bioconductor Release Testing - OSX"
+      os: osx
+      if: tag IS NOT present
+      language: r
+      r: bioc-release
+      repos:
+        CRAN: http://cran.rstudio.com/ 
+      sudo: required
+      before_install:
+        - sudo apt-get update
+        - sudo apt-get install -y libxml2-dev libssl-dev libcurl4-openssl-dev
+
+    - name: "Bioconductor Devel Testing - OSX"
+      os: osx
+      if: tag IS NOT present
+      language: r
+      r: bioc-devel
+      repos:
+        CRAN: http://cran.rstudio.com/ 
+      sudo: required
+      before_install:
+        - sudo apt-get update
+        - sudo apt-get install -y libxml2-dev libssl-dev libcurl4-openssl-dev
+
