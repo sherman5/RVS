@@ -35,10 +35,6 @@ jobs:
       r: bioc-release
       repos:
         CRAN: http://cran.rstudio.com/ 
-      sudo: required
-      before_install:
-        - sudo apt-get update
-        - sudo apt-get install -y libxml2-dev libssl-dev libcurl4-openssl-dev
 
     - name: "Bioconductor Devel Testing - OSX"
       os: osx
@@ -47,8 +43,4 @@ jobs:
       r: bioc-devel
       repos:
         CRAN: http://cran.rstudio.com/ 
-      sudo: required
-      before_install:
-        - sudo apt-get update
-        - sudo apt-get install -y libxml2-dev libssl-dev libcurl4-openssl-dev
 
