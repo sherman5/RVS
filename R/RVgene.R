@@ -656,7 +656,7 @@ precomputed.prob=list(0), maxdim = 1e9, partial.sharing=TRUE, ...)
     }
     
         # Computing potential p-value
-        potentialp = prod(sapply(pattern.prob.list[fam.info],min))
+        potentialp = prod(sapply(pattern.prob.list[fam.info],function (vec) min(vec[vec>0])))
         # Computing p-value
         pobs =  round(prod(famRVprob[fam.info]),5)
         if (compute.p)
@@ -670,7 +670,7 @@ precomputed.prob=list(0), maxdim = 1e9, partial.sharing=TRUE, ...)
             if (2^nfam.info <= maxdim)
             {
                 pshare = list(ped.tocompute.vec=fam.info,pshare=
-                    sapply(pattern.prob.list[fam.info],min))
+                    sapply(pattern.prob.list[fam.info],function (vec) min(vec[vec>0])))
                 pall = suppressWarnings(get.psubset(fam.info,not,pshare))
             }
             else pall = NA
