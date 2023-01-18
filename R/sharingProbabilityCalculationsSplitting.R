@@ -7,8 +7,14 @@
 #' @param procPed pedigree that has been through processPedigree()
 #' @param useFounderCouples a logical value indicating whether to exploit the interchangeability of the mother and father from founder couples to save computations. Warning! This works only when all founders have only one spouse. Set to FALSE if at least one founder has two or more spouses.
 #' @return sharing probability
-oneFounderSharingProbSplitting <- function(procPed, useFounderCouples=TRUE)
+oneFounderSharingProbSplitting <- function(procPed, useFounderCouples=TRUE,ncores=1)
 {
+  library(foreach)
+  # This may only work on a system with a Slurm scheduler
+  if (ncores==0) ncores = Sys.getenv("SLURM_CPUS_PER_TASK")
+  doParallel::registerDoParallel(cores=ncores)
+  cat("Computing sharing probabilities on ",ncores," cores.\n")
+  
 	nf = length(procPed$founders)
 	if (useFounderCouples)
 	{
@@ -33,10 +39,10 @@ oneFounderSharingProbSplitting <- function(procPed, useFounderCouples=TRUE)
 	carrier.sets = list()
 	for (i in length(procPed$affected):1)
 	carrier.sets = c(carrier.sets, combn(procPed$affected,i,simplify=FALSE))
-    carrier.numer <- rep(0,length(carrier.sets))
-    carrier.noRV <- 0
+    #carrier.numer <- rep(0,length(carrier.sets))
+    #carrier.noRV <- 0
     # First loop over the founder couples, using the father as index, then the other founders
-    for (f in f.vec) 
+    prob.mat = foreach (f=f.vec, .combine=rbind) %dopar%
     {
     	# Extract subpedigree 
     	subaffected = procPed$affected[affByFounder[rownames(affByFounder)==as.character(f),]>0]
@@ -53,7 +59,7 @@ oneFounderSharingProbSplitting <- function(procPed, useFounderCouples=TRUE)
 		subped = rbind(subped,pedtmp)
 		
 		# Code to follow progression
-		cat ("Founder ",f," subped size ",nrow(subped),"\n")
+		#cat ("Founder ",f," subped size ",nrow(subped),"\n")
 		
 		# Recreating a processed ped
 		#subprocPed = list('parents'=rbind(subped$father,subped$mother),'id'=subped$ind,'affected'=subaffected,'founders'=which(subped$father == 0))
@@ -75,23 +81,27 @@ oneFounderSharingProbSplitting <- function(procPed, useFounderCouples=TRUE)
         	if (f %in% founder.couples[,1])
         	{
         		# Multiply probabilities by 2 to account for the mother contribution
-        		carrier.noRV <- carrier.noRV + 2*(1 - denomProb(net,subprocPed))
-        		carrier.numer <- carrier.numer + 2*sapply(carrier.sets,numerProbSet,net=net, procPed=subprocPed)
+        		carrier.noRV <- 2*(1 - denomProb(net,subprocPed))
+        		carrier.numer <- 2*sapply(carrier.sets,numerProbSet,net=net, procPed=subprocPed)
         	}
         	else
         	{
-        		carrier.noRV <- carrier.noRV + 1 - denomProb(net,subprocPed)
-        		carrier.numer <- carrier.numer + sapply(carrier.sets,numerProbSet,net=net, procPed=subprocPed)
+        		carrier.noRV <- 1 - denomProb(net,subprocPed)
+        		carrier.numer <- sapply(carrier.sets,numerProbSet,net=net, procPed=subprocPed)
         	}
         }
         else
         {
-        	carrier.noRV <- carrier.noRV + 1 - denomProb(net,subprocPed)
-        	carrier.numer <- carrier.numer + sapply(carrier.sets,numerProbSet,net=net, procPed=subprocPed)
+        	carrier.noRV <- 1 - denomProb(net,subprocPed)
+        	carrier.numer <- sapply(carrier.sets,numerProbSet,net=net, procPed=subprocPed)
         }
-        }
+	    }
+	    c(carrier.noRV,carrier.numer)
     }
-    return(carrier.numer/(nf-carrier.noRV))
+#    return(carrier.numer/(nf-carrier.noRV))
+    prob.vec = apply(prob.mat,2,sum)
+    # prob no RV is in first column, prob of each sharing config in subsequent columns
+    return(prob.vec[-1]/(nf-prob.vec[1]))
 }
 
 numerProbSet <- function(carriers,net,procPed)

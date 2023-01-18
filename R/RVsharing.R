@@ -59,14 +59,14 @@ NULL
 #' Bioinformatics, 1-3, doi: 10.1093/bioinformatics/bty976
 setGeneric('RVsharing', function(ped, carriers=NULL, alleleFreq=NA,
 kinshipCoeff=NA, nSim=NA, founderDist=NULL, useAffected=FALSE,
-kinshipOrder=5, splitPed=FALSE, useFounderCouples=TRUE, distinguishHomo=FALSE, ...)
+kinshipOrder=5, splitPed=FALSE, useFounderCouples=TRUE, ncores=1, distinguishHomo=FALSE, ...)
     {standardGeneric('RVsharing')})
 
 #' @rdname RVsharing-methods
 #' @aliases RVsharing
 setMethod('RVsharing', signature(ped='pedigree'),
 function(ped, carriers, alleleFreq, kinshipCoeff, nSim,
-founderDist, useAffected, kinshipOrder, splitPed, useFounderCouples, distinguishHomo, ...)
+founderDist, useAffected, kinshipOrder, splitPed, useFounderCouples, ncores, distinguishHomo, ...)
 {
     # needed for backwards compatibility with v1.7
     ped <- oldArgs(ped, list(...)$data, list(...)$dad.id, list(...)$mom.id)
@@ -96,7 +96,7 @@ founderDist, useAffected, kinshipOrder, splitPed, useFounderCouples, distinguish
     }
     else if (splitPed)
     {
-        prob <- oneFounderSharingProbSplitting(procPed, useFounderCouples)
+        prob <- oneFounderSharingProbSplitting(procPed, useFounderCouples,ncores=ncores)
     }
     else
     {
