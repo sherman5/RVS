@@ -93,8 +93,9 @@ oneFounderSharingProb <- function(procPed, distinguishHomo=FALSE,ncores=1)
         denom <- denom + denomProb(condNet, procPed)
         if (distinguishHomo)
         {
-            numer <- numer + foreach (f=0:(npatterns-1), .combine=rbind) %dopar% 
+            tmp = foreach (f=0:(npatterns-1), .combine=rbind) %dopar% 
                 numerProbPattern(f, net=condNet, procPed=procPed)
+            numer <- numer + as.vector(tmp)
         }
         else numer <- numer + numerProb(condNet, procPed)
     }
