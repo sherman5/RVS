@@ -62,7 +62,7 @@ denomProb <- function(net, procPed)
 #' probabilities. 
 #' @param procPed pedigree that has been through processPedigree()
 #' @return sharing probability
-oneFounderSharingProb <- function(procPed, distinguishHomo=FALSE)
+oneFounderSharingProb <- function(procPed, distinguishHomo=FALSE,ncores=1)
 {
     # set all founders to 0 (no variant)
     net <- try(createNetwork(procPed))
@@ -75,6 +75,11 @@ oneFounderSharingProb <- function(procPed, distinguishHomo=FALSE)
     numer <- denom <- 0
     if (distinguishHomo)
     {
+        library(foreach)
+        # This may only work on a system with a Slurm scheduler
+        if (ncores==0) ncores = Sys.getenv("SLURM_CPUS_PER_TASK")
+        doParallel::registerDoParallel(cores=ncores)
+        cat("Computing sharing probabilities on ",ncores," cores.\n")
         npatterns = 2^length(procPed$carriers)
         numer = numeric(npatterns)
     }
@@ -87,7 +92,10 @@ oneFounderSharingProb <- function(procPed, distinguishHomo=FALSE)
         # compute probability
         denom <- denom + denomProb(condNet, procPed)
         if (distinguishHomo)
-            numer <- numer + sapply(0:(npatterns-1),numerProbPattern, net=condNet, procPed=procPed)
+        {
+            numer <- numer + foreach (f=0:(npatterns-1), .combine=rbind) %dopar% 
+                numerProbPattern(f, net=condNet, procPed=procPed)
+        }
         else numer <- numer + numerProb(condNet, procPed)
     }
     return(numer/denom)

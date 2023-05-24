@@ -100,7 +100,7 @@ founderDist, useAffected, kinshipOrder, splitPed, useFounderCouples, ncores, dis
     }
     else
     {
-        prob <- oneFounderSharingProb(procPed, distinguishHomo)
+        prob <- oneFounderSharingProb(procPed, distinguishHomo,ncores=ncores)
         if (distinguishHomo) names(prob) = R.utils::intToBin(0:(2^length(procPed$carriers)-1))
     }
     
