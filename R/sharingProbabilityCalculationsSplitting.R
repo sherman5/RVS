@@ -99,7 +99,8 @@ oneFounderSharingProbSplitting <- function(procPed, useFounderCouples=TRUE,ncore
 	    c(carrier.noRV,carrier.numer)
     }
 #    return(carrier.numer/(nf-carrier.noRV))
-    prob.vec = apply(prob.mat,2,sum)
+    if (length(f.vec)>1) prob.vec = apply(prob.mat,2,sum)
+    else prob.vec = prob.mat
     # prob no RV is in first column, prob of each sharing config in subsequent columns
     return(prob.vec[-1]/(nf-prob.vec[1]))
 }
