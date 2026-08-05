@@ -44,7 +44,7 @@ pedigree for which genotype data are included in \code{data}.}
 \item{sites}{a vector of the column indices of the variant sites to
 test in \code{data}. If the argument fams is provided, the variant sites
 are tested in each corresponding family in the fams vector (a variant
-present in multiple families must then be repeated for every families
+present in multiple families must then be repeated for every family
 where it appears).}
 
 \item{fams}{an optional character vector of the names of families

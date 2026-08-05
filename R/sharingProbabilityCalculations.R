@@ -11,7 +11,7 @@ numerProb <- function(net, procPed)
     rvInCarriers <- sapply(simplify=FALSE, FUN=function(dummy) 1:2,
         X=as.character(procPed$carriers))
     noRvInNonCarriers <- sapply(simplify=FALSE, FUN=function(dummy) 0,
-        X=as.character(setdiff(procPed$affected, procPed$carriers)))
+        X=as.character(setdiff(procPed$allrelatives, procPed$carriers)))
     return(marginalProb(net, c(rvInCarriers, noRvInNonCarriers)))
 }
 
@@ -35,7 +35,7 @@ numerProbPattern <- function(patternIndex, net, procPed)
     
     rvInCarriers <- sapply(pattern,list)
     noRvInNonCarriers <- sapply(simplify=FALSE, FUN=function(dummy) 0,
-                                X=as.character(setdiff(procPed$affected, procPed$carriers)))
+                                X=as.character(setdiff(procPed$allrelatives, procPed$carriers)))
     return(marginalProb(net, c(rvInCarriers, noRvInNonCarriers)))
 }
 
@@ -61,6 +61,7 @@ denomProb <- function(net, procPed)
 #' the pedigree. Condition on each founder and sum over all resulting
 #' probabilities. 
 #' @param procPed pedigree that has been through processPedigree()
+#' @param distinguishHomo a logical value indicating whether to compute distinct probabilities for homozygous and heterozygous variant carrier status
 #' @return sharing probability
 oneFounderSharingProb <- function(procPed, distinguishHomo=FALSE)
 {
@@ -102,6 +103,7 @@ oneFounderSharingProb <- function(procPed, distinguishHomo=FALSE)
 #' @param procPed pedigree that has been through processPedigree()
 #' @param kinshipCoeff mean kinship coefficient among the founders
 #' @param kinshipOrder order of the polynomial approximation to the distribtion
+#' @param distinguishHomo a logical value indicating whether to compute distinct probabilities for homozygous and heterozygous variant carrier status
 #' of the number of distinct alleles in the founders (d in Bureau et al.).
 #' Must be <= 5
 #' @return sharing probability

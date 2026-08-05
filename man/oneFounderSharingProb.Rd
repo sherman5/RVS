@@ -4,7 +4,7 @@
 \alias{oneFounderSharingProb}
 \title{calculate sharing probability in basic case}
 \usage{
-oneFounderSharingProb(procPed)
+oneFounderSharingProb(procPed, distinguishHomo = FALSE)
 }
 \arguments{
 \item{procPed}{pedigree that has been through processPedigree()}

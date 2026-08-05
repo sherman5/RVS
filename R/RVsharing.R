@@ -43,6 +43,7 @@ NULL
 #' @param splitPed a logical value indicating whether to split the pedigree in subpedigrees below each founder to enable computations in pedigrees too large to be stored in a single Bayesian network. Cannot be used in conjunction with alleleFreq or kinshipCoef. If useAffected=TRUE, this option produces correct probabilities only if all the affected subjects are non-founders of the pedigree. Erroneous probabilities may be returned if any founder is affected.
 #' @param useFounderCouples a logical value indicating whether to exploit the interchangeability of the mother and father from founder couples to save computations. Warning! This works only when all founders have only one spouse. Set to FALSE if at least one founder has two or more spouses. Only used when splitPed = TRUE
 #' @param distinguishHomo a logical value indicating whether to compute distinct probabilities for homozygous and heterozygous variant carrier status
+#' @param useUnaffected a logical value indicating whether to include unaffected relatives (pedigree members with affected=0) in the computation of probabilities of rare variant sharing by carriers. The condition that the variant be seen in at least one affected relative remains. Default to FALSE.
 #' @param ... allows for additional arguments
 #' @return sharing probability between all carriers in pedigree, except when splitPed = TRUE, where a vector of sharing probabilities for all subsets of the carriers is returned, and when distinguishHomo = TRUE, where a vector of sharing probabilities of the (2 to the power ncarriers) configurations of one or two copies of the variant allele among the carriers is returned. In this case, the probabilities are named by binary strings, such that a "0" means 1 copy of the variant allele and a "1" means 2 copies of the variant allele.
 #' @examples
@@ -59,14 +60,14 @@ NULL
 #' Bioinformatics, 1-3, doi: 10.1093/bioinformatics/bty976
 setGeneric('RVsharing', function(ped, carriers=NULL, alleleFreq=NA,
 kinshipCoeff=NA, nSim=NA, founderDist=NULL, useAffected=FALSE,
-kinshipOrder=5, splitPed=FALSE, useFounderCouples=TRUE, distinguishHomo=FALSE, ...)
+kinshipOrder=5, splitPed=FALSE, useFounderCouples=TRUE, distinguishHomo=FALSE, useUnaffected=FALSE, ...)
     {standardGeneric('RVsharing')})
 
 #' @rdname RVsharing-methods
 #' @aliases RVsharing
 setMethod('RVsharing', signature(ped='pedigree'),
 function(ped, carriers, alleleFreq, kinshipCoeff, nSim,
-founderDist, useAffected, kinshipOrder, splitPed, useFounderCouples, distinguishHomo, ...)
+founderDist, useAffected, kinshipOrder, splitPed, useFounderCouples, distinguishHomo, useUnaffected, ...)
 {
     # needed for backwards compatibility with v1.7
     ped <- oldArgs(ped, list(...)$data, list(...)$dad.id, list(...)$mom.id)
@@ -74,9 +75,9 @@ founderDist, useAffected, kinshipOrder, splitPed, useFounderCouples, distinguish
     # pre-processing step
     checkArgs(alleleFreq, kinshipCoeff, nSim, founderDist)
     if (!useAffected) ped$affected <- numeric(0)
-    procPed <- processPedigree(ped, carriers)
-    if (length(procPed$affected) < 2)
-        stop('need at least 2 affected subjects')
+    procPed <- processPedigree(ped, carriers, useUnaffected)
+    if (useUnaffected == FALSE & length(procPed$affected) < 2)
+        stop('need at least 2 affected subjects when useUnaffected is FALSE')
 
     # calculate sharing prob with appropiate method
     if (!is.na(nSim))
@@ -106,18 +107,18 @@ founderDist, useAffected, kinshipOrder, splitPed, useFounderCouples, distinguish
     
     # print and return result
     carrierText <- paste(procPed$origID[procPed$carriers], collapse=' ')
-    affectedText <- paste(procPed$origID[procPed$affected], collapse=' ')
+    allrelativesText <- paste(procPed$origID[procPed$allrelatives], collapse=' ')
 
     if (splitPed)
     {
-        message('Probability every subset of subjects among ', affectedText,
+        message('Probability every subset of subjects among ', allrelativesText,
             ' share a rare variant:')
         print(signif(prob, 4))
     }
     else
     {
         message(paste('Probability subjects', carrierText, 'among',
-            affectedText, 'share a rare variant:', signif(prob[1], 4)))
+            allrelativesText, 'share a rare variant:', signif(prob[1], 4)))
     }
     return(prob)
 })

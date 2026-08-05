@@ -2,6 +2,7 @@
 % Please edit documentation in R/documentation.R
 \docType{package}
 \name{RVS}
+\alias{RVS-package}
 \alias{RVS}
 \title{RVS}
 \description{

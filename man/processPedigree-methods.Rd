@@ -6,14 +6,16 @@
 \alias{processPedigree,pedigree-method}
 \title{extract useful information from a pedigree}
 \usage{
-processPedigree(ped, carriers = NULL)
+processPedigree(ped, carriers = NULL, useUnaffected = FALSE)
 
-\S4method{processPedigree}{pedigree}(ped, carriers = NULL)
+\S4method{processPedigree}{pedigree}(ped, carriers = NULL, useUnaffected = FALSE)
 }
 \arguments{
 \item{ped}{pedigree object (S3)}
 
-\item{carriers}{subjects in which the rare variant is seen}
+\item{carriers}{relatives in which the rare variant is seen}
+
+\item{useUnaffected}{a logical value indicating whether to include unaffected relatives (pedigree members with affected=0) in the computation of probabilities of rare variant sharing by carriers. The condition that the variant be seen in at least one affected relative remains. Default to FALSE.}
 }
 \value{
 list containing relevant pedigree info

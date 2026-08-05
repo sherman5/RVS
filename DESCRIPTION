@@ -27,7 +27,7 @@ Suggests:
     VariantAnnotation
 VignetteBuilder: knitr
 LazyData: true
-RoxygenNote: 7.1.0
+RoxygenNote: 7.3.2
 Encoding: UTF-8
 biocViews: ImmunoOncology, Genetics, GenomeWideAssociation, VariantDetection, ExomeSeq, WholeGenome
 Collate:

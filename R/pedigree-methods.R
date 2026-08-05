@@ -41,12 +41,13 @@ setGeneric('ComputeKinshipPropCoef', function(ped)
 #' @description Extract key information from a pedigree object, which makes
 #' subsequent computations much easier.
 #' @param ped pedigree object (S3)
-#' @param carriers subjects in which the rare variant is seen
+#' @param carriers relatives in which the rare variant is seen
+#' @param useUnaffected a logical value indicating whether to include unaffected relatives (pedigree members with affected=0) in the computation of probabilities of rare variant sharing by carriers. The condition that the variant be seen in at least one affected relative remains. Default to FALSE.
 #' @return list containing relevant pedigree info
 #' @examples 
 #' data(samplePedigrees)
 #' processPedigree(samplePedigrees$firstCousinPair)
-setGeneric('processPedigree', function(ped, carriers=NULL)
+setGeneric('processPedigree', function(ped, carriers=NULL, useUnaffected=FALSE)
     {standardGeneric('processPedigree')})
 
 #################### METHODS ####################
@@ -54,7 +55,7 @@ setGeneric('processPedigree', function(ped, carriers=NULL)
 #' @rdname processPedigree-methods
 #' @aliases processPedigree
 setMethod('processPedigree', signature(ped='pedigree'),
-function(ped, carriers)
+function(ped, carriers, useUnaffected)
 {
     # relabel subjects and get basic ped info
     origID <- ped$id
@@ -66,11 +67,18 @@ function(ped, carriers)
     
     # get affected, default to finalDescendants if not provided and no carriers specified
     # or the union of finalDescendants and carriers if carriers are specified
-    if (length(ped$affected)) affected <- which(ped$affected == 1)
+    if (length(ped$affected))
+        {
+        affected <- which(ped$affected == 1)
+        if (useUnaffected) allrelatives = which(!is.na(ped$affected))
+        else allrelatives = affected
+        }
     else
     {
     	if (is.null(carriers)) affected <- finalDescendants
     	else affected <- union(carriers,finalDescendants)
+    	if (useUnaffected) warning("Pedigree object does not contain an affected vector to distinguish affected and unaffected relatives. The useUnaffected option is ignored.")
+    	allrelatives = affected
     }
     # carriers default to affected if not provided
     if (is.null(carriers))   carriers <- affected
@@ -80,12 +88,12 @@ function(ped, carriers)
     #    stop('some founders are affected')
     #if (length(affected) < 2)
     #    stop('need at least 2 affected subjects')
-    if (sum(!carriers %in% affected) > 0)
-        stop('carriers must be a subset of affected')
+    if (sum(!carriers %in% allrelatives) > 0)
+        stop('carriers must be a subset of allrelatives')
 
     # save info in list
-    return(list('origID'=origID, 'ped'=ped, 'parents'=parents,
-        'founders'=founders, 'affected'=affected, 'size'=length(ped$id),
+    return(list('origID'=origID, 'ped'=ped, 'parents'=parents, 'founders'=founders, 
+        'affected'=affected, 'allrelatives'=allrelatives, 'size'=length(ped$id),
         'carriers'=carriers, 'id'=ped$id, 'finalDescendants'=finalDescendants))
 })
 

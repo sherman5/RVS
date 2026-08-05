@@ -4,7 +4,12 @@
 \alias{twoFounderSharingProb}
 \title{sharing probability when founder pair introduces variant}
 \usage{
-twoFounderSharingProb(procPed, kinshipCoeff, kinshipOrder)
+twoFounderSharingProb(
+  procPed,
+  kinshipCoeff,
+  kinshipOrder,
+  distinguishHomo = FALSE
+)
 }
 \arguments{
 \item{procPed}{pedigree that has been through processPedigree()}
