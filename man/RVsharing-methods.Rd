@@ -19,21 +19,22 @@ RVsharing(
   splitPed = FALSE,
   useFounderCouples = TRUE,
   distinguishHomo = FALSE,
+  useUnaffected = FALSE,
   ...
 )
 
 \S4method{RVsharing}{pedigree}(
   ped,
-  carriers,
-  alleleFreq,
-  kinshipCoeff,
-  nSim,
-  founderDist,
-  useAffected,
-  kinshipOrder,
-  splitPed,
-  useFounderCouples,
-  distinguishHomo,
+  carriers = NULL,
+  alleleFreq = NA,
+  kinshipCoeff = NA,
+  nSim = NA,
+  founderDist = NULL,
+  useAffected = FALSE,
+  kinshipOrder = 5,
+  splitPed = FALSE,
+  useFounderCouples = TRUE,
+  distinguishHomo = FALSE,
   useUnaffected = FALSE,
   ...
 )
@@ -50,6 +51,7 @@ RVsharing(
   splitPed = FALSE,
   useFounderCouples = TRUE,
   distinguishHomo = FALSE,
+  useUnaffected = FALSE,
   ...
 )
 }
@@ -82,9 +84,9 @@ Must be <= 5}
 
 \item{distinguishHomo}{a logical value indicating whether to compute distinct probabilities for homozygous and heterozygous variant carrier status}
 
-\item{...}{allows for additional arguments}
-
 \item{useUnaffected}{a logical value indicating whether to include unaffected relatives (pedigree members with affected=0) in the computation of probabilities of rare variant sharing by carriers. The condition that the variant be seen in at least one affected relative remains. Default to FALSE.}
+
+\item{...}{allows for additional arguments}
 }
 \value{
 sharing probability between all carriers in pedigree, except when splitPed = TRUE, where a vector of sharing probabilities for all subsets of the carriers is returned, and when distinguishHomo = TRUE, where a vector of sharing probabilities of the (2 to the power ncarriers) configurations of one or two copies of the variant allele among the carriers is returned. In this case, the probabilities are named by binary strings, such that a "0" means 1 copy of the variant allele and a "1" means 2 copies of the variant allele.

@@ -8,6 +8,8 @@ oneFounderSharingProb(procPed, distinguishHomo = FALSE)
 }
 \arguments{
 \item{procPed}{pedigree that has been through processPedigree()}
+
+\item{distinguishHomo}{a logical value indicating whether to compute distinct probabilities for homozygous and heterozygous variant carrier status}
 }
 \value{
 sharing probability

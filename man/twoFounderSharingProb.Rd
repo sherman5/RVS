@@ -16,7 +16,9 @@ twoFounderSharingProb(
 
 \item{kinshipCoeff}{mean kinship coefficient among the founders}
 
-\item{kinshipOrder}{order of the polynomial approximation to the distribtion
+\item{kinshipOrder}{order of the polynomial approximation to the distribtion}
+
+\item{distinguishHomo}{a logical value indicating whether to compute distinct probabilities for homozygous and heterozygous variant carrier status
 of the number of distinct alleles in the founders (d in Bureau et al.).
 Must be <= 5}
 }
