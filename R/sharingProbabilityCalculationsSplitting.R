@@ -33,8 +33,24 @@ oneFounderSharingProbSplitting <- function(procPed, useFounderCouples=TRUE, useU
 	
     # sum over probs, conditioning on each founder introducing variant
 	carrier.sets = list()
-	for (i in length(procPed$allrelatives):1)
-	carrier.sets = c(carrier.sets, combn(procPed$allrelatives,i,simplify=FALSE))
+	# If there are only affected relatives
+	if (all(procPed$allrelatives%in%procPed$affected))
+	{
+	  for (i in length(procPed$allrelatives):1)
+	  carrier.sets = c(carrier.sets, combn(procPed$allrelatives,i,simplify=FALSE))
+	}
+	# Else there are unaffected relatives and we must insure every subset of relatives
+	# contains at least one affected individual
+	else
+	{
+	  for (i in length(procPed$allrelatives):1)
+	  {
+	    set.list = combn(procPed$allrelatives,i,simplify=FALSE)
+	    # Only sets with at least one affected individual are valid
+	    valid = sapply(set.list,function(vec) any(vec%in%procPed$affected))
+	    carrier.sets = c(carrier.sets, set.list[valid])
+	  }
+	}
     carrier.numer <- rep(0,length(carrier.sets))
     carrier.noRV <- 0
     # First loop over the founder couples, using the father as index, then the other founders

@@ -82,7 +82,9 @@ function(ped, carriers, useUnaffected)
     }
     # carriers default to affected if not provided
     if (is.null(carriers))   carriers <- affected
-
+    else if(sum(carriers %in% affected) == 0)
+        stop('At least one carrier must be affected')
+        
     # check pedigree is valid
     #if (sum(affected %in% founders) > 0)
     #    stop('some founders are affected')
