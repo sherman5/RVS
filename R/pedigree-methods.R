@@ -88,7 +88,7 @@ function(ped, carriers, useUnaffected)
     #    stop('some founders are affected')
     #if (length(affected) < 2)
     #    stop('need at least 2 affected subjects')
-    if (sum(!carriers %in% allrelatives) > 0)
+    if (sum(!(carriers %in% allrelatives)) > 0)
         stop('carriers must be a subset of allrelatives')
 
     # save info in list

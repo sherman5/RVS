@@ -97,7 +97,7 @@ founderDist, useAffected, kinshipOrder, splitPed, useFounderCouples, distinguish
     }
     else if (splitPed)
     {
-        prob <- oneFounderSharingProbSplitting(procPed, useFounderCouples)
+        prob <- oneFounderSharingProbSplitting(procPed, useFounderCouples=useFounderCouples, useUnaffected=useUnaffected)
     }
     else
     {

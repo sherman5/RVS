@@ -6,8 +6,9 @@
 #' probabilities. 
 #' @param procPed pedigree that has been through processPedigree()
 #' @param useFounderCouples a logical value indicating whether to exploit the interchangeability of the mother and father from founder couples to save computations. Warning! This works only when all founders have only one spouse. Set to FALSE if at least one founder has two or more spouses.
+#' @param useUnaffected a logical value indicating whether to include unaffected relatives (pedigree members with affected=0) in the computation of probabilities of rare variant sharing by carriers. The condition that the variant be seen in at least one affected relative remains. Default to FALSE.
 #' @return sharing probability
-oneFounderSharingProbSplitting <- function(procPed, useFounderCouples=TRUE)
+oneFounderSharingProbSplitting <- function(procPed, useFounderCouples=TRUE, useUnaffected=FALSE)
 {
 	nf = length(procPed$founders)
 	if (useFounderCouples)
@@ -25,14 +26,15 @@ oneFounderSharingProbSplitting <- function(procPed, useFounderCouples=TRUE)
 	colnames(peddat) = c("ind","father","mother","sex")
 	gen = GENLIB::gen.genealogy(peddat)
 
-	# Find occurence of founders in ancestry of each affected subject
+	# Find occurence of founders in ancestry of each included relative
+    relativesByFounder <- founderOccurence(procPed, procPed$allrelatives, procPed$founders)
     affByFounder <- founderOccurence(procPed, procPed$affected, procPed$founders)
-    #affByFounder = GENLIB::gen.occ(gen,pro=procPed$affected,procPed$founders)
+    #affByFounder = GENLIB::gen.occ(gen,pro=procPed$allrelatives,procPed$founders)
 	
     # sum over probs, conditioning on each founder introducing variant
 	carrier.sets = list()
-	for (i in length(procPed$affected):1)
-	carrier.sets = c(carrier.sets, combn(procPed$affected,i,simplify=FALSE))
+	for (i in length(procPed$allrelatives):1)
+	carrier.sets = c(carrier.sets, combn(procPed$allrelatives,i,simplify=FALSE))
     carrier.numer <- rep(0,length(carrier.sets))
     carrier.noRV <- 0
     # First loop over the founder couples, using the father as index, then the other founders
@@ -40,7 +42,8 @@ oneFounderSharingProbSplitting <- function(procPed, useFounderCouples=TRUE)
     {
     	# Extract subpedigree 
     	subaffected = procPed$affected[affByFounder[rownames(affByFounder)==as.character(f),]>0]
-    	subgen = GENLIB::gen.branching(gen,pro=subaffected,ances=f)
+    	subrelatives = procPed$allrelatives[relativesByFounder[rownames(relativesByFounder)==as.character(f),]>0]
+    	subgen = GENLIB::gen.branching(gen,pro=subrelatives,ances=f)
     	subped = GENLIB::gen.genout(subgen)
     	# Adding dummy parents
 		mb = subped$father>0 & subped$mother==0
@@ -55,9 +58,10 @@ oneFounderSharingProbSplitting <- function(procPed, useFounderCouples=TRUE)
 		# Code to follow progression
 		cat ("Founder ",f," subped size ",nrow(subped),"\n")
 		
+		# Recreating a vector distinguishing affected, unaffected and unknown individuals
+		subaffected.vec = ifelse(subped$ind%in%subrelatives,ifelse(subped$ind%in%subaffected,1,0),NA)
 		# Recreating a processed ped
-		#subprocPed = list('parents'=rbind(subped$father,subped$mother),'id'=subped$ind,'affected'=subaffected,'founders'=which(subped$father == 0))
-		subprocPed = processPedigree(kinship2::pedigree(subped$ind,subped$father,subped$mother,subped$sex,subped$ind%in%subaffected))
+		subprocPed = processPedigree(kinship2::pedigree(subped$ind,subped$father,subped$mother,subped$sex,subaffected.vec),useUnaffected=useUnaffected)
 						
 		    # set all founders to 0 (no variant)	 except current founder f	    
 	    net <- try(createNetwork(subprocPed))
@@ -102,7 +106,7 @@ if (all(carriers%in%procPed$origID))
 	rvInCarriers <- sapply(simplify=FALSE, FUN=function(dummy) 1:2,
       X=as.character(carriersi))
     noRvInNonCarriers <- sapply(simplify=FALSE, FUN=function(dummy) 0,
-      X=as.character(setdiff(procPed$affected, carriersi)))
+      X=as.character(setdiff(procPed$allrelatives, carriersi)))
     return(marginalProb(net, c(rvInCarriers, noRvInNonCarriers)))
 	}
 else return (0)
