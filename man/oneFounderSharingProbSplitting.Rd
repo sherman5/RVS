@@ -4,12 +4,18 @@
 \alias{oneFounderSharingProbSplitting}
 \title{calculate sharing probability in basic case}
 \usage{
-oneFounderSharingProbSplitting(procPed, useFounderCouples = TRUE)
+oneFounderSharingProbSplitting(
+  procPed,
+  useFounderCouples = TRUE,
+  useUnaffected = FALSE
+)
 }
 \arguments{
 \item{procPed}{pedigree that has been through processPedigree()}
 
 \item{useFounderCouples}{a logical value indicating whether to exploit the interchangeability of the mother and father from founder couples to save computations. Warning! This works only when all founders have only one spouse. Set to FALSE if at least one founder has two or more spouses.}
+
+\item{useUnaffected}{a logical value indicating whether to include unaffected relatives (pedigree members with affected=0) in the computation of probabilities of rare variant sharing by carriers. The condition that the variant be seen in at least one affected relative remains. Default to FALSE.}
 }
 \value{
 sharing probability
