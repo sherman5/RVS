@@ -97,6 +97,7 @@ founderDist, useAffected, kinshipOrder, splitPed, useFounderCouples, distinguish
     }
     else if (splitPed)
     {
+        if (any(procPed$allrelatives%in%procPed$founders)) stop("Relatives considered in sharing set inclues the following founders: ",procPed$allrelatives[procPed$allrelatives%in%procPed$founders],". The splitPed option does not behave correctly it that case.")
         prob <- oneFounderSharingProbSplitting(procPed, useFounderCouples=useFounderCouples, useUnaffected=useUnaffected)
     }
     else
