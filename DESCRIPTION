@@ -27,7 +27,6 @@ Suggests:
     VariantAnnotation
 VignetteBuilder: knitr
 LazyData: true
-RoxygenNote: 7.3.2
 Encoding: UTF-8
 biocViews: ImmunoOncology, Genetics, GenomeWideAssociation, VariantDetection, ExomeSeq, WholeGenome
 Collate:
@@ -43,3 +42,4 @@ Collate:
     'relatedFoundersCorrection.R'
     'sharingProbabilityCalculations.R'
     'sharingProbabilityCalculationsSplitting.R'
+Config/roxygen2/version: 8.1.1.9000

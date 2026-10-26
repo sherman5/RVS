@@ -18,8 +18,12 @@ import(gRain)
 import(kinship2)
 import(methods)
 importClassesFrom(snpStats,SnpMatrix)
-importFrom(stats,runif)
-importFrom(stats,weighted.mean)
-importFrom(utils,combn)
-importFrom(utils,data)
-importFrom(utils,installed.packages)
+importFrom(stats,
+  runif,
+  weighted.mean
+)
+importFrom(utils,
+  combn,
+  data,
+  installed.packages
+)
