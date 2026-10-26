@@ -2,7 +2,7 @@ Package: RVS
 Type: Package
 Title: Computes estimates of the probability of related individuals sharing a
     rare variant
-Version: 1.25.1
+Version: 1.35.0
 Date: 2024-02-14
 Author: Alexandre Bureau, Ingo Ruczinski, Samuel Younkin, Thomas Sherman
 Maintainer: Alexandre Bureau <alexandre.bureau@fmed.ulaval.ca>
