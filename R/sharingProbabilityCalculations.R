@@ -3,7 +3,7 @@
 #'
 #' @description calculates the numerator of the sharing probability
 #' outline in section 2.1 of Bureau et al.
-#' @param gRain bayesian network
+#' @param net bayesian network
 #' @param procPed pedigree object that has been process with processPedigree
 #' @return numerator value
 numerProb <- function(net, procPed)
@@ -20,7 +20,8 @@ numerProb <- function(net, procPed)
 #'
 #' @description calculates the numerator of the sharing probability
 #' for a specific sharing pattern of 1 or 2 copies of the RV
-#' @param gRain bayesian network
+#' @param patternIndex integer index of the sharing pattern, where the binary representation of the integer indicates the number of copies of the RV for each carrier (0 for one copy, 1 for two copies). The least significant bit corresponds to the first carrier in procPed$carriers.
+#' @param net bayesian network
 #' @param procPed pedigree object that has been process with processPedigree
 #' @return numerator value
 numerProbPattern <- function(patternIndex, net, procPed)
@@ -44,7 +45,7 @@ numerProbPattern <- function(patternIndex, net, procPed)
 #'
 #' @description calculates the denominator of the sharing probability
 #' outline in section 2.1 of Bureau et al.
-#' @param gRain bayesian network
+#' @param net bayesian network
 #' @param procPed pedigree object that has been process with processPedigree
 #' @return denominator value
 denomProb <- function(net, procPed)

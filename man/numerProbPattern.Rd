@@ -7,9 +7,11 @@
 numerProbPattern(patternIndex, net, procPed)
 }
 \arguments{
-\item{procPed}{pedigree object that has been process with processPedigree}
+\item{patternIndex}{integer index of the sharing pattern, where the binary representation of the integer indicates the number of copies of the RV for each carrier (0 for one copy, 1 for two copies). The least significant bit corresponds to the first carrier in procPed$carriers.}
 
-\item{gRain}{bayesian network}
+\item{net}{bayesian network}
+
+\item{procPed}{pedigree object that has been process with processPedigree}
 }
 \value{
 numerator value

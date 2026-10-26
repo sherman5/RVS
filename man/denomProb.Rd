@@ -7,9 +7,9 @@
 denomProb(net, procPed)
 }
 \arguments{
-\item{procPed}{pedigree object that has been process with processPedigree}
+\item{net}{bayesian network}
 
-\item{gRain}{bayesian network}
+\item{procPed}{pedigree object that has been process with processPedigree}
 }
 \value{
 denominator value
