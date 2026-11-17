@@ -1,0 +1,7 @@
+Changes in version 1.35.0
+
++ New option useUnaffected to the RVsharing function, a logical value indicating whether to include unaffected relatives (pedigree members with affected=0) in the computation of probabilities of rare variant sharing by carriers. The condition that the variant be seen in at least one affected relative remains.
+
++ Correction of subject identifiers in ex.ped.mat data object.
+
++ Corrections of wrong argument names in help files.
