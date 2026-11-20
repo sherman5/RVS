@@ -1,0 +1,10 @@
+bibentry(
+  bibtype  = "Article",
+  title    = "Detection of rare disease variants in extended pedigrees using RVS",
+  author   = c(person("Thomas","Sherman"),person("Jack", "Fu"), person(c("Robert","B."), "Scharpf"),person("Alexandre", "Bureau"), person("Ingo", "Ruczinski")),
+  journal  = "Bioinformatics",
+  year     = "2019",
+  volume   = "35",
+  number   = "14",
+  pages    = "2509-2511",
+  doi      = "10.1093/bioinformatics/bty976")
